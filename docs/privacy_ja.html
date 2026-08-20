@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>プライバシーポリシー – Steel Verdict</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #060A10;
+      color: #DDCB9A;
+      font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+      line-height: 1.85;
+      padding: 0 0 60px;
+    }
+
+    /* ── Header bar ── */
+    header {
+      background: linear-gradient(180deg, #141C24 0%, #0F1C2A 100%);
+      border-bottom: 2px solid #D4A017;
+      box-shadow: 0 2px 20px #D4A01733;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-title .icon { font-size: 1.4rem; }
+
+    .header-title h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #F5C842;
+      text-shadow: 0 0 12px #D4A01766;
+    }
+
+    .header-title .sub {
+      font-size: 0.75rem;
+      color: #9A8A6A;
+      letter-spacing: 0.06em;
+    }
+
+    .lang-switch a {
+      color: #9A8A6A;
+      font-size: 0.85rem;
+      text-decoration: none;
+      border: 1px solid #6A5428;
+      border-radius: 4px;
+      padding: 4px 12px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .lang-switch a:hover {
+      color: #F5C842;
+      border-color: #D4A017;
+    }
+
+    /* ── Content ── */
+    .content {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .meta {
+      font-size: 0.85rem;
+      color: #9A8A6A;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #1E2E3E;
+    }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #F5C842;
+      margin: 36px 0 12px;
+      padding-left: 12px;
+      border-left: 3px solid #D4A017;
+    }
+
+    h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #EDC038;
+      margin: 20px 0 6px;
+    }
+
+    p {
+      color: #DDCB9A;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 12px;
+    }
+
+    ul li {
+      color: #DDCB9A;
+      font-size: 0.95rem;
+      padding: 4px 0 4px 20px;
+      position: relative;
+    }
+
+    ul li::before {
+      content: "▸";
+      color: #D4A017;
+      position: absolute;
+      left: 0;
+    }
+
+    a {
+      color: #EDC038;
+      text-decoration: none;
+      border-bottom: 1px solid #6A542866;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    a:hover {
+      color: #F5C842;
+      border-bottom-color: #D4A017;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #D4A017, transparent);
+      margin: 32px 0;
+      opacity: 0.4;
+    }
+
+    /* ── Footer ── */
+    footer {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 24px;
+      font-size: 0.8rem;
+      color: #5C4E38;
+      border-top: 1px solid #1E2E3E;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <span class="icon">⚔️</span>
+      <div>
+        <h1>鋼鉄の審判</h1>
+        <div class="sub">プライバシーポリシー</div>
+      </div>
+    </div>
+    <div class="lang-switch">
+      <a href="privacy_en.html">English</a>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <div class="meta">
+      <strong>アプリ名：</strong>鋼鉄の審判 &nbsp;|&nbsp;
+      <strong>最終更新日：</strong>2026年3月27日
+    </div>
+
+    <p>本プライバシーポリシーは、Steel Verdict（以下「本アプリ」）がご利用者の情報をどのように収集・利用・保護するかについて説明します。</p>
+
+    <h2>1. 収集する情報</h2>
+
+    <h3>アカウント情報</h3>
+    <p>本アプリは匿名またはメールアドレスで利用できます。メールアドレスで登録された場合、Firebase Authentication にメールアドレスと一意のユーザーIDを保存します。</p>
+
+    <h3>ゲームデータ</h3>
+    <p>以下のデータを Firebase Firestore に保存します：</p>
+    <ul>
+      <li>種族名および能力値（Strength・Intellect・Skill・Magic・Art・Life）</li>
+      <li>戦闘履歴・結果・AIが生成した戦闘レポート</li>
+      <li>チケット残高とサブスクリプションの状態</li>
+      <li>PvP対戦データ（提出した戦略・結果）</li>
+      <li>生成した戦争年代記</li>
+      <li>お気に入り登録した戦闘履歴</li>
+    </ul>
+
+    <h3>戦略テキスト</h3>
+    <p>戦闘を送信する際、入力した戦略テキストはAIによる戦闘レポート生成のために、サードパーティのAIサービス（Google Gemini または Anthropic Claude）へ送信されます。このテキストはCloud Functionsサーバーを経由してAIプロバイダーに転送されます。入力された戦略テキストは、戦闘履歴として保存されるもの以外は永続的に保存されません。</p>
+
+    <h3>ローカルストレージ</h3>
+    <p>一部の設定やキャッシュデータは Hive を使用してデバイス上にローカル保存されます。このデータは Firestore に同期されない限り、デバイス外に送信されることはありません。</p>
+
+    <h3>広告データ</h3>
+    <p>本アプリは Google AdMob を使用してリワード広告を表示します。AdMob はデバイス識別子や利用状況データを収集する場合があります。詳細は <a href="https://policies.google.com/privacy" target="_blank">Google のプライバシーポリシー</a> をご参照ください。</p>
+
+    <h3>購入データ</h3>
+    <p>アプリ内購入（サブスクリプションまたはチケットパック）はApple App StoreまたはGoogle Playによって処理されます。当方は購入確認のためのレシートトークンを受け取りますが、クレジットカード情報等の支払い情報は受け取らず、保存もしません。</p>
+
+    <div class="divider"></div>
+
+    <h2>2. 情報の利用目的</h2>
+    <ul>
+      <li>ゲームの提供および運営</li>
+      <li>入力された戦略に基づくAI戦闘レポートの生成</li>
+      <li>チケット残高およびサブスクリプション特典の管理</li>
+      <li>PvPモードでの対戦相手とのマッチング</li>
+      <li>リワード広告の表示および獲得チケットの付与</li>
+      <li>アプリ内購入の検証</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <h2>3. 利用する第三者サービス</h2>
+    <p>本アプリは以下の第三者サービスを使用しています。各サービスは独自のプライバシーポリシーを有しています：</p>
+    <ul>
+      <li><strong style="color:#EDC038">Firebase（Google）</strong> — 認証・データベース・Cloud Functions・Remote Config：<a href="https://firebase.google.com/support/privacy" target="_blank">firebase.google.com/support/privacy</a></li>
+      <li><strong style="color:#EDC038">Google Gemini API</strong> — AIによる戦闘レポート生成：<a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a></li>
+      <li><strong style="color:#EDC038">Anthropic Claude API</strong> — AIによる戦闘レポート生成（Epicモード）：<a href="https://www.anthropic.com/privacy" target="_blank">anthropic.com/privacy</a></li>
+      <li><strong style="color:#EDC038">Google AdMob</strong> — リワード広告：<a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a></li>
+      <li><strong style="color:#EDC038">Google Play / Apple App Store</strong> — アプリ内購入</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <h2>4. データの保持期間</h2>
+    <p>アカウントおよびゲームデータは、アカウントが有効な期間中保持されます。匿名アカウントおよび長期間利用されていないアカウントは、一定期間の非アクティブ後に削除される場合があります。PvP対戦データは非アクティブ後24時間で自動削除されます（TTLポリシー）。</p>
+
+    <h2>5. データのセキュリティ</h2>
+    <p>Firebaseのセキュリティルールにより、各ユーザーは自分のデータのみにアクセスできるよう制限されています。Cloud Functionsは戦闘リクエストを処理する前に、サーバー側でバリデーションを行います。</p>
+
+    <h2>6. 児童のプライバシー</h2>
+    <p>本アプリは13歳未満の児童を対象としていません。13歳未満の児童から故意に個人情報を収集することはありません。児童が個人情報を提供したと思われる場合は、下記の連絡先までご連絡ください。速やかに削除いたします。</p>
+
+    <h2>7. お客様の権利</h2>
+    <p>アカウントおよび関連データの削除は、下記メールアドレスよりいつでもご依頼いただけます。ご依頼から30日以内に、FirestoreデータおよびFirebase Authアカウントを削除いたします。</p>
+
+    <h2>8. ポリシーの変更</h2>
+    <p>本プライバシーポリシーは随時更新される場合があります。変更後のポリシーは、改訂された「最終更新日」とともに本URLに掲載されます。</p>
+
+    <h2>9. お問い合わせ</h2>
+    <p>本プライバシーポリシーに関するお問い合わせは、下記までご連絡ください：<br />
+    <a href="mailto:your@example.com">your@example.com</a></p>
+
+  </div>
+
+  <footer>
+    <span>&copy; 2026 Steel Verdict. All rights reserved.</span>
+    <a href="privacy_en.html">English Privacy Policy</a>
+  </footer>
+
+</body>
+</html>

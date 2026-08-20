@@ -1,0 +1,73 @@
+{
+  "worldviews": {
+    "1830_fantasy": {
+      "common_judgment": "あなたは1830年代のファンタジー世界における厳格な軍事戦闘審判です。提供されたステータスに基づいて戦略を客観的に評価してください。後付けでじゃんけんのような判定はしないでください。プレイヤーの実際の戦略に動的に反応してください。必ず最後に明確な結果を記載してください：勝利、敗北、または引き分け。",
+      "worldview_description": "ステータス：知恵、技術、魔法、芸術（工学・防衛）、生命、力。",
+      "stats": ["知恵", "技術", "魔法", "芸術", "生命", "力"],
+      "stat_descriptions": {
+        "知恵": "戦略的思考と意思決定能力",
+        "技術": "高度な兵器や機械へのアクセス",
+        "魔法": "魔法の力と呪文の能力",
+        "芸術": "工学・要塞化・建設スキル",
+        "生命": "持久力、回復力、部隊の士気",
+        "力": "純粋な身体的パワーと戦闘力"
+      }
+    }
+  },
+  "scenarios": {
+    "scenario_001": {
+      "scenarioId": "scenario_001",
+      "title": "The Border Skirmish",
+      "titleJa": "国境の小競り合い",
+      "enemyName": "Bandit Horde",
+      "enemyNameJa": "盗賊の大群",
+      "difficulty": 1,
+      "isFree": true,
+      "commanderDefinition": "A disorganized bandit force. Aggressive but uncoordinated. Exploitable by discipline or superior positioning.",
+      "commanderDefinitionJa": "規律のない盗賊集団。攻撃的だが統率が取れておらず、規律や優れた陣形で弱点を突くことができる。"
+    },
+    "scenario_002": {
+      "scenarioId": "scenario_002",
+      "title": "Siege of Iron Keep",
+      "titleJa": "鉄の砦の包囲戦",
+      "enemyName": "Imperial Garrison",
+      "enemyNameJa": "帝国の守備隊",
+      "difficulty": 3,
+      "isFree": false,
+      "commanderDefinition": "A fortified imperial stronghold with seasoned defenders. Commander Van Holt is a disciplined tactician who excels in defensive warfare.",
+      "commanderDefinitionJa": "歴戦の守備兵を擁する帝国の要塞。ヴァン・ホルト司令官は防衛戦を得意とする規律正しい戦術家である。"
+    },
+    "scenario_003": {
+      "scenarioId": "scenario_003",
+      "title": "Dragon Valley Assault",
+      "titleJa": "ドラゴン谷の強襲",
+      "enemyName": "Dragon Cult Army",
+      "enemyNameJa": "ドラゴン教団軍",
+      "difficulty": 5,
+      "isFree": false,
+      "commanderDefinition": "A fanatical army empowered by dragon magic. High Priestess Vyreth commands with religious fervor and devastating magical artillery.",
+      "commanderDefinitionJa": "ドラゴンの魔力で強化された狂信的な軍隊。ヴィレス大神官は宗教的な熱狂と破壊的な魔法砲撃で軍を率いる。"
+    }
+  },
+  "mode_addons": {
+    "practice": "プレイヤーの使用言語で50文字以内の戦闘報告を出力してください。",
+    "tabletop": "この戦闘を10回シミュレートしてください。推定勝率をパーセントで20文字以内のみ出力してください。例：'勝率: 70%'",
+    "normal": "1000文字以上の詳細な戦闘報告を書いてください。",
+    "epic": "1500文字以上の臨場感あふれる叙事詩的な戦闘物語を、鮮明な描写で書いてください。",
+    "boss": "1000文字以上の詳細な戦闘報告を書いてください。プレイヤーは強力なボス級の敵と対峙しています。",
+    "history_puzzle": "これは固定された歴史的兵力を使った歴史パズル戦闘です。プレイヤーの戦略を厳格かつ客観的に評価してください。500文字以上の詳細な戦闘報告を書いてください。",
+    "pvp": "あなたはPvP戦闘の審判です。両者の戦略が提供されています。ステータスと戦略の質に基づいて公平に判定してください。40文字以内の短い戦闘報告を書き、勝者を宣言してください。"
+  },
+  "ticket_costs": {
+    "gemini": 1,
+    "claude": 3,
+    "practice": 0,
+    "tabletop": 0,
+    "pvp": 1
+  },
+  "model_config": {
+    "gemini_flash": "gemini-2.0-flash",
+    "gemini_flash_lite": "gemini-2.0-flash-lite",
+    "claude": "claude-haiku-4-5-20251001"
+  }
+}

@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Users ──────────────────────────────────────────────────────────────
+    // Users can only read/write their own document.
+    // ticketCount and subscriptionTier can only be written by Cloud Functions
+    // (server-side), never directly by the client.
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // Client may only update non-sensitive fields (displayName, lastLoginAt)
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(["ticketCount", "subscriptionTier", "isBossEnabled",
+                      "lastDailyRewardAt", "subscriptionUpdatedAt"]);
+
+      // Creation is done by Cloud Function (onUserCreated trigger)
+      allow create: if false;
+      allow delete: if false;
+    }
+
+    // ── System Config (Admin Panel) ──────────────────────────────────────
+    // game_config: readable by any authenticated user, writable only by admins
+    // admin_uids: readable by authenticated users, never client-writable
+    match /system_config/{docId} {
+      allow read: if request.auth != null;
+
+      allow write: if request.auth != null
+        && docId == 'game_config'
+        && exists(/databases/$(database)/documents/system_config/admin_uids)
+        && request.auth.uid in get(/databases/$(database)/documents/system_config/admin_uids).data.uids;
+    }
+
+    // ── PvP Matches ────────────────────────────────────────────────────────
+    match /pvp_matches/{matchId} {
+      // Players can read their own matches
+      allow read: if request.auth != null
+        && (resource.data.playerAUid == request.auth.uid
+            || resource.data.playerBUid == request.auth.uid
+            || resource.data.playerBUid == ""); // Public waiting matches (for matchmaking)
+
+      // Players can submit their own strategy only
+      allow update: if request.auth != null
+        && isMatchParticipant(resource.data, request.auth.uid)
+        && onlySubmittingOwnStrategy(resource.data, request.resource.data, request.auth.uid);
+
+      // Match creation is done by Cloud Function (findOrCreatePvpMatch)
+      allow create: if false;
+      allow delete: if false;
+    }
+  }
+
+  function isMatchParticipant(matchData, uid) {
+    return matchData.playerAUid == uid || matchData.playerBUid == uid;
+  }
+
+  function onlySubmittingOwnStrategy(before, after, uid) {
+    let changedKeys = after.diff(before).affectedKeys();
+    return before.playerAUid == uid ? changedKeys.hasOnly(["playerAStrategy"])
+         : before.playerBUid == uid ? changedKeys.hasOnly(["playerBStrategy"])
+         : false;
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "worldviews": {
+    "1830_fantasy": {
+      "common_judgment": "You are a strict military battle judge in a fantasy world set around 1830. Evaluate the strategy objectively based on the stats provided. DO NOT play rock-paper-scissors after the fact — react dynamically to the player's actual strategy. Always end your response with a clear outcome: VICTORY, DEFEAT, or STALEMATE.",
+      "worldview_description": "Stats: Wisdom, Technology, Magic, Art (engineering/fortification), Life, Strength.",
+      "stats": ["Wisdom", "Technology", "Magic", "Art", "Life", "Strength"],
+      "stat_descriptions": {
+        "Wisdom": "Strategic thinking and decision-making ability",
+        "Technology": "Access to advanced weapons and machinery",
+        "Magic": "Magical power and spell capacity",
+        "Art": "Engineering, fortification, and construction skill",
+        "Life": "Endurance, healing, and troop morale",
+        "Strength": "Raw physical power and combat prowess"
+      }
+    }
+  },
+  "scenarios": {
+    "scenario_001": {
+      "scenarioId": "scenario_001",
+      "title": "The Border Skirmish",
+      "titleJa": "国境の小競り合い",
+      "enemyName": "Bandit Horde",
+      "enemyNameJa": "盗賊の大群",
+      "difficulty": 1,
+      "isFree": true,
+      "commander_definition": "A disorganized bandit force threatening the western border. They rely on numbers and surprise, but lack coordination and discipline."
+    },
+    "scenario_002": {
+      "scenarioId": "scenario_002",
+      "title": "Siege of Iron Keep",
+      "titleJa": "鉄の砦の包囲戦",
+      "enemyName": "Imperial Garrison",
+      "enemyNameJa": "帝国の守備隊",
+      "difficulty": 3,
+      "isFree": false,
+      "commander_definition": "A fortified imperial stronghold with seasoned defenders. Commander Van Holt is a disciplined tactician who excels in defensive warfare."
+    },
+    "scenario_003": {
+      "scenarioId": "scenario_003",
+      "title": "Dragon Valley Assault",
+      "titleJa": "ドラゴン谷の強襲",
+      "enemyName": "Dragon Cult Army",
+      "enemyNameJa": "ドラゴン教団軍",
+      "difficulty": 5,
+      "isFree": false,
+      "commander_definition": "A fanatical army empowered by dragon magic. High Priestess Vyreth commands with religious fervor and devastating magical artillery."
+    }
+  },
+  "mode_addons": {
+    "practice": "Output a battle report of 50 characters or less in the player's implied language.",
+    "tabletop": "Simulate this battle 10 times. Output only the estimated win rate as a percentage in 20 characters or less, e.g. 'Win rate: 70%'",
+    "normal": "Write a detailed battle report of 1000 characters or more.",
+    "epic": "Write a rich, epic battle narrative of 1500 characters or more with vivid descriptions.",
+    "boss": "Write a detailed battle report of 1000 characters or more. The player faces a powerful boss-tier enemy.",
+    "history_puzzle": "This is a historical puzzle battle using fixed historical forces. Evaluate the player's strategy strictly and objectively. Write a detailed battle report of 500 characters or more.",
+    "pvp": "You are judging a PvP battle. Both strategies are provided. Judge fairly based on stats and strategy quality. Write a short battle report of 40 characters, then state the winner."
+  },
+  "ticket_costs": {
+    "gemini": 1,
+    "claude": 3,
+    "practice": 0,
+    "tabletop": 0,
+    "pvp": 1
+  },
+  "model_config": {
+    "gemini_flash": "gemini-2.0-flash",
+    "gemini_flash_lite": "gemini-2.0-flash-lite",
+    "claude": "claude-haiku-4-5-20251001"
+  }
+}

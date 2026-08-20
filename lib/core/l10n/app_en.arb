@@ -1,0 +1,1337 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Steel Verdict",
+  "@appTitle": { "description": "Application title" },
+
+  "loading": "Loading...",
+  "@loading": { "description": "Generic loading text" },
+
+  "error": "Error",
+  "@error": { "description": "Generic error label" },
+
+  "retry": "Retry",
+  "@retry": { "description": "Retry button label" },
+
+  "cancel": "Cancel",
+  "@cancel": { "description": "Cancel button label" },
+
+  "confirm": "Confirm",
+  "@confirm": { "description": "Confirm button label" },
+
+  "save": "Save",
+  "@save": { "description": "Save button label" },
+
+  "delete": "Delete",
+  "@delete": { "description": "Delete button label" },
+
+  "close": "Close",
+  "@close": { "description": "Close button label" },
+
+  "back": "Back",
+  "@back": { "description": "Back button label" },
+
+  "next": "Next",
+  "@next": { "description": "Next button label" },
+
+  "tickets": "Tickets",
+  "@tickets": { "description": "Ticket currency label" },
+
+  "splashInitializing": "Initializing...",
+  "@splashInitializing": { "description": "Splash screen loading text" },
+
+  "splashTagline": "Write your strategy. Command the battle.",
+  "@splashTagline": { "description": "Splash screen tagline" },
+
+  "authTitle": "Steel Verdict",
+  "@authTitle": { "description": "Auth screen title" },
+
+  "authSubtitle": "Enter the battlefield",
+  "@authSubtitle": { "description": "Auth screen subtitle" },
+
+  "authWelcomeTo": "Welcome to",
+  "@authWelcomeTo": { "description": "Auth welcome line 1" },
+
+  "authAppName": "STEEL\nVERDICT",
+  "@authAppName": { "description": "Auth screen large app name" },
+
+  "authContinueJourney": "Sign in to continue your journey",
+  "@authContinueJourney": { "description": "Auth screen sign in prompt" },
+
+  "authGoogleSignIn": "Continue with Google",
+  "@authGoogleSignIn": { "description": "Google sign in button" },
+
+  "authAppleSignIn": "Continue with Apple",
+  "@authAppleSignIn": { "description": "Apple sign in button" },
+
+  "authComingSoon": "Coming soon.",
+  "@authComingSoon": { "description": "Coming soon placeholder" },
+
+  "authOr": "or",
+  "@authOr": { "description": "Separator between auth options" },
+
+  "authSignUpEmail": "Sign Up with Email",
+  "@authSignUpEmail": { "description": "Sign up with email button" },
+
+  "authLogIn": "Log In",
+  "@authLogIn": { "description": "Log in button label" },
+
+  "authSignIn": "Sign In",
+  "@authSignIn": { "description": "Sign in button label" },
+
+  "authRegister": "Register",
+  "@authRegister": { "description": "Register button label" },
+
+  "authAnonymous": "Play as Guest",
+  "@authAnonymous": { "description": "Anonymous sign in button label" },
+
+  "authContinueGuest": "Continue as Guest",
+  "@authContinueGuest": { "description": "Continue as guest button" },
+
+  "authGuestWarning": "Guest accounts may lose data if the app is uninstalled.",
+  "@authGuestWarning": { "description": "Guest data loss warning" },
+
+  "authCreateAccount": "Create Account",
+  "@authCreateAccount": { "description": "Create account button label" },
+
+  "authTerms": "By continuing, you agree to our Terms & Privacy Policy",
+  "@authTerms": { "description": "Terms agreement text" },
+
+  "authEmail": "Email",
+  "@authEmail": { "description": "Email field label" },
+
+  "authPassword": "Password",
+  "@authPassword": { "description": "Password field label" },
+
+  "authAnonymousWarning": "Guest accounts may lose data. Link an email to secure your progress.",
+  "@authAnonymousWarning": { "description": "Anonymous account warning" },
+
+  "authLinkAccount": "Link Email to Account",
+  "@authLinkAccount": { "description": "Link account button label" },
+
+  "authLinkTitle": "Link Account",
+  "@authLinkTitle": { "description": "Link account screen title" },
+
+  "authLinkSubtitle": "Add an email and password to permanently secure your progress.",
+  "@authLinkSubtitle": { "description": "Link account screen subtitle" },
+
+  "authEmailRequired": "Email is required",
+  "@authEmailRequired": { "description": "Email validation error" },
+
+  "authEmailInvalid": "Enter a valid email",
+  "@authEmailInvalid": { "description": "Email format validation error" },
+
+  "authPasswordRequired": "Password is required",
+  "@authPasswordRequired": { "description": "Password validation error" },
+
+  "authPasswordMinLength": "Password must be at least 6 characters",
+  "@authPasswordMinLength": { "description": "Password length validation error" },
+
+  "authLinkSuccess": "Account linked successfully!",
+  "@authLinkSuccess": { "description": "Account link success message" },
+
+  "authGuestProgressWarning": "Your progress may be lost if you uninstall the app. Link an email address to secure your data.",
+  "@authGuestProgressWarning": { "description": "Guest progress warning in banner" },
+
+  "authLinkAccountArrow": "Link Account →",
+  "@authLinkAccountArrow": { "description": "Link account arrow button in banner" },
+
+  "homeWelcome": "Welcome, Commander",
+  "@homeWelcome": { "description": "Home screen welcome message" },
+
+  "homeHello": "Hello, {name}!",
+  "@homeHello": {
+    "description": "Home screen greeting with name",
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "homeGuestAccount": "Guest Account",
+  "@homeGuestAccount": { "description": "Guest account label on home" },
+
+  "homeQuickActions": "Quick Actions",
+  "@homeQuickActions": { "description": "Quick actions section header" },
+
+  "homePlayGame": "Play Game",
+  "@homePlayGame": { "description": "Play game quick action" },
+
+  "homeDailyMissions": "Daily Missions",
+  "@homeDailyMissions": { "description": "Daily missions quick action" },
+
+  "homeReady": "READY",
+  "@homeReady": { "description": "Daily reward ready badge" },
+
+  "homeDailyAlreadyClaimed": "Daily reward already claimed.",
+  "@homeDailyAlreadyClaimed": { "description": "Daily reward already claimed message" },
+
+  "homeDailySuccess": "Daily reward claimed! +3 tickets",
+  "@homeDailySuccess": { "description": "Daily reward success message" },
+
+  "homeLeaderboard": "Leaderboard",
+  "@homeLeaderboard": { "description": "Leaderboard quick action" },
+
+  "homeRecommended": "Recommended",
+  "@homeRecommended": { "description": "Recommended section header" },
+
+  "homeChallengeAI": "Challenge AI",
+  "@homeChallengeAI": { "description": "Challenge AI recommended tile title" },
+
+  "homeChallengeAISubtitle": "Test your skills",
+  "@homeChallengeAISubtitle": { "description": "Challenge AI subtitle" },
+
+  "homeMultiplayer": "Multiplayer",
+  "@homeMultiplayer": { "description": "Multiplayer recommended tile title" },
+
+  "homeMultiplayerSubtitle": "Play with friends",
+  "@homeMultiplayerSubtitle": { "description": "Multiplayer subtitle" },
+
+  "homeWarHistorySubtitle": "Review past battles",
+  "@homeWarHistorySubtitle": { "description": "War history subtitle on home" },
+
+  "homeAdReward": "Ad reward earned! +2 tickets",
+  "@homeAdReward": { "description": "Ad reward success message" },
+
+  "homeAdNotAvailable": "Ad not available. Try again later.",
+  "@homeAdNotAvailable": { "description": "Ad not available message" },
+
+  "homeLinkAccountBanner": "Link your account to save data across devices",
+  "@homeLinkAccountBanner": { "description": "Link account banner text on home" },
+
+  "homeLosses": "Losses",
+  "@homeLosses": { "description": "Losses stat label" },
+
+  "homeWins": "Wins",
+  "@homeWins": { "description": "Wins stat label" },
+
+  "homePlay": "Play",
+  "@homePlay": { "description": "Play button label" },
+
+  "homePvP": "PvP Battle",
+  "@homePvP": { "description": "PvP button label" },
+
+  "homeWarHistory": "War History",
+  "@homeWarHistory": { "description": "War History button label" },
+
+  "homeShop": "Shop",
+  "@homeShop": { "description": "Shop button label" },
+
+  "homeDailyReward": "Daily Reward",
+  "@homeDailyReward": { "description": "Daily reward button label" },
+
+  "homeWatchAd": "Watch Ad +2",
+  "@homeWatchAd": { "description": "Watch ad for tickets button label" },
+
+  "dailyRewardAvailable": "+3 tickets available!",
+  "@dailyRewardAvailable": { "description": "Daily reward available message" },
+
+  "dailyRewardComeBack": "Come back tomorrow",
+  "@dailyRewardComeBack": { "description": "Daily reward not available message" },
+
+  "dailyClaim": "CLAIM",
+  "@dailyClaim": { "description": "Claim daily reward button" },
+
+  "watchAdTitle": "Watch Ad",
+  "@watchAdTitle": { "description": "Watch ad button title" },
+
+  "watchAdDesc": "Earn +2 tickets by watching a short ad",
+  "@watchAdDesc": { "description": "Watch ad description" },
+
+  "watchAdBonus": "+2",
+  "@watchAdBonus": { "description": "Watch ad bonus label" },
+
+  "raceCreationTitle": "Create Your Race",
+  "@raceCreationTitle": { "description": "Race creation screen title" },
+
+  "raceCreationNameLabel": "Race Name",
+  "@raceCreationNameLabel": { "description": "Race name field label" },
+
+  "raceCreationPointsRemaining": "{points} points remaining",
+  "@raceCreationPointsRemaining": {
+    "description": "Points remaining display",
+    "placeholders": { "points": { "type": "int" } }
+  },
+
+  "raceCreationConfirm": "Create Race",
+  "@raceCreationConfirm": { "description": "Confirm race creation button" },
+
+  "raceCreationWorld": "World: {world}",
+  "@raceCreationWorld": {
+    "description": "World label in race creation",
+    "placeholders": { "world": { "type": "String" } }
+  },
+
+  "raceAllocateStats": "Allocate Stats",
+  "@raceAllocateStats": { "description": "Allocate stats section header" },
+
+  "raceCreationSuccess": "Race created! Let the wars begin.",
+  "@raceCreationSuccess": { "description": "Race creation success message" },
+
+  "raceNamePlaceholder": "Enter your race name...",
+  "@raceNamePlaceholder": { "description": "Race name input placeholder" },
+
+  "raceStatPoints": "Stat Points",
+  "@raceStatPoints": { "description": "Stat points label" },
+
+  "raceAllAllocated": "All points allocated!",
+  "@raceAllAllocated": { "description": "All stat points allocated message" },
+
+  "raceOverLimit": "Over limit!",
+  "@raceOverLimit": { "description": "Over stat point limit message" },
+
+  "scenarioSelectionTitle": "Choose Scenario",
+  "@scenarioSelectionTitle": { "description": "Scenario selection title" },
+
+  "scenarioLocked": "Locked",
+  "@scenarioLocked": { "description": "Locked scenario label" },
+
+  "scenarioUnlock": "Unlock",
+  "@scenarioUnlock": { "description": "Unlock scenario button label" },
+
+  "scenarioDifficulty": "Difficulty: {difficulty}",
+  "@scenarioDifficulty": {
+    "description": "Scenario difficulty label",
+    "placeholders": { "difficulty": { "type": "String" } }
+  },
+
+  "scenarioNoAvailable": "No scenarios available",
+  "@scenarioNoAvailable": { "description": "No scenarios placeholder" },
+
+  "scenarioFree": "FREE",
+  "@scenarioFree": { "description": "Free scenario badge" },
+
+  "scenarioVsEnemy": "vs. {enemy}",
+  "@scenarioVsEnemy": {
+    "description": "Versus enemy label",
+    "placeholders": { "enemy": { "type": "String" } }
+  },
+
+  "unlockScenarioTitle": "Unlock Scenario",
+  "@unlockScenarioTitle": { "description": "Unlock scenario dialog title" },
+
+  "unlockWatchAd": "Watch Ad",
+  "@unlockWatchAd": { "description": "Unlock by watching ad button" },
+
+  "unlockWatchAdDesc": "Unlock by watching a short advertisement",
+  "@unlockWatchAdDesc": { "description": "Watch ad unlock description" },
+
+  "unlockFree": "FREE",
+  "@unlockFree": { "description": "Free unlock badge" },
+
+  "unlockPurchase": "Purchase",
+  "@unlockPurchase": { "description": "Purchase unlock button" },
+
+  "unlockPurchaseDesc": "Permanently unlock this scenario",
+  "@unlockPurchaseDesc": { "description": "Purchase unlock description" },
+
+  "gameModeTitle": "Choose Game Mode",
+  "@gameModeTitle": { "description": "Game mode selection title" },
+
+  "gameModeChooseMode": "Choose Mode",
+  "@gameModeChooseMode": { "description": "Choose mode screen title (short)" },
+
+  "gameModeNormal": "Normal",
+  "@gameModeNormal": { "description": "Normal game mode" },
+
+  "gameModeTabletop": "Tabletop",
+  "@gameModeTabletop": { "description": "Tabletop game mode" },
+
+  "gameModeEpic": "Epic",
+  "@gameModeEpic": { "description": "Epic game mode" },
+
+  "gameModeBoss": "Boss",
+  "@gameModeBoss": { "description": "Boss game mode" },
+
+  "gameModePractice": "Practice",
+  "@gameModePractice": { "description": "Practice game mode" },
+
+  "gameModePracticeDesc": "Test your strategy for free. No report saved.",
+  "@gameModePracticeDesc": { "description": "Practice mode description" },
+
+  "gameModeNormalDesc": "Standard AI-judged battle with full report.",
+  "@gameModeNormalDesc": { "description": "Normal mode description" },
+
+  "gameModeTabletopDesc": "Enhanced tactical analysis with detailed breakdown.",
+  "@gameModeTabletopDesc": { "description": "Tabletop mode description" },
+
+  "gameModeEpicDesc": "Full campaign-style narrative battle.",
+  "@gameModeEpicDesc": { "description": "Epic mode description" },
+
+  "gameModeEpicRequires": "Requires Commander subscription or higher",
+  "@gameModeEpicRequires": { "description": "Epic mode subscription requirement" },
+
+  "gameModeBossDesc": "Face a legendary enemy. Extreme difficulty.",
+  "@gameModeBossDesc": { "description": "Boss mode description" },
+
+  "gameModeBossRequires": "Requires special unlock",
+  "@gameModeBossRequires": { "description": "Boss mode unlock requirement" },
+
+  "gameModeStartBattle": "Start Battle",
+  "@gameModeStartBattle": { "description": "Start battle button" },
+
+  "gameModeFree": "FREE",
+  "@gameModeFree": { "description": "Free mode badge" },
+
+  "gameModeLocked": "Locked",
+  "@gameModeLocked": { "description": "Locked mode label" },
+
+  "gameModeAiModel": "AI Model",
+  "@gameModeAiModel": { "description": "AI model selector label" },
+
+  "gameModeAiModelDesc": "Choose which AI judges your battle",
+  "@gameModeAiModelDesc": { "description": "AI model selector description" },
+
+  "battleTitle": "Battle",
+  "@battleTitle": { "description": "Battle screen title" },
+
+  "battleEnemyLabel": "Enemy: {enemy}",
+  "@battleEnemyLabel": {
+    "description": "Enemy label in battle",
+    "placeholders": { "enemy": { "type": "String" } }
+  },
+
+  "battleModeLabel": "Mode: {mode}",
+  "@battleModeLabel": {
+    "description": "Mode label in battle",
+    "placeholders": { "mode": { "type": "String" } }
+  },
+
+  "battleStrategyLabel": "Your Strategy",
+  "@battleStrategyLabel": { "description": "Strategy input label" },
+
+  "battleStrategyHint": "Describe your battle strategy in detail...",
+  "@battleStrategyHint": { "description": "Strategy input hint short" },
+
+  "battleStrategyHintFull": "e.g. Fight like Napoleon\n\nDescribe your battle strategy in detail...\n\nExamples:\n- Flank the enemy from the east\n- Use cavalry to disrupt supply lines\n- Deploy archers on the high ground",
+  "@battleStrategyHintFull": { "description": "Strategy input hint with examples" },
+
+  "battleNeedMoreChars": "Need {count} more characters",
+  "@battleNeedMoreChars": {
+    "description": "Need more characters message",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "battleSubmit": "Submit Strategy",
+  "@battleSubmit": { "description": "Submit strategy button label" },
+
+  "battleLoadSaved": "Load Saved Strategy",
+  "@battleLoadSaved": { "description": "Load saved strategy button label" },
+
+  "battleResultTitle": "Battle Result",
+  "@battleResultTitle": { "description": "Battle result screen title" },
+
+  "battleResultVictory": "Victory!",
+  "@battleResultVictory": { "description": "Victory outcome label" },
+
+  "battleResultDefeat": "Defeat",
+  "@battleResultDefeat": { "description": "Defeat outcome label" },
+
+  "battleResultDraw": "Draw",
+  "@battleResultDraw": { "description": "Draw outcome label" },
+
+  "battleVictoryFull": "VICTORY!",
+  "@battleVictoryFull": { "description": "Victory full caps display" },
+
+  "battleDefeatFull": "DEFEAT",
+  "@battleDefeatFull": { "description": "Defeat full caps display" },
+
+  "battleDrawFull": "DRAW",
+  "@battleDrawFull": { "description": "Draw full caps display" },
+
+  "battleSaveToHistory": "Save to History",
+  "@battleSaveToHistory": { "description": "Save battle to history button" },
+
+  "battleNoReport": "No report available.",
+  "@battleNoReport": { "description": "No battle report placeholder" },
+
+  "battleReport": "Battle Report",
+  "@battleReport": { "description": "Battle report section title" },
+
+  "battlePlayAgain": "Play Again",
+  "@battlePlayAgain": { "description": "Play again button" },
+
+  "battleViewWarHistory": "View War History",
+  "@battleViewWarHistory": { "description": "View war history button" },
+
+  "generalStaffTitle": "General Staff",
+  "@generalStaffTitle": { "description": "General staff overlay title" },
+
+  "generalStaffAnalyzing": "Analyzing your battle plan...",
+  "@generalStaffAnalyzing": { "description": "General staff analyzing message" },
+
+  "generalStaffMsg1": "Reviewing tactical situation...",
+  "@generalStaffMsg1": { "description": "General staff status message 1" },
+
+  "generalStaffMsg2": "Analyzing terrain advantages...",
+  "@generalStaffMsg2": { "description": "General staff status message 2" },
+
+  "generalStaffMsg3": "Assessing enemy formations...",
+  "@generalStaffMsg3": { "description": "General staff status message 3" },
+
+  "generalStaffMsg4": "Calculating force ratios...",
+  "@generalStaffMsg4": { "description": "General staff status message 4" },
+
+  "generalStaffMsg5": "Consulting strategic doctrine...",
+  "@generalStaffMsg5": { "description": "General staff status message 5" },
+
+  "generalStaffMsg6": "Preparing battle assessment...",
+  "@generalStaffMsg6": { "description": "General staff status message 6" },
+
+  "savedStrategiesTitle": "Saved Strategies",
+  "@savedStrategiesTitle": { "description": "Saved strategies picker title" },
+
+  "savedStrategiesCount": "{count} saved",
+  "@savedStrategiesCount": {
+    "description": "Saved strategies count",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "savedStrategiesEmpty": "No saved strategies yet",
+  "@savedStrategiesEmpty": { "description": "No saved strategies placeholder" },
+
+  "pvpLobbyTitle": "PvP Lobby",
+  "@pvpLobbyTitle": { "description": "PvP lobby screen title" },
+
+  "pvpSubtitle": "Challenge another commander to battle!",
+  "@pvpSubtitle": { "description": "PvP lobby subtitle" },
+
+  "pvpFindMatch": "Find Match",
+  "@pvpFindMatch": { "description": "Find PvP match button label" },
+
+  "pvpSearching": "Searching...",
+  "@pvpSearching": { "description": "PvP searching for match" },
+
+  "pvpMatchCreated": "Match created! Waiting for opponent...",
+  "@pvpMatchCreated": { "description": "PvP match created message" },
+
+  "pvpJoined": "Joined a match!",
+  "@pvpJoined": { "description": "PvP joined match message" },
+
+  "pvpActiveMatches": "Active Matches",
+  "@pvpActiveMatches": { "description": "Active matches section label" },
+
+  "pvpNoMatches": "No active matches",
+  "@pvpNoMatches": { "description": "No matches placeholder" },
+
+  "pvpFindMatchHelp": "Find a match to get started!",
+  "@pvpFindMatchHelp": { "description": "PvP find match help text" },
+
+  "pvpCountdown": "Time remaining: {time}",
+  "@pvpCountdown": {
+    "description": "PvP countdown label",
+    "placeholders": { "time": { "type": "String" } }
+  },
+
+  "pvpBattleTitle": "PvP Battle",
+  "@pvpBattleTitle": { "description": "PvP battle screen title" },
+
+  "pvpWaitingOpponent": "Waiting for opponent to join...",
+  "@pvpWaitingOpponent": { "description": "PvP waiting for opponent" },
+
+  "pvpStrategySubmitted": "Strategy submitted! Waiting for the battle to resolve...",
+  "@pvpStrategySubmitted": { "description": "PvP strategy submitted message" },
+
+  "pvpBattleResultLabel": "Battle Result",
+  "@pvpBattleResultLabel": { "description": "PvP battle result label" },
+
+  "pvpYouWon": "You won!",
+  "@pvpYouWon": { "description": "PvP you won message" },
+
+  "pvpDraw": "Draw!",
+  "@pvpDraw": { "description": "PvP draw message" },
+
+  "pvpOpponentWon": "Opponent won",
+  "@pvpOpponentWon": { "description": "PvP opponent won message" },
+
+  "pvpYourStrategy": "Your Strategy",
+  "@pvpYourStrategy": { "description": "PvP your strategy label" },
+
+  "pvpStrategyHint": "Describe your battle strategy...",
+  "@pvpStrategyHint": { "description": "PvP strategy input hint" },
+
+  "pvpSubmitStrategy": "Submit Strategy",
+  "@pvpSubmitStrategy": { "description": "PvP submit strategy button" },
+
+  "pvpTimerExpired": "EXPIRED",
+  "@pvpTimerExpired": { "description": "PvP timer expired label" },
+
+  "pvpWaitingForOpponent": "Waiting for opponent...",
+  "@pvpWaitingForOpponent": { "description": "PvP match card waiting for opponent" },
+
+  "pvpSubmitYourStrategy": "Submit your strategy!",
+  "@pvpSubmitYourStrategy": { "description": "PvP match card submit strategy prompt" },
+
+  "pvpOpponentStatsHidden": "Opponent stats hidden",
+  "@pvpOpponentStatsHidden": { "description": "Opponent stats hidden message" },
+
+  "pvpVictory": "Victory!",
+  "@pvpVictory": { "description": "PvP match card victory" },
+
+  "pvpDefeat": "Defeat",
+  "@pvpDefeat": { "description": "PvP match card defeat" },
+
+  "pvpTimeout": "Timed out",
+  "@pvpTimeout": { "description": "PvP match timed out" },
+
+  "warHistoryTitle": "War History",
+  "@warHistoryTitle": { "description": "War history screen title" },
+
+  "warHistorySoloBattles": "Solo Battles",
+  "@warHistorySoloBattles": { "description": "Solo battles tab label" },
+
+  "warHistoryFavorites": "Favorites",
+  "@warHistoryFavorites": { "description": "Favorites tab label" },
+
+  "warHistoryEmpty": "No battles recorded yet",
+  "@warHistoryEmpty": { "description": "Empty war history message" },
+
+  "warHistoryEmptyMsg": "No battles recorded yet.\nStart playing to build your history!",
+  "@warHistoryEmptyMsg": { "description": "Empty war history with instruction" },
+
+  "warHistoryLoadError": "Failed to load history: {error}",
+  "@warHistoryLoadError": {
+    "description": "War history load error",
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "warHistoryNoFavoritesMsg": "No favorites yet.\nStar battles to save them here!",
+  "@warHistoryNoFavoritesMsg": { "description": "No favorites placeholder" },
+
+  "warHistoryGenerate": "Generate Chronicle",
+  "@warHistoryGenerate": { "description": "Generate war chronicle button" },
+
+  "warHistoryShare": "Share to X",
+  "@warHistoryShare": { "description": "Share to X button" },
+
+  "warHistorySharing": "Sharing...",
+  "@warHistorySharing": { "description": "Sharing in progress label" },
+
+  "warHistoryBattleDetail": "Battle Detail",
+  "@warHistoryBattleDetail": { "description": "Battle detail screen title" },
+
+  "warHistoryBattleNotFound": "Battle record not found.",
+  "@warHistoryBattleNotFound": { "description": "Battle not found message" },
+
+  "warHistoryBattleReport": "Battle Report",
+  "@warHistoryBattleReport": { "description": "Battle report section in detail" },
+
+  "warHistoryWarChronicle": "War Chronicle",
+  "@warHistoryWarChronicle": { "description": "War chronicle section label" },
+
+  "warHistoryGenerateDesc": "Generate a detailed war chronicle from this battle",
+  "@warHistoryGenerateDesc": { "description": "War chronicle generate description" },
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": { "description": "Settings screen title" },
+
+  "settingsProfile": "Profile",
+  "@settingsProfile": { "description": "Settings profile section" },
+
+  "settingsEdit": "Edit",
+  "@settingsEdit": { "description": "Edit button in settings" },
+
+  "settingsComingSoon": "Coming soon.",
+  "@settingsComingSoon": { "description": "Coming soon placeholder in settings" },
+
+  "settingsChangePassword": "Change Password",
+  "@settingsChangePassword": { "description": "Change password option" },
+
+  "settingsLinkAccountFirst": "Link an account first.",
+  "@settingsLinkAccountFirst": { "description": "Link account first message" },
+
+  "settingsLinkedAccounts": "Linked Accounts",
+  "@settingsLinkedAccounts": { "description": "Linked accounts section" },
+
+  "settingsGuestAccount": "Guest Account",
+  "@settingsGuestAccount": { "description": "Guest account label in settings" },
+
+  "settingsAccount": "Account",
+  "@settingsAccount": { "description": "Account section in settings" },
+
+  "settingsPreferences": "Preferences",
+  "@settingsPreferences": { "description": "Preferences section in settings" },
+
+  "settingsNotifications": "Notifications",
+  "@settingsNotifications": { "description": "Notifications setting" },
+
+  "settingsSoundMusic": "Sound & Music",
+  "@settingsSoundMusic": { "description": "Sound and music setting" },
+
+  "settingsSupport": "Support",
+  "@settingsSupport": { "description": "Support section in settings" },
+
+  "settingsHelpCenter": "Help Center",
+  "@settingsHelpCenter": { "description": "Help center link" },
+
+  "settingsLanguage": "Language",
+  "@settingsLanguage": { "description": "Language setting label" },
+
+  "settingsSubscription": "Subscription",
+  "@settingsSubscription": { "description": "Subscription setting label" },
+
+  "settingsClearData": "Clear All Data",
+  "@settingsClearData": { "description": "Clear data button label" },
+
+  "settingsClearDataConfirm": "This will permanently delete all local data. Cannot be undone.",
+  "@settingsClearDataConfirm": { "description": "Clear data confirmation message" },
+
+  "settingsAllDataCleared": "All data cleared.",
+  "@settingsAllDataCleared": { "description": "Data cleared success message" },
+
+  "settingsRace": "Race",
+  "@settingsRace": { "description": "Race section label in settings" },
+
+  "settingsViewRace": "My Race",
+  "@settingsViewRace": { "description": "View current race details button label" },
+
+  "settingsViewRaceNoRace": "No race created yet.",
+  "@settingsViewRaceNoRace": { "description": "Shown when player has no race" },
+
+  "settingsChangeRace": "Change Race",
+  "@settingsChangeRace": { "description": "Change race button label" },
+
+  "settingsChangeRaceConfirm": "Your current race will be deleted and you will create a new one. This cannot be undone.",
+  "@settingsChangeRaceConfirm": { "description": "Change race confirmation message" },
+
+  "settingsSignOut": "Sign Out",
+  "@settingsSignOut": { "description": "Sign out button label" },
+
+  "settingsSignOutConfirm": "Are you sure you want to sign out?",
+  "@settingsSignOutConfirm": { "description": "Sign out confirmation" },
+
+  "settingsPrivacyPolicy": "Privacy Policy",
+  "@settingsPrivacyPolicy": { "description": "Privacy policy link label" },
+
+  "settingsVersion": "Steel Verdict v1.0.0",
+  "@settingsVersion": { "description": "App version label" },
+
+  "settingsSelectLanguage": "Select Language",
+  "@settingsSelectLanguage": { "description": "Select language dialog title" },
+
+  "settingsPersonalInfo": "Personal Info",
+  "@settingsPersonalInfo": { "description": "Personal info section" },
+
+  "settingsLinkAccount": "Link Account",
+  "@settingsLinkAccount": { "description": "Link account option in settings" },
+
+  "settingsCurrentPlan": "Current Plan",
+  "@settingsCurrentPlan": { "description": "Current plan label in settings" },
+
+  "settingsUpgrade": "Upgrade",
+  "@settingsUpgrade": { "description": "Upgrade button in settings" },
+
+  "settingsLanguageChanged": "Language changed!",
+  "@settingsLanguageChanged": { "description": "Language changed success message" },
+
+  "settingsLangEnglish": "English",
+  "@settingsLangEnglish": { "description": "English language option" },
+
+  "settingsLangJapanese": "日本語",
+  "@settingsLangJapanese": { "description": "Japanese language option" },
+
+  "shopTitle": "Shop",
+  "@shopTitle": { "description": "Shop screen title" },
+
+  "shopSubscriptions": "Subscriptions",
+  "@shopSubscriptions": { "description": "Subscriptions section label" },
+
+  "shopTickets": "Tickets",
+  "@shopTickets": { "description": "Tickets section label" },
+
+  "shopRestore": "Restore Purchases",
+  "@shopRestore": { "description": "Restore purchases button label" },
+
+  "shopRestoreShort": "Restore",
+  "@shopRestoreShort": { "description": "Restore button short label" },
+
+  "shopUnlockMore": "Unlock more tickets and features",
+  "@shopUnlockMore": { "description": "Shop subscriptions subtitle" },
+
+  "shopTicketPacks": "TICKET PACKS",
+  "@shopTicketPacks": { "description": "Ticket packs section header" },
+
+  "shopOneTimePurchases": "One-time ticket purchases",
+  "@shopOneTimePurchases": { "description": "One-time purchases subtitle" },
+
+  "shopSmallPack": "Small Pack",
+  "@shopSmallPack": { "description": "Small ticket pack name" },
+
+  "shopSmallPackDesc": "10 battle tickets",
+  "@shopSmallPackDesc": { "description": "Small pack description" },
+
+  "shopLargePack": "Large Pack",
+  "@shopLargePack": { "description": "Large ticket pack name" },
+
+  "shopLargePackDesc": "30 battle tickets — Best value!",
+  "@shopLargePackDesc": { "description": "Large pack description" },
+
+  "shopScenarioPacks": "SCENARIO PACKS",
+  "@shopScenarioPacks": { "description": "Scenario packs section header" },
+
+  "shopScenarioPacksDesc": "Additional battle scenarios",
+  "@shopScenarioPacksDesc": { "description": "Scenario packs subtitle" },
+
+  "shopAncientBattles": "Ancient Battles Pack",
+  "@shopAncientBattles": { "description": "Ancient battles pack name" },
+
+  "shopAncientBattlesDesc": "Unlock 5 historical scenarios",
+  "@shopAncientBattlesDesc": { "description": "Ancient battles pack description" },
+
+  "shopAutoRenew": "Subscriptions auto-renew unless cancelled. Prices vary by region.",
+  "@shopAutoRenew": { "description": "Auto-renew disclaimer" },
+
+  "shopMostPopular": "MOST POPULAR",
+  "@shopMostPopular": { "description": "Most popular badge on subscription" },
+
+  "shopSubscribe": "Subscribe",
+  "@shopSubscribe": { "description": "Subscribe button" },
+
+  "subscriptionFree": "Free",
+  "@subscriptionFree": { "description": "Free tier label" },
+
+  "subscriptionCommander": "Commander",
+  "@subscriptionCommander": { "description": "Sub 500 tier label" },
+
+  "subscriptionGeneral": "General",
+  "@subscriptionGeneral": { "description": "Sub 1000 tier label" },
+
+  "subscriptionWarlord": "Warlord",
+  "@subscriptionWarlord": { "description": "Sub 3000 tier label" },
+
+  "gameHubTitle": "Game",
+  "@gameHubTitle": { "description": "Game hub screen title" },
+
+  "gameHubChooseMode": "Choose Game Mode",
+  "@gameHubChooseMode": { "description": "Game hub choose mode header" },
+
+  "gameHubSelectHow": "Select how you want to battle",
+  "@gameHubSelectHow": { "description": "Game hub mode selection subtitle" },
+
+  "gameHubSinglePlayer": "Single Player",
+  "@gameHubSinglePlayer": { "description": "Single player mode title" },
+
+  "gameHubPlayVsAI": "Play vs AI",
+  "@gameHubPlayVsAI": { "description": "Play vs AI subtitle" },
+
+  "gameHubSinglePlayerDesc": "Choose a scenario and challenge historical commanders. Test your strategy against AI-judged battles.",
+  "@gameHubSinglePlayerDesc": { "description": "Single player description" },
+
+  "gameHubVsAI": "VS AI",
+  "@gameHubVsAI": { "description": "VS AI badge" },
+
+  "gameHubMultiplayer": "Multiplayer",
+  "@gameHubMultiplayer": { "description": "Multiplayer mode title" },
+
+  "gameHubPlayOnline": "Play online with friends",
+  "@gameHubPlayOnline": { "description": "Play online subtitle" },
+
+  "gameHubMultiplayerDesc": "Compete against real players. Submit your strategy within 24 hours and let AI judge the outcome.",
+  "@gameHubMultiplayerDesc": { "description": "Multiplayer description" },
+
+  "gameHubLive": "LIVE",
+  "@gameHubLive": { "description": "Live badge" },
+
+  "gameHubManagement": "Management",
+  "@gameHubManagement": { "description": "Management section header in game hub" },
+
+  "gameHubWarHistoryDesc": "View your past battles",
+  "@gameHubWarHistoryDesc": { "description": "War history nav description" },
+
+  "gameHubShopDesc": "Get tickets & subscriptions",
+  "@gameHubShopDesc": { "description": "Shop nav description" },
+
+  "difficultyNovice": "Novice",
+  "@difficultyNovice": { "description": "Difficulty level 1" },
+
+  "difficultySoldier": "Soldier",
+  "@difficultySoldier": { "description": "Difficulty level 2" },
+
+  "difficultyCaptain": "Captain",
+  "@difficultyCaptain": { "description": "Difficulty level 3" },
+
+  "difficultyGeneral": "General",
+  "@difficultyGeneral": { "description": "Difficulty level 4" },
+
+  "difficultyWarlord": "Warlord",
+  "@difficultyWarlord": { "description": "Difficulty level 5" },
+
+  "difficultyUnknown": "Unknown",
+  "@difficultyUnknown": { "description": "Unknown difficulty" },
+
+  "pvpStatusWaiting": "Waiting",
+  "@pvpStatusWaiting": { "description": "PvP match status: waiting" },
+
+  "pvpStatusActive": "Active",
+  "@pvpStatusActive": { "description": "PvP match status: active" },
+
+  "pvpStatusResolved": "Resolved",
+  "@pvpStatusResolved": { "description": "PvP match status: resolved" },
+
+  "pvpStatusTimedOut": "Timed Out",
+  "@pvpStatusTimedOut": { "description": "PvP match status: timed out" },
+
+  "pvpLoadingMatch": "Loading match...",
+  "@pvpLoadingMatch": { "description": "PvP loading match message" },
+
+  "pvpOpponent": "Opponent",
+  "@pvpOpponent": { "description": "Generic opponent label in PvP" },
+
+  "pvpStatusPrefix": "Status",
+  "@pvpStatusPrefix": { "description": "PvP status label prefix" },
+
+  "pvpMatchPrefix": "Match",
+  "@pvpMatchPrefix": { "description": "PvP match label prefix" },
+
+  "warChronicleGenerated": "Chronicle generated!",
+  "@warChronicleGenerated": { "description": "War chronicle generation success" },
+
+  "sharedToX": "Shared to X!",
+  "@sharedToX": { "description": "Shared to X success message" },
+
+  "sharedToXWithImage": "Shared to X with image!",
+  "@sharedToXWithImage": { "description": "Shared to X with image success" },
+
+  "parchmentFooter": "Steel Verdict Chronicle",
+  "@parchmentFooter": { "description": "Footer label on parchment share image" },
+
+  "anonymousCommander": "Anonymous Commander",
+  "@anonymousCommander": { "description": "Default display name for anonymous users" },
+
+  "battleSavedToHistory": "Battle saved to history!",
+  "@battleSavedToHistory": { "description": "Battle save success message" },
+
+  "favoritesAdded": "Added to favorites!",
+  "@favoritesAdded": { "description": "Added to favorites success message" },
+
+  "favoritesRemoved": "Removed from favorites",
+  "@favoritesRemoved": { "description": "Removed from favorites message" },
+
+  "subscriptionCommanderPrice": "Commander (¥500)",
+  "@subscriptionCommanderPrice": { "description": "Commander tier with price" },
+
+  "subscriptionGeneralPrice": "General (¥1,000)",
+  "@subscriptionGeneralPrice": { "description": "General tier with price" },
+
+  "subscriptionWarlordPrice": "Warlord (¥3,000)",
+  "@subscriptionWarlordPrice": { "description": "Warlord tier with price" },
+
+  "shopTicketsPerDay": "{count} tickets/day",
+  "@shopTicketsPerDay": {
+    "description": "Tickets per day label on subscription card",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "shopFeature10Tickets": "10 daily tickets",
+  "@shopFeature10Tickets": { "description": "Commander plan: 10 tickets feature" },
+
+  "shopFeatureBasicScenarios": "All basic scenarios",
+  "@shopFeatureBasicScenarios": { "description": "Commander plan: basic scenarios feature" },
+
+  "shopFeatureSave20Strategies": "Save up to 20 strategies",
+  "@shopFeatureSave20Strategies": { "description": "Commander plan: save 20 strategies feature" },
+
+  "shopFeaturePriorityQueue": "Priority battle queue",
+  "@shopFeaturePriorityQueue": { "description": "Commander plan: priority queue feature" },
+
+  "shopFeature20Tickets": "20 daily tickets",
+  "@shopFeature20Tickets": { "description": "General plan: 20 tickets feature" },
+
+  "shopFeatureEpicMode": "Epic mode unlocked",
+  "@shopFeatureEpicMode": { "description": "General plan: epic mode feature" },
+
+  "shopFeatureUnlimitedHistory": "Unlimited war history",
+  "@shopFeatureUnlimitedHistory": { "description": "General plan: unlimited history feature" },
+
+  "shopFeatureSave50Strategies": "Save up to 50 strategies",
+  "@shopFeatureSave50Strategies": { "description": "General plan: save 50 strategies feature" },
+
+  "shopFeatureAllCommanderFeatures": "All Commander features",
+  "@shopFeatureAllCommanderFeatures": { "description": "General plan: all commander features" },
+
+  "shopFeature50Tickets": "50 daily tickets",
+  "@shopFeature50Tickets": { "description": "Warlord plan: 50 tickets feature" },
+
+  "shopFeatureAllModes": "All modes unlocked",
+  "@shopFeatureAllModes": { "description": "Warlord plan: all modes feature" },
+
+  "shopFeatureBossBattles": "Boss battles enabled",
+  "@shopFeatureBossBattles": { "description": "Warlord plan: boss battles feature" },
+
+  "shopFeatureUnlimitedAll": "Unlimited everything",
+  "@shopFeatureUnlimitedAll": { "description": "Warlord plan: unlimited all feature" },
+
+  "shopFeatureAllGeneralFeatures": "All General features",
+  "@shopFeatureAllGeneralFeatures": { "description": "Warlord plan: all general features" },
+
+  "splashTitleLine1": "STEEL",
+  "@splashTitleLine1": { "description": "Splash screen title line 1" },
+
+  "splashTitleLine2": "VERDICT",
+  "@splashTitleLine2": { "description": "Splash screen title line 2" },
+
+  "navHome": "Home",
+  "@navHome": { "description": "Bottom nav: Home" },
+
+  "navGame": "Game",
+  "@navGame": { "description": "Bottom nav: Game" },
+
+  "navMissions": "Missions",
+  "@navMissions": { "description": "Bottom nav: Missions" },
+
+  "navProfile": "Profile",
+  "@navProfile": { "description": "Bottom nav: Profile" },
+
+  "dismiss": "Dismiss",
+  "@dismiss": { "description": "Dismiss snackbar action button" },
+
+  "shopPurchaseInitiated": "Purchase initiated!",
+  "@shopPurchaseInitiated": { "description": "Purchase started success message" },
+
+  "shopPurchasesRestored": "Purchases restored!",
+  "@shopPurchasesRestored": { "description": "Purchases restored success message" },
+
+  "shopPurchaseFailed": "Purchase failed",
+  "@shopPurchaseFailed": { "description": "Purchase failed error prefix" },
+
+  "shopRestoreFailed": "Restore failed",
+  "@shopRestoreFailed": { "description": "Restore failed error prefix" },
+
+  "statAttack": "Attack",
+  "@statAttack": { "description": "Attack stat name (legacy)" },
+
+  "statDefense": "Defense",
+  "@statDefense": { "description": "Defense stat name (legacy)" },
+
+  "statSpeed": "Speed",
+  "@statSpeed": { "description": "Speed stat name (legacy)" },
+
+  "statMorale": "Morale",
+  "@statMorale": { "description": "Morale stat name (legacy)" },
+
+  "statMagic": "Magic",
+  "@statMagic": { "description": "Magic stat name" },
+
+  "statLeadership": "Leadership",
+  "@statLeadership": { "description": "Leadership stat name (legacy)" },
+
+  "statStrength": "Strength",
+  "@statStrength": { "description": "Strength stat name" },
+
+  "statIntellect": "Intellect",
+  "@statIntellect": { "description": "Intellect stat name" },
+
+  "statSkill": "Skill",
+  "@statSkill": { "description": "Skill stat name" },
+
+  "statArt": "Art",
+  "@statArt": { "description": "Art stat name" },
+
+  "statLife": "Life",
+  "@statLife": { "description": "Life stat name" },
+
+  "raceOverviewLabel": "Race Overview",
+  "@raceOverviewLabel": { "description": "Label for race overview field" },
+
+  "raceOverviewHint": "Brief description of your race's background, culture, or fighting style...",
+  "@raceOverviewHint": { "description": "Hint text for race overview field" },
+
+  "authErrNoAccount": "No account found with this email.",
+  "authErrWrongPassword": "Incorrect password.",
+  "authErrEmailInUse": "This email is already in use.",
+  "authErrWeakPassword": "Password is too weak. Use at least 6 characters.",
+  "authErrInvalidEmail": "Invalid email address.",
+  "authErrCredentialInUse": "This credential is already linked to another account.",
+  "authErrDefault": "Authentication failed.",
+  "authErrSignInFailed": "Failed to sign in.",
+  "authErrSignOutFailed": "Sign out failed.",
+
+  "battleSaveStrategy": "Save Strategy",
+  "@battleSaveStrategy": { "description": "Save current strategy button label" },
+  "battleSaveStrategyDialogTitle": "Save Strategy",
+  "@battleSaveStrategyDialogTitle": { "description": "Save strategy dialog title" },
+  "battleSaveStrategyNameHint": "Give your strategy a name...",
+  "@battleSaveStrategyNameHint": { "description": "Strategy name input hint" },
+  "battleSaveStrategySuccess": "Strategy saved!",
+  "@battleSaveStrategySuccess": { "description": "Strategy saved success message" },
+  "battleSaveStrategyLimitReached": "Save limit reached. Upgrade your plan to save more strategies.",
+  "@battleSaveStrategyLimitReached": { "description": "Strategy save limit error" },
+  "xShareRewardEarned": "+1 ticket earned for sharing to X!",
+  "@xShareRewardEarned": { "description": "X share ticket reward earned message" },
+  "xShareRewardAlreadyClaimed": "X share reward already claimed today.",
+  "@xShareRewardAlreadyClaimed": { "description": "X share reward already claimed message" },
+
+  "gameModeHistoryPuzzle": "Historical Puzzle",
+  "@gameModeHistoryPuzzle": { "description": "Historical puzzle game mode name" },
+  "gameModeHistoryPuzzleDesc": "Fixed historical forces. No clear stage — beat your personal best!",
+  "@gameModeHistoryPuzzleDesc": { "description": "Historical puzzle game mode description" },
+  "personalBest": "Personal Best",
+  "@personalBest": { "description": "Personal best label" },
+  "personalBestScore": "{wins} wins / {total} attempts",
+  "@personalBestScore": {
+    "description": "Personal best score format",
+    "placeholders": {
+      "wins": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "personalBestNone": "No record yet",
+  "@personalBestNone": { "description": "No personal best record yet" },
+
+  "skipAdCost": "Skip (-1 ticket)",
+  "@skipAdCost": { "description": "Skip ad button label with ticket cost" },
+  "watchAdFree": "Watch Ad (Free)",
+  "@watchAdFree": { "description": "Watch ad for free button label" },
+  "skipAdSuccess": "Ad skipped. -1 ticket.",
+  "@skipAdSuccess": { "description": "Ad skipped success message" },
+  "skipAdNoTickets": "Not enough tickets to skip.",
+  "@skipAdNoTickets": { "description": "Not enough tickets to skip ad message" },
+  "practiceAdPrompt": "An ad is ready. Watch it for free or skip.",
+  "@practiceAdPrompt": { "description": "Practice mode ad choice prompt" },
+
+  "contentFilterBlocked": "Your text contains inappropriate content. Please revise.",
+  "@contentFilterBlocked": { "description": "Content filter blocked message" },
+
+  "battleFailedRetry": "Battle failed. Please try again.",
+  "@battleFailedRetry": { "description": "Generic battle failure message" },
+
+  "battleSignInRequired": "Please sign in to continue.",
+  "@battleSignInRequired": { "description": "Auth required error message" },
+
+  "deleteConfirmWord": "DELETE",
+  "@deleteConfirmWord": { "description": "The exact word user must type to confirm deletion" },
+
+  "deleteConfirmHint": "Type DELETE to confirm",
+  "@deleteConfirmHint": { "description": "Hint text inside the confirmation input field" },
+
+  "homeNoRaceBanner": "Create your race to begin",
+  "@homeNoRaceBanner": { "description": "Banner shown on home when player has no race" },
+
+  "homeNoRaceBannerSub": "Tap Play to set up your race and enter battle",
+  "@homeNoRaceBannerSub": { "description": "Subtitle for no-race banner on home" },
+
+  "homeWorldSetting": "World Setting",
+  "@homeWorldSetting": { "description": "World setting banner label on home screen" },
+
+  "homeWorldSettingChange": "Change",
+  "@homeWorldSettingChange": { "description": "Change world setting button on home screen" },
+
+  "homeWorldSettingNone": "Select World",
+  "@homeWorldSettingNone": { "description": "Shown on home when no world setting selected yet" },
+
+  "battleTypeTitle": "Battle Type",
+  "@battleTypeTitle": { "description": "Battle type selection screen title" },
+
+  "battleTypeChoose": "Choose Battle Type",
+  "@battleTypeChoose": { "description": "Battle type selection header" },
+
+  "battleTypeSubtitle": "Select the type of battle you want to fight",
+  "@battleTypeSubtitle": { "description": "Battle type selection subtitle" },
+
+  "battleTypeStandard": "Standard Battle",
+  "@battleTypeStandard": { "description": "Standard battle type title" },
+
+  "battleTypeStandardDesc": "Choose a scenario and challenge historical commanders with multiple sub-modes.",
+  "@battleTypeStandardDesc": { "description": "Standard battle type description" },
+
+  "battleTypeSubModeBadge": "4 MODES",
+  "@battleTypeSubModeBadge": { "description": "Badge showing sub-mode count for standard battle" },
+
+  "battleTypeBoss": "Boss Battle",
+  "@battleTypeBoss": { "description": "Boss battle type title" },
+
+  "battleTypeBossDesc": "Face a legendary enemy in an extreme difficulty encounter.",
+  "@battleTypeBossDesc": { "description": "Boss battle type description" },
+
+  "battleTypeBossBadge": "BOSS",
+  "@battleTypeBossBadge": { "description": "Badge label for boss battle type" },
+
+  "battleTypeHistory": "History Puzzle",
+  "@battleTypeHistory": { "description": "History puzzle battle type title" },
+
+  "battleTypeHistoryDesc": "Fixed historical forces with no clear stage. Beat your personal best!",
+  "@battleTypeHistoryDesc": { "description": "History puzzle battle type description" },
+
+  "battleTypeHistoryBadge": "PUZZLE",
+  "@battleTypeHistoryBadge": { "description": "Badge label for history puzzle battle type" },
+
+  "pvpOpponentSubmittedUrge": "Opponent submitted — submit your strategy now!",
+  "@pvpOpponentSubmittedUrge": { "description": "Urgent prompt when opponent has submitted strategy" },
+
+  "pvpBothSubmittedResolving": "Both submitted — battle resolving...",
+  "@pvpBothSubmittedResolving": { "description": "Status when both players submitted and AI is resolving" },
+
+  "gameHubMyRace": "My Race",
+  "@gameHubMyRace": { "description": "My race tile label in Game Hub management" },
+
+  "gameHubMyRaceDesc": "View your race stats and traits",
+  "@gameHubMyRaceDesc": { "description": "My race tile subtitle in Game Hub management" },
+
+  "myRaceNoRace": "No race created yet. Tap Play to create one.",
+  "@myRaceNoRace": { "description": "Shown in My Race sheet when no race exists" },
+
+  "myRaceStats": "Stats",
+  "@myRaceStats": { "description": "Stats section label in My Race sheet" },
+
+  "myRaceOverview": "Overview",
+  "@myRaceOverview": { "description": "Overview section label in My Race sheet" },
+
+  "validStrategyRequired": "Strategy text is required.",
+  "@validStrategyRequired": { "description": "Validation: strategy field empty" },
+
+  "validStrategyTooLong": "Strategy must be at most {max} characters.",
+  "@validStrategyTooLong": {
+    "description": "Validation: strategy too long",
+    "placeholders": { "max": { "type": "int" } }
+  },
+
+  "validStrategyInappropriate": "Strategy contains inappropriate content. Please revise.",
+  "@validStrategyInappropriate": { "description": "Validation: strategy has inappropriate content" },
+
+  "validRaceNameRequired": "Race name is required.",
+  "@validRaceNameRequired": { "description": "Validation: race name empty" },
+
+  "validRaceNameTooShort": "Race name must be at least {min} characters.",
+  "@validRaceNameTooShort": {
+    "description": "Validation: race name too short",
+    "placeholders": { "min": { "type": "int" } }
+  },
+
+  "validRaceNameTooLong": "Race name must be at most {max} characters.",
+  "@validRaceNameTooLong": {
+    "description": "Validation: race name too long",
+    "placeholders": { "max": { "type": "int" } }
+  },
+
+  "validRaceNameInvalidChars": "Race name contains invalid characters.",
+  "@validRaceNameInvalidChars": { "description": "Validation: race name has invalid characters" },
+
+  "validRaceNameInappropriate": "Race name contains inappropriate content.",
+  "@validRaceNameInappropriate": { "description": "Validation: race name has inappropriate content" },
+
+  "validEmailRequired": "Email is required.",
+  "@validEmailRequired": { "description": "Validation: email field empty" },
+
+  "validEmailInvalid": "Enter a valid email address.",
+  "@validEmailInvalid": { "description": "Validation: email format invalid" },
+
+  "validPasswordRequired": "Password is required.",
+  "@validPasswordRequired": { "description": "Validation: password field empty" },
+
+  "validPasswordTooShort": "Password must be at least 6 characters.",
+  "@validPasswordTooShort": { "description": "Validation: password too short" },
+
+  "settingsBgmVolume": "BGM Volume",
+  "@settingsBgmVolume": { "description": "Background music volume slider label" },
+
+  "settingsSfxVolume": "SFX Volume",
+  "@settingsSfxVolume": { "description": "Sound effects volume slider label" },
+
+  "gameModeModelSelect": "AI Model",
+  "@gameModeModelSelect": { "description": "AI model dropdown label at top" },
+
+  "gameModeTicketInfo": "{cost} tickets",
+  "@gameModeTicketInfo": {
+    "description": "Ticket cost display with count",
+    "placeholders": { "cost": { "type": "int" } }
+  },
+
+  "gameModeWorldview": "World Setting",
+  "@gameModeWorldview": { "description": "Worldview selector label" },
+
+  "gameModeWorldviewDesc": "Choose the world setting for your battle",
+  "@gameModeWorldviewDesc": { "description": "Worldview selector description" },
+
+  "adminPanel": "Admin Panel",
+  "@adminPanel": { "description": "Admin panel title" },
+
+  "adminWorldviews": "Worldviews",
+  "@adminWorldviews": { "description": "Admin worldviews editor title" },
+
+  "adminWorldviewsDesc": "Edit world settings and AI judgment rules",
+  "@adminWorldviewsDesc": { "description": "Admin worldviews description" },
+
+  "adminScenarios": "Scenarios",
+  "@adminScenarios": { "description": "Admin scenarios editor title" },
+
+  "adminScenariosDesc": "Edit battle scenarios and enemy commanders",
+  "@adminScenariosDesc": { "description": "Admin scenarios description" },
+
+  "adminModeAddons": "Mode Instructions",
+  "@adminModeAddons": { "description": "Admin mode addons editor title" },
+
+  "adminModeAddonsDesc": "Edit AI instructions for each game mode",
+  "@adminModeAddonsDesc": { "description": "Admin mode addons description" },
+
+  "adminCosts": "Costs & Models",
+  "@adminCosts": { "description": "Admin costs editor title" },
+
+  "adminCostsDesc": "Edit ticket costs and AI model configuration",
+  "@adminCostsDesc": { "description": "Admin costs description" },
+
+  "adminSave": "Save",
+  "@adminSave": { "description": "Admin save button" },
+
+  "adminSaveSuccess": "Configuration saved successfully",
+  "@adminSaveSuccess": { "description": "Admin save success message" },
+
+  "adminSaveError": "Failed to save: {error}",
+  "@adminSaveError": {
+    "description": "Admin save error message",
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "adminAdd": "Add",
+  "@adminAdd": { "description": "Admin add button" },
+
+  "adminDelete": "Delete",
+  "@adminDelete": { "description": "Admin delete button" },
+
+  "adminDeleteConfirm": "Are you sure you want to delete this item?",
+  "@adminDeleteConfirm": { "description": "Admin delete confirmation" },
+
+  "adminTitle": "Title",
+  "@adminTitle": { "description": "Admin field label: title" },
+
+  "adminTitleJa": "Title (JA)",
+  "@adminTitleJa": { "description": "Admin field label: Japanese title" },
+
+  "adminDescription": "Description",
+  "@adminDescription": { "description": "Admin field label: description" },
+
+  "adminDescriptionJa": "Description (JA)",
+  "@adminDescriptionJa": { "description": "Admin field label: Japanese description" },
+
+  "adminCommonJudgment": "Judgment Rules",
+  "@adminCommonJudgment": { "description": "Admin field label: common judgment" },
+
+  "adminCommanderDef": "Commander Definition",
+  "@adminCommanderDef": { "description": "Admin field label: commander definition" },
+
+  "adminEnemyName": "Enemy Name",
+  "@adminEnemyName": { "description": "Admin field label: enemy name" },
+
+  "adminDifficulty": "Difficulty",
+  "@adminDifficulty": { "description": "Admin field label: difficulty" },
+
+  "adminBattleType": "Battle Type",
+  "@adminBattleType": { "description": "Admin field label: battle type" },
+
+  "adminKey": "Key",
+  "@adminKey": { "description": "Admin field label: key identifier" },
+
+  "adminValue": "Value",
+  "@adminValue": { "description": "Admin field label: value" },
+
+  "adminNewWorldview": "New Worldview",
+  "@adminNewWorldview": { "description": "Admin add worldview dialog title" },
+
+  "adminNewScenario": "New Scenario",
+  "@adminNewScenario": { "description": "Admin add scenario dialog title" },
+
+  "worldSettingChoose": "Choose World Setting",
+  "@worldSettingChoose": { "description": "World setting selection screen title" },
+
+  "worldSettingSubtitle": "Select a world to define your battle rules and scenarios",
+  "@worldSettingSubtitle": { "description": "World setting selection subtitle" },
+
+  "worldSettingSelect": "Select",
+  "@worldSettingSelect": { "description": "Select world setting button" }
+}

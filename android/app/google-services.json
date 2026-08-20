@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "60492504266",
+    "project_id": "steelverdict-81c34",
+    "storage_bucket": "steelverdict-81c34.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:60492504266:android:5e7cd906f77bd85062e833",
+        "android_client_info": {
+          "package_name": "com.example.strategy_game"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXVA10ciTHyECr_8mqQ2Wriub_JzHUntQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

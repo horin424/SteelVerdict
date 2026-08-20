@@ -1,0 +1,103 @@
+{
+  "dev_uids": ["REPLACE_WITH_YOUR_FIREBASE_UID"],
+
+  "ticket_costs": {
+    "normal": 1,
+    "tabletop": 2,
+    "epic": 3,
+    "boss": 5,
+    "practice": 0,
+    "pvp": 1,
+    "claude": 3
+  },
+
+  "model_config": {
+    "claude": "claude-sonnet-4-20250514",
+    "gemini": "gemini-2.0-flash"
+  },
+
+  "fallback_prompt": "You are a strict military battle judge in a fantasy world set around 1830. The player will describe their battle strategy and provide their race's stats. Evaluate the strategy objectively based on the stats provided. Stats: Wisdom, Technology, Magic, Art (engineering/fortification), Life, Strength. DO NOT play rock-paper-scissors after the fact — react dynamically to the player's actual strategy. Always end your response with a clear outcome: VICTORY, DEFEAT, or STALEMATE.",
+
+  "worldviews": {
+    "1830_fantasy": {
+      "worldviewKey": "1830_fantasy",
+      "title": "1830 Fantasy World",
+      "titleJa": "1830年 ファンタジーワールド",
+      "stats": ["strength", "intellect", "skill", "magic", "art", "life"],
+      "statDescriptions": {
+        "strength": { "en": "Raw physical power and combat prowess", "ja": "生の肉体的な力と戦闘能力" },
+        "intellect": { "en": "Strategic thinking and decision-making ability", "ja": "戦略的思考と意思決定能力" },
+        "skill": { "en": "Combat technique and tactical precision", "ja": "戦闘技術と戦術的精度" },
+        "magic": { "en": "Magical power and spell capacity", "ja": "魔力と呪文の使用能力" },
+        "art": { "en": "Engineering, fortification, and construction skill", "ja": "工学・築城・建設の技術" },
+        "life": { "en": "Endurance, healing, and troop morale", "ja": "持久力・回復力・部隊士気" }
+      },
+      "commonJudgment": "Battles in this world are decided by a combination of military prowess, tactical genius, and the favor of the ancient powers.",
+      "common_judgment": "Battles in this world are decided by a combination of military prowess, tactical genius, and the favor of the ancient powers.",
+      "worldviewDescription": "An early 19th century world where magic and gunpowder coexist. Great empires clash over vast territories.",
+      "worldview_description": "An early 19th century world where magic and gunpowder coexist. Great empires clash over vast territories.",
+      "worldviewDescriptionJa": "魔法と火薬が共存する19世紀初頭の世界。大帝国が広大な領土をめぐって激突する。"
+    }
+  },
+
+  "scenarios": {
+    "scenario_001": {
+      "scenarioId": "scenario_001",
+      "worldviewKey": "1830_fantasy",
+      "title": "The Border Skirmish",
+      "titleJa": "国境の小競り合い",
+      "difficulty": 1,
+      "enemyName": "Bandit Horde",
+      "enemyNameJa": "盗賊の大群",
+      "enemyStats": { "attack": 3, "defense": 2, "speed": 4, "morale": 2, "magic": 0, "leadership": 2 },
+      "commanderDefinition": "A disorganized bandit force threatening the western border.",
+      "commander_definition": "A disorganized bandit force threatening the western border.",
+      "commanderDefinitionJa": "西の国境を脅かす統率のとれていない盗賊集団。",
+      "battleType": "standard",
+      "isUnlocked": true,
+      "isFree": true
+    },
+    "scenario_002": {
+      "scenarioId": "scenario_002",
+      "worldviewKey": "1830_fantasy",
+      "title": "Siege of Iron Keep",
+      "titleJa": "鉄の砦の包囲戦",
+      "difficulty": 3,
+      "enemyName": "Imperial Garrison",
+      "enemyNameJa": "帝国の守備隊",
+      "enemyStats": { "attack": 5, "defense": 8, "speed": 2, "morale": 6, "magic": 1, "leadership": 5 },
+      "commanderDefinition": "A fortified imperial stronghold with seasoned defenders.",
+      "commander_definition": "A fortified imperial stronghold with seasoned defenders.",
+      "commanderDefinitionJa": "歴戦の守備兵を擁する帝国の要塞。",
+      "battleType": "standard",
+      "isUnlocked": false,
+      "isFree": false
+    },
+    "scenario_003": {
+      "scenarioId": "scenario_003",
+      "worldviewKey": "1830_fantasy",
+      "title": "Dragon Valley Assault",
+      "titleJa": "ドラゴン谷の強襲",
+      "difficulty": 5,
+      "enemyName": "Dragon Cult Army",
+      "enemyNameJa": "ドラゴン教団軍",
+      "enemyStats": { "attack": 9, "defense": 6, "speed": 5, "morale": 8, "magic": 10, "leadership": 7 },
+      "commanderDefinition": "A fanatical army empowered by dragon magic.",
+      "commander_definition": "A fanatical army empowered by dragon magic.",
+      "commanderDefinitionJa": "ドラゴンの魔力で強化された狂信的な軍隊。",
+      "battleType": "standard",
+      "isUnlocked": false,
+      "isFree": false
+    }
+  },
+
+  "mode_addons": {
+    "practice": "Output a battle report of 50 characters or less in the player's implied language.",
+    "normal": "Write a detailed battle report of 1000 characters or more.",
+    "tabletop": "Simulate this battle 10 times. Output only the estimated win rate as a percentage in 20 characters or less, e.g. 'Win rate: 70%'",
+    "epic": "Write a rich, epic battle narrative of 1500 characters or more with vivid descriptions.",
+    "boss": "Write a detailed battle report of 1000 characters or more. The player faces a powerful boss-tier enemy.",
+    "history_puzzle": "This is a historical puzzle battle using fixed historical forces. Evaluate the player's strategy strictly and objectively. There is no clear stage — focus on how well the strategy performs. Write a detailed battle report of 500 characters or more.",
+    "pvp": "You are judging a PvP battle. Both strategies are provided. Judge fairly based on stats and strategy quality. Write a short battle report of 40 characters, then state the winner."
+  }
+}
