@@ -9,6 +9,7 @@ import '../../../core/constants/route_names.dart';
 import '../../../core/widgets/error_snackbar.dart';
 import '../../../features/auth/auth_providers.dart';
 import '../../../features/splash/splash_providers.dart';
+import '../../../features/world_setting/world_setting_providers.dart';
 import '../../../services/game_config/game_config_providers.dart';
 import '../settings_providers.dart';
 import '../widgets/language_selector.dart';
@@ -435,7 +436,11 @@ class SettingsScreen extends ConsumerWidget {
                                   final storage = ref.read(
                                     hiveStorageServiceProvider,
                                   );
-                                  await storage.deleteRace();
+                                  // Only the race for the world currently
+                                  // selected — races in other worlds are kept.
+                                  await storage.deleteRace(
+                                    ref.read(selectedWorldviewKeyProvider),
+                                  );
                                   ref.invalidate(currentRaceProvider);
                                 }
                               },

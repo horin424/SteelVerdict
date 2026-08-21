@@ -7,6 +7,39 @@ import '../../models/race_model.dart';
 import '../../core/constants/app_constants.dart';
 import 'local_storage_service.dart';
 
+/// Moves a pre-existing single race into the slot for the worldview it was
+/// created in, then removes the old key. Idempotent.
+///
+/// Must run BEFORE runApp, not from HiveStorageService.initialize(): that runs
+/// on the splash screen, by which point currentRaceProvider may already have
+/// read Hive, found nothing under the new key, and cached null. The visible
+/// symptom is "Create your race to begin" on the first launch after updating,
+/// with the race reappearing on the second launch — and a player who taps the
+/// banner in that window creates a duplicate.
+Future<void> migrateLegacyRaceIfNeeded() async {
+  const legacyKey = 'current_race';
+  try {
+    if (!Hive.isBoxOpen(AppConstants.hiveBoxRace)) return;
+    final box = Hive.box(AppConstants.hiveBoxRace);
+
+    final raw = box.get(legacyKey);
+    if (raw == null) return;
+
+    final json = jsonDecode(raw as String) as Map<String, dynamic>;
+    final race = RaceModel.fromJson(json);
+    final key = 'race_${race.worldviewKey}';
+
+    // Don't clobber a race already created for that worldview.
+    if (box.get(key) == null) {
+      await box.put(key, raw);
+    }
+    await box.delete(legacyKey);
+    debugPrint('Migrated legacy race to $key');
+  } catch (e) {
+    debugPrint('migrateLegacyRaceIfNeeded error: $e');
+  }
+}
+
 class HiveStorageService implements LocalStorageService {
   Box<BattleRecordModel>? _battleRecordsBox;
   Box<WarHistoryModel>? _warHistoriesBox;
@@ -35,6 +68,9 @@ class HiveStorageService implements LocalStorageService {
       _settingsBox = Hive.isBoxOpen(AppConstants.hiveBoxSettings)
           ? Hive.box(AppConstants.hiveBoxSettings)
           : await Hive.openBox(AppConstants.hiveBoxSettings);
+
+      // Existing players have a single race stored under the old key.
+      await _migrateLegacyRace();
     } catch (e) {
       debugPrint('HiveStorageService.initialize error: $e');
     }
@@ -164,19 +200,29 @@ class HiveStorageService implements LocalStorageService {
     }
   }
 
+  // ── Race ───────────────────────────────────────────────────────────────────
+  // Each worldview defines its own stats, so a race belongs to one worldview.
+  // Stored one per worldview under 'race_<worldviewKey>'.
+
+  static String _raceKey(String worldviewKey) => 'race_$worldviewKey';
+
+  /// Safety net only — the real call happens in bootstrap before runApp.
+  /// Idempotent, so running it twice is harmless.
+  Future<void> _migrateLegacyRace() => migrateLegacyRaceIfNeeded();
+
   @override
   Future<void> saveRace(RaceModel race) async {
     try {
-      await _race.put('current_race', jsonEncode(race.toJson()));
+      await _race.put(_raceKey(race.worldviewKey), jsonEncode(race.toJson()));
     } catch (e) {
       debugPrint('saveRace error: $e');
     }
   }
 
   @override
-  RaceModel? getRace() {
+  RaceModel? getRace(String worldviewKey) {
     try {
-      final raw = _race.get('current_race');
+      final raw = _race.get(_raceKey(worldviewKey));
       if (raw == null) return null;
       final json = jsonDecode(raw as String) as Map<String, dynamic>;
       return RaceModel.fromJson(json);
@@ -187,9 +233,9 @@ class HiveStorageService implements LocalStorageService {
   }
 
   @override
-  Future<void> deleteRace() async {
+  Future<void> deleteRace(String worldviewKey) async {
     try {
-      await _race.delete('current_race');
+      await _race.delete(_raceKey(worldviewKey));
     } catch (e) {
       debugPrint('deleteRace error: $e');
     }

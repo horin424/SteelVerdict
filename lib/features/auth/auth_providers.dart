@@ -7,6 +7,7 @@ import '../../services/firestore/firebase_firestore_service.dart';
 import '../../models/user_model.dart';
 import '../../models/race_model.dart';
 import '../splash/splash_providers.dart';
+import '../world_setting/world_setting_providers.dart';
 
 // Auth service provider
 final authServiceProvider = Provider<AuthService>((ref) {
@@ -44,11 +45,17 @@ final currentUserModelProvider = FutureProvider<UserModel?>((ref) async {
   }
 });
 
-// Provider for current race (from local storage)
+// Provider for the race belonging to the currently selected worldview.
+//
+// Each worldview defines its own stats, so a race created in 1830 Fantasy
+// (Strength/Wisdom/Magic/Artistry) is meaningless in Aces High (turn rate,
+// climb rate, weapon lethality). One race per worldview; entering a world you
+// have no race for prompts you to create one.
 final currentRaceProvider = Provider<RaceModel?>((ref) {
   final storageService = ref.watch(hiveStorageServiceProvider);
+  final worldviewKey = ref.watch(selectedWorldviewKeyProvider);
   try {
-    return storageService.getRace();
+    return storageService.getRace(worldviewKey);
   } catch (e) {
     return null;
   }

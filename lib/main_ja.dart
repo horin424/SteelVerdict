@@ -7,6 +7,7 @@ import 'bootstrap/hive_adapters.dart';
 import 'core/constants/app_constants.dart';
 import 'features/settings/settings_providers.dart';
 import 'firebase_options.dart';
+import 'services/local_storage/hive_storage_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +31,9 @@ void main() async {
   } catch (e) {
     debugPrint('Hive box open error: $e');
   }
+
+  // See bootstrap.dart — must run before runApp.
+  await migrateLegacyRaceIfNeeded();
 
   runApp(
     ProviderScope(

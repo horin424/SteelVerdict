@@ -14,10 +14,11 @@ abstract class LocalStorageService {
   List<WarHistoryModel> getWarHistories();
   Future<void> deleteWarHistory(String id);
 
-  // Race
+  // Race — a race belongs to a worldview, because each worldview defines its
+  // own stats. A player can hold one race per worldview.
   Future<void> saveRace(RaceModel race);
-  RaceModel? getRace();
-  Future<void> deleteRace();
+  RaceModel? getRace(String worldviewKey);
+  Future<void> deleteRace(String worldviewKey);
 
   // Strategies
   Future<void> saveStrategy(String name, String text);

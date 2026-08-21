@@ -5,11 +5,21 @@ import '../../core/constants/app_constants.dart';
 import '../../services/game_config/game_config_providers.dart';
 import '../splash/splash_providers.dart';
 import '../auth/auth_providers.dart';
+import '../world_setting/world_setting_providers.dart';
 
-// Active worldview provider — reads from Firestore game config
+// The worldview the race is being created for.
+//
+// This used to read AppConstants.defaultWorldviewKey unconditionally, so no
+// matter which world the player picked, race creation always offered the
+// 1830 Fantasy stats (Strength/Wisdom/Technology/Magic/Artistry/Life) and saved
+// the race with worldviewKey '1830_fantasy'. A Last Breath player could never
+// put a point into Luck, and the Magic they were forced to spend on was not
+// read by that world's judging at all.
 final activeWorldviewProvider = Provider<WorldviewModel>((ref) {
   final config = ref.watch(gameConfigProvider);
-  return config.worldviews[AppConstants.defaultWorldviewKey] ??
+  final selectedKey = ref.watch(selectedWorldviewKeyProvider);
+  return config.worldviews[selectedKey] ??
+      config.worldviews[AppConstants.defaultWorldviewKey] ??
       WorldviewModel.defaultWorldview();
 });
 

@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../app.dart';
 import '../core/constants/app_constants.dart';
 import '../firebase_options.dart';
+import '../services/local_storage/hive_storage_service.dart';
 import 'hive_adapters.dart';
 
 Future<void> bootstrap() async {
@@ -37,6 +38,11 @@ Future<void> bootstrap() async {
   } catch (e) {
     debugPrint('Hive box open error: $e');
   }
+
+  // Must happen before runApp: currentRaceProvider reads the race box on its
+  // first evaluation and caches the result, so migrating any later would show
+  // an upgrading player "create your race" for one launch.
+  await migrateLegacyRaceIfNeeded();
 
   runApp(const ProviderScope(child: App()));
 }
