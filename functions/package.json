@@ -3,6 +3,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
+    "verify": "npm run build && node scripts/verify-outcome.js",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
     "lint": "eslint --ext .ts ."

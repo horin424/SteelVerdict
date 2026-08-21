@@ -1,15 +1,25 @@
-import * as admin from "firebase-admin";
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { GEMINI_API_KEY } from "../utils/config";
-import { callGeminiFlash } from "../utils/ai";
-import { assemblePrompt, formatPvpUserMessage } from "../utils/prompt";
+import { judgePvpMatch } from "./judgePvpMatch";
+import { FirestorePvpMatch } from "../utils/firestore";
 
 /**
- * Firestore trigger — fires when a pvp_matches document is updated.
- * When both players have submitted strategies (status becomes "active"),
- * calls Gemini Flash to judge the battle and writes the result.
+ * Firestore trigger — judges a PvP match once both players have submitted.
  *
- * Using Gemini Flash for all PvP (fixed model for fairness — spec requirement).
+ * The previous version fired only on the status transition into "active":
+ *
+ *   if (before.status === "active" || after.status !== "active") return;
+ *   if (!after.playerAStrategy || !after.playerBStrategy) return;
+ *
+ * findOrCreatePvpMatch sets status to "active" the moment player B *joins*,
+ * before either strategy exists — so at the only instant the first guard let
+ * through, the second guard always returned. Every later strategy write had
+ * before.status === "active" and was rejected by the first. The result: the
+ * judge never ran, matches sat until the 24h sweep, and the sweep then told two
+ * players who had both submitted that neither of them had.
+ *
+ * Now the condition is what it should always have been: fire on the update that
+ * completes the pair of strategies, whatever the status was doing.
  */
 export const judgeCompletedPvpMatch = onDocumentUpdated(
   { document: "pvp_matches/{matchId}", secrets: [GEMINI_API_KEY] },
@@ -19,77 +29,25 @@ export const judgeCompletedPvpMatch = onDocumentUpdated(
 
     if (!after || !before) return;
 
-    // Only run when status transitions to "active"
-    if (before.status === "active" || after.status !== "active") return;
-    if (!after.playerAStrategy || !after.playerBStrategy) return;
+    const bothNow = !!after.playerAStrategy && !!after.playerBStrategy;
+    const bothBefore = !!before.playerAStrategy && !!before.playerBStrategy;
+
+    // Only the update that completes the pair. bothBefore also stops this
+    // trigger re-entering on its own result write.
+    if (!bothNow || bothBefore) return;
+
+    // Already settled (e.g. by the deserter sweep) — leave it alone.
+    if (after.status === "resolved" || after.status === "timeout") return;
 
     const matchId = event.params.matchId;
     console.log(`Judging PvP match ${matchId}`);
 
     try {
-      // Assemble PvP prompt (no commander_definition for PvP)
-      const systemPrompt = await assemblePrompt("1830_fantasy", "pvp", "pvp");
-      const userMessage = formatPvpUserMessage(
-        after.playerAStrategy,
-        after.playerAStats,
-        after.playerARaceName,
-        after.playerBStrategy,
-        after.playerBStats,
-        after.playerBRaceName,
-      );
-
-      const response = await callGeminiFlash(
-        GEMINI_API_KEY.value(),
-        systemPrompt,
-        userMessage,
-      );
-
-      // Parse winner and report from response
-      const { winner, shortReport } = parsePvpResponse(
-        response,
-        after.playerAUid,
-        after.playerBUid,
-      );
-
-      await admin.firestore()
-        .collection("pvp_matches")
-        .doc(matchId)
-        .update({
-          winner,
-          shortReport,
-          status: "resolved",
-          resolvedAt: Date.now(),
-        });
-
-      console.log(`Match ${matchId} resolved. Winner: ${winner}`);
+      await judgePvpMatch(matchId, after as FirestorePvpMatch, GEMINI_API_KEY.value());
     } catch (err) {
+      // Don't rethrow — a retry would re-run the AI call and double the cost.
+      // checkDeserters picks up anything left unresolved at the deadline.
       console.error(`Failed to judge match ${matchId}:`, err);
-      // Don't throw — Firestore triggers don't benefit from rethrowing
     }
   },
 );
-
-function parsePvpResponse(
-  text: string,
-  playerAUid: string,
-  playerBUid: string,
-): { winner: string; shortReport: string } {
-  const upper = text.toUpperCase();
-
-  let winner = "draw";
-  if (upper.includes("WINNER: PLAYER A")) {
-    winner = playerAUid;
-  } else if (upper.includes("WINNER: PLAYER B")) {
-    winner = playerBUid;
-  } else if (upper.includes("WINNER: DRAW")) {
-    winner = "draw";
-  }
-
-  // Extract REPORT: line
-  const reportMatch = text.match(/REPORT:\s*(.+)/i);
-  const shortReport = reportMatch
-    ? reportMatch[1].trim().substring(0, 60)
-    : text.trim().substring(0, 60);
-
-  return { winner, shortReport };
-}
