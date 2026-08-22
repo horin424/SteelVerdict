@@ -45,50 +45,45 @@ let _rcCacheAt = 0;
 // Assembled prompt cache keyed by "worldviewKey:scenarioId:gameMode"
 const _promptCache = new Map();
 /**
- * Fetch Remote Config template from Firebase Admin SDK.
- * Results are cached in memory for 5 minutes to avoid an Admin SDK
- * network call on every battle request.
+ * Fetch game config from Firestore (system_config/game_config).
+ * Results are cached in memory for 5 minutes to avoid a Firestore
+ * read on every battle request.
  */
 async function fetchRemoteConfigData() {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f;
     const now = Date.now();
     if (_rcCache !== null && now - _rcCacheAt < RC_CACHE_TTL_MS) {
         return _rcCache;
     }
+    // Past the TTL and about to refetch, so the assembled prompts built from the
+    // old config are stale too.
+    //
+    // This used to read `if (_promptCacheAt < _rcCacheAt)`, which could never be
+    // true: _promptCacheAt was stamped by assemblePrompt *after* _rcCacheAt was
+    // stamped here, so it was always the larger of the two. The prompt cache was
+    // therefore never cleared for the life of a warm instance, and an edit made in
+    // the admin panel could keep serving the old prompt until the instance
+    // recycled — which defeats the whole point of editing prompts without a
+    // release.
+    _promptCache.clear();
     try {
-        const rc = admin.remoteConfig();
-        const template = await rc.getTemplate();
-        const params = template.parameters;
-        const parse = (key) => {
-            const param = params[key];
-            if (!(param === null || param === void 0 ? void 0 : param.defaultValue) || !("value" in param.defaultValue))
-                return {};
-            try {
-                return JSON.parse(param.defaultValue.value);
-            }
-            catch (_a) {
-                return {};
-            }
-        };
-        const parseString = (key) => {
-            const param = params[key];
-            if (!(param === null || param === void 0 ? void 0 : param.defaultValue) || !("value" in param.defaultValue))
-                return undefined;
-            return param.defaultValue.value;
-        };
-        // New grouped keys (game_prompts, game_scenarios, system_config)
-        // with fallback to legacy flat keys for backward compatibility.
-        const gamePrompts = parse("game_prompts");
-        const gameScenarios = parse("game_scenarios");
-        const systemConfig = parse("system_config");
+        const doc = await admin.firestore()
+            .collection("system_config")
+            .doc("game_config")
+            .get();
+        if (!doc.exists) {
+            console.warn("system_config/game_config not found, using stale cache or empty.");
+            return _rcCache !== null && _rcCache !== void 0 ? _rcCache : {};
+        }
+        const data = doc.data();
         _rcCache = {
-            worldviews: (_a = gamePrompts.worldviews) !== null && _a !== void 0 ? _a : parse("worldviews"),
-            scenarios: (_b = gameScenarios.scenarios) !== null && _b !== void 0 ? _b : parse("scenarios"),
-            mode_addons: (_c = gamePrompts.mode_addons) !== null && _c !== void 0 ? _c : parse("mode_addons"),
-            ticket_costs: (_d = systemConfig.ticket_costs) !== null && _d !== void 0 ? _d : parse("ticket_costs"),
-            model_config: (_e = systemConfig.model_config) !== null && _e !== void 0 ? _e : parse("model_config"),
-            dev_uids: (_f = systemConfig.dev_uids) !== null && _f !== void 0 ? _f : [],
-            fallback_prompt: (_g = gamePrompts.fallback_prompt) !== null && _g !== void 0 ? _g : parseString("fallback_prompt"),
+            worldviews: (_a = data.worldviews) !== null && _a !== void 0 ? _a : {},
+            scenarios: (_b = data.scenarios) !== null && _b !== void 0 ? _b : {},
+            mode_addons: (_c = data.mode_addons) !== null && _c !== void 0 ? _c : {},
+            ticket_costs: (_d = data.ticket_costs) !== null && _d !== void 0 ? _d : {},
+            model_config: (_e = data.model_config) !== null && _e !== void 0 ? _e : {},
+            dev_uids: (_f = data.dev_uids) !== null && _f !== void 0 ? _f : [],
+            fallback_prompt: data.fallback_prompt,
         };
         _rcCacheAt = now;
         return _rcCache;
@@ -111,7 +106,7 @@ async function fetchRemoteConfigData() {
  * correct full order while allowing parts 1-4 to be cached server-side.
  */
 async function assemblePrompt(worldviewKey, scenarioId, gameMode) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     const cacheKey = `${worldviewKey}:${scenarioId}:${gameMode}`;
     if (_promptCache.has(cacheKey)) {
         return _promptCache.get(cacheKey);
@@ -121,21 +116,25 @@ async function assemblePrompt(worldviewKey, scenarioId, gameMode) {
     const scenario = (_d = (_c = data.scenarios) === null || _c === void 0 ? void 0 : _c[scenarioId]) !== null && _d !== void 0 ? _d : {};
     const modeAddons = (_e = data.mode_addons) !== null && _e !== void 0 ? _e : {};
     const parts = [];
-    if (worldview.common_judgment) {
-        parts.push(worldview.common_judgment);
+    // Support both snake_case (legacy) and camelCase (admin panel) keys
+    const judgment = (_f = worldview.common_judgment) !== null && _f !== void 0 ? _f : worldview.commonJudgment;
+    if (judgment) {
+        parts.push(judgment);
     }
-    if (worldview.worldview_description) {
-        parts.push(worldview.worldview_description);
+    const wvDesc = (_g = worldview.worldview_description) !== null && _g !== void 0 ? _g : worldview.worldviewDescription;
+    if (wvDesc) {
+        parts.push(wvDesc);
     }
     if (modeAddons[gameMode]) {
         parts.push(modeAddons[gameMode]);
     }
-    if (scenario.commander_definition) {
-        parts.push(scenario.commander_definition);
+    const cmdDef = (_h = scenario.commander_definition) !== null && _h !== void 0 ? _h : scenario.commanderDefinition;
+    if (cmdDef) {
+        parts.push(cmdDef);
     }
     // Fallback: use RC fallback_prompt, or hardcoded minimal prompt
     if (parts.length === 0) {
-        parts.push((_f = data.fallback_prompt) !== null && _f !== void 0 ? _f : getFallbackPrompt(gameMode));
+        parts.push((_j = data.fallback_prompt) !== null && _j !== void 0 ? _j : getFallbackPrompt(gameMode));
     }
     const prompt = parts.join("\n\n");
     _promptCache.set(cacheKey, prompt);
@@ -143,7 +142,7 @@ async function assemblePrompt(worldviewKey, scenarioId, gameMode) {
 }
 /**
  * Fallback system prompt used during development before
- * Remote Config is populated.
+ * Firestore config is populated.
  */
 function getFallbackPrompt(gameMode) {
     var _a;

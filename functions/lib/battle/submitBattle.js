@@ -40,6 +40,7 @@ const config_1 = require("../utils/config");
 const ai_1 = require("../utils/ai");
 const prompt_1 = require("../utils/prompt");
 const firestore_1 = require("../utils/firestore");
+const outcome_1 = require("../utils/outcome");
 /**
  * submitBattle — the core AI battle judging function.
  *
@@ -114,10 +115,10 @@ exports.submitBattle = (0, https_1.onCall)({ secrets: [config_1.GEMINI_API_KEY, 
     // 7. Call AI — refund tickets if the API fails
     let reportText;
     try {
+        const maxTokens = gameMode === "epic" ? 2048 : 1024;
         if (modelChoice === "claude") {
             const rcModels = (_h = rcData.model_config) !== null && _h !== void 0 ? _h : {};
             const claudeModel = (_j = rcModels["claude"]) !== null && _j !== void 0 ? _j : undefined;
-            const maxTokens = gameMode === "epic" ? 2048 : 1024;
             reportText = await (0, ai_1.callClaude)(config_1.CLAUDE_API_KEY.value(), systemPrompt, userMessage, claudeModel, maxTokens);
         }
         else {
@@ -125,7 +126,7 @@ exports.submitBattle = (0, https_1.onCall)({ secrets: [config_1.GEMINI_API_KEY, 
             const modelId = isPractice
                 ? ((_l = rcModels["gemini_flash_lite"]) !== null && _l !== void 0 ? _l : config_1.GEMINI_FLASH_LITE)
                 : ((_m = rcModels["gemini_flash"]) !== null && _m !== void 0 ? _m : config_1.GEMINI_FLASH);
-            reportText = await (0, ai_1.callGemini)(config_1.GEMINI_API_KEY.value(), systemPrompt, userMessage, modelId);
+            reportText = await (0, ai_1.callGemini)(config_1.GEMINI_API_KEY.value(), systemPrompt, userMessage, modelId, maxTokens);
         }
     }
     catch (err) {
@@ -143,7 +144,7 @@ exports.submitBattle = (0, https_1.onCall)({ secrets: [config_1.GEMINI_API_KEY, 
         throw new https_1.HttpsError("internal", "AI service error. Please try again.");
     }
     // 7. Parse outcome keyword from the AI response
-    const outcome = parseOutcome(reportText);
+    const outcome = (0, outcome_1.parseOutcome)(reportText);
     // 8. Short summary (first sentence or first 120 chars)
     const shortSummary = extractShortSummary(reportText, gameMode);
     // Update lastLoginAt for PvP matching priority (fire-and-forget)
@@ -156,26 +157,21 @@ exports.submitBattle = (0, https_1.onCall)({ secrets: [config_1.GEMINI_API_KEY, 
     };
 });
 // ─── Content filter ───────────────────────────────────────────────────────────
-const BLACKLIST = [
+// Matched on word boundaries. Substring matching rejected ordinary battle prose:
+// "spic" is inside suspicion / conspicuous / despicable, and "chink" is inside
+// "a chink in their armour" - a military idiom a player is very likely to use.
+const BLACKLIST_EN = [
     "fuck", "shit", "bitch", "nigger", "nigga", "faggot", "retard",
     "kike", "spic", "chink", "whore", "cunt", "bastard", "asshole",
-    // Japanese
-    "バカ", "死ね", "クソ", "うざい", "殺す", "ファック",
 ];
+// Japanese has no word boundaries, so each term is matched directly. 殺す was
+// removed: "敵将を殺す" is the subject matter of a war game, not abuse.
+const BLACKLIST_JA = ["バカ", "死ね", "クソ", "うざい", "ファック"];
+const EN_PATTERNS = BLACKLIST_EN.map((w) => new RegExp(`\\b${w}\\b`, "iu"));
 function containsInappropriateContent(text) {
-    const lower = text.toLowerCase();
-    return BLACKLIST.some((word) => lower.includes(word));
-}
-// ─── Outcome parsing ──────────────────────────────────────────────────────────
-function parseOutcome(text) {
-    const upper = text.toUpperCase();
-    if (upper.includes("VICTORY") || upper.includes("WIN") || upper.includes("VICTORIOUS")) {
-        return "win";
-    }
-    if (upper.includes("DEFEAT") || upper.includes("LOSS") || upper.includes("LOST") || upper.includes("ROUTED")) {
-        return "loss";
-    }
-    return "draw";
+    if (EN_PATTERNS.some((re) => re.test(text)))
+        return true;
+    return BLACKLIST_JA.some((word) => text.includes(word));
 }
 function extractShortSummary(text, gameMode) {
     if (gameMode === "tabletop") {
