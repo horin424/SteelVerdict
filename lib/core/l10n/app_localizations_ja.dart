@@ -1027,6 +1027,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get statLife => '生命';
 
   @override
+  String get statWisdom => '知力';
+
+  @override
+  String get statTechnology => '技術';
+
+  @override
+  String get statArtistry => '芸術';
+
+  @override
   String get raceOverviewLabel => '種族の概要';
 
   @override
@@ -1347,6 +1356,63 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get adminNewScenario => '新しいシナリオ';
+
+  @override
+  String get adminSystemConfig => 'システム設定';
+
+  @override
+  String get adminSystemConfigDesc => 'フォールバックプロンプト、開発者UID、広告ユニット';
+
+  @override
+  String get adminSelectScenario => '編集するシナリオを選択してください';
+
+  @override
+  String get adminWorldviewSection => '世界設定';
+
+  @override
+  String get adminEnemyStatsSection => '敵ステータス';
+
+  @override
+  String get adminFreeScenario => '無料';
+
+  @override
+  String get adminFallbackPromptSection => 'フォールバックプロンプト';
+
+  @override
+  String get adminFallbackPromptHelp => '世界設定・シナリオのプロンプトが未設定のときに使用されます';
+
+  @override
+  String get adminDevUidsSection => '開発者UID（管理者アクセス）';
+
+  @override
+  String get adminDevUidHint => 'Firebase UIDを貼り付け...';
+
+  @override
+  String get adminAdUnitsSection => '広告ユニットID';
+
+  @override
+  String get adminRewardedAdUnit => 'リワード広告ユニットID';
+
+  @override
+  String get adminInterstitialAdUnit => 'インタースティシャル広告ユニットID';
+
+  @override
+  String get adminTicketCostsSection => 'チケットコスト';
+
+  @override
+  String get adminAiModelsSection => 'AIモデル';
+
+  @override
+  String get adminScenarioIdHint => '例: scenario_004';
+
+  @override
+  String get adminWorldviewKeyHint => '例: cyberpunk_2099';
+
+  @override
+  String get adminEnemyNameJa => '敵名（日本語）';
+
+  @override
+  String get adminCommanderDefJa => '指揮官定義（日本語）';
 
   @override
   String get worldSettingChoose => '世界設定を選択';

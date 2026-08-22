@@ -2078,6 +2078,24 @@ abstract class AppLocalizations {
   /// **'Life'**
   String get statLife;
 
+  /// Stat name: wisdom (live worldview key 'wisdom')
+  ///
+  /// In en, this message translates to:
+  /// **'Wisdom'**
+  String get statWisdom;
+
+  /// Stat name: technology (live worldview key 'technology')
+  ///
+  /// In en, this message translates to:
+  /// **'Technology'**
+  String get statTechnology;
+
+  /// Stat name: artistry (live worldview key 'artistry')
+  ///
+  /// In en, this message translates to:
+  /// **'Artistry'**
+  String get statArtistry;
+
   /// Label for race overview field
   ///
   /// In en, this message translates to:
@@ -2695,6 +2713,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Scenario'**
   String get adminNewScenario;
+
+  /// Admin menu: system config screen
+  ///
+  /// In en, this message translates to:
+  /// **'System Config'**
+  String get adminSystemConfig;
+
+  /// Admin menu: system config description
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback prompt, dev UIDs, ad units'**
+  String get adminSystemConfigDesc;
+
+  /// Admin scenarios: empty-state hint
+  ///
+  /// In en, this message translates to:
+  /// **'Select a scenario to edit'**
+  String get adminSelectScenario;
+
+  /// Admin section heading: worldview
+  ///
+  /// In en, this message translates to:
+  /// **'WORLDVIEW'**
+  String get adminWorldviewSection;
+
+  /// Admin section heading: enemy stats
+  ///
+  /// In en, this message translates to:
+  /// **'ENEMY STATS'**
+  String get adminEnemyStatsSection;
+
+  /// Admin toggle: scenario is free to play
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get adminFreeScenario;
+
+  /// Admin section heading: fallback prompt
+  ///
+  /// In en, this message translates to:
+  /// **'FALLBACK PROMPT'**
+  String get adminFallbackPromptSection;
+
+  /// Admin help text for the fallback prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Used when no worldview/scenario prompt is configured'**
+  String get adminFallbackPromptHelp;
+
+  /// Admin section heading: developer UIDs
+  ///
+  /// In en, this message translates to:
+  /// **'DEV UIDs (admin access)'**
+  String get adminDevUidsSection;
+
+  /// Admin input hint for a Firebase UID
+  ///
+  /// In en, this message translates to:
+  /// **'Paste Firebase UID...'**
+  String get adminDevUidHint;
+
+  /// Admin section heading: ad unit IDs
+  ///
+  /// In en, this message translates to:
+  /// **'AD UNIT IDs'**
+  String get adminAdUnitsSection;
+
+  /// Admin field label: rewarded ad unit
+  ///
+  /// In en, this message translates to:
+  /// **'Rewarded Ad Unit ID'**
+  String get adminRewardedAdUnit;
+
+  /// Admin field label: interstitial ad unit
+  ///
+  /// In en, this message translates to:
+  /// **'Interstitial Ad Unit ID'**
+  String get adminInterstitialAdUnit;
+
+  /// Admin section heading: ticket costs
+  ///
+  /// In en, this message translates to:
+  /// **'TICKET COSTS'**
+  String get adminTicketCostsSection;
+
+  /// Admin section heading: AI models
+  ///
+  /// In en, this message translates to:
+  /// **'AI MODELS'**
+  String get adminAiModelsSection;
+
+  /// Admin input hint for a new scenario id
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. scenario_004'**
+  String get adminScenarioIdHint;
+
+  /// Admin input hint for a new worldview key
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. cyberpunk_2099'**
+  String get adminWorldviewKeyHint;
+
+  /// Admin field label: Japanese enemy name
+  ///
+  /// In en, this message translates to:
+  /// **'Enemy Name (JA)'**
+  String get adminEnemyNameJa;
+
+  /// Admin field label: Japanese commander definition
+  ///
+  /// In en, this message translates to:
+  /// **'Commander Definition (JA)'**
+  String get adminCommanderDefJa;
 
   /// World setting selection screen title
   ///

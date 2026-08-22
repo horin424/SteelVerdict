@@ -1043,6 +1043,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statLife => 'Life';
 
   @override
+  String get statWisdom => 'Wisdom';
+
+  @override
+  String get statTechnology => 'Technology';
+
+  @override
+  String get statArtistry => 'Artistry';
+
+  @override
   String get raceOverviewLabel => 'Race Overview';
 
   @override
@@ -1380,6 +1389,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminNewScenario => 'New Scenario';
+
+  @override
+  String get adminSystemConfig => 'System Config';
+
+  @override
+  String get adminSystemConfigDesc => 'Fallback prompt, dev UIDs, ad units';
+
+  @override
+  String get adminSelectScenario => 'Select a scenario to edit';
+
+  @override
+  String get adminWorldviewSection => 'WORLDVIEW';
+
+  @override
+  String get adminEnemyStatsSection => 'ENEMY STATS';
+
+  @override
+  String get adminFreeScenario => 'Free';
+
+  @override
+  String get adminFallbackPromptSection => 'FALLBACK PROMPT';
+
+  @override
+  String get adminFallbackPromptHelp =>
+      'Used when no worldview/scenario prompt is configured';
+
+  @override
+  String get adminDevUidsSection => 'DEV UIDs (admin access)';
+
+  @override
+  String get adminDevUidHint => 'Paste Firebase UID...';
+
+  @override
+  String get adminAdUnitsSection => 'AD UNIT IDs';
+
+  @override
+  String get adminRewardedAdUnit => 'Rewarded Ad Unit ID';
+
+  @override
+  String get adminInterstitialAdUnit => 'Interstitial Ad Unit ID';
+
+  @override
+  String get adminTicketCostsSection => 'TICKET COSTS';
+
+  @override
+  String get adminAiModelsSection => 'AI MODELS';
+
+  @override
+  String get adminScenarioIdHint => 'e.g. scenario_004';
+
+  @override
+  String get adminWorldviewKeyHint => 'e.g. cyberpunk_2099';
+
+  @override
+  String get adminEnemyNameJa => 'Enemy Name (JA)';
+
+  @override
+  String get adminCommanderDefJa => 'Commander Definition (JA)';
 
   @override
   String get worldSettingChoose => 'Choose World Setting';

@@ -6,6 +6,8 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/error_snackbar.dart';
+import '../../../core/utils/stat_names.dart';
+import '../../../models/scenario_model.dart';
 import '../../../services/game_config/game_config_providers.dart';
 
 const _kDefaultStatKeys = [
@@ -16,6 +18,31 @@ const _kDefaultStatKeys = [
   'art',
   'life',
 ];
+
+/// Label for one row in the scenario list.
+///
+/// Uses the localized title so the Japanese build reads Japanese, and falls
+/// back to the raw scenario id when a scenario has no usable title in either
+/// language — a half-filled entry should still be selectable, not an empty row.
+/// Display name for a battle type, reusing the strings players already see on
+/// the battle-type screen rather than showing the raw enum name.
+String _battleTypeName(String type, AppLocalizations l10n) {
+  switch (type) {
+    case 'standard':
+      return l10n.battleTypeStandard;
+    case 'boss':
+      return l10n.battleTypeBoss;
+    case 'history':
+      return l10n.battleTypeHistory;
+    default:
+      return type;
+  }
+}
+
+String _listLabel(ScenarioModel s, String locale, String id) {
+  final title = s.localizedTitle(locale);
+  return title.isNotEmpty ? title : id;
+}
 
 class AdminScenarioEditor extends ConsumerStatefulWidget {
   const AdminScenarioEditor({super.key});
@@ -138,7 +165,7 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
           controller: keyController,
           style: AppTextStyles.bodySmall,
           decoration: InputDecoration(
-            hintText: 'e.g. scenario_004',
+            hintText: l10n.adminScenarioIdHint,
             hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted),
             enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.textMuted)),
             focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.goldAccent)),
@@ -217,6 +244,7 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
     final config = ref.watch(gameConfigProvider);
     final scenarios = config.scenarios;
     final worldviewKeys = config.worldviews.keys.toList();
@@ -249,7 +277,9 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
                     selected: isSelected,
                     selectedTileColor: AppColors.goldAccent.withValues(alpha: 0.1),
                     title: Text(
-                      s.title.isNotEmpty ? s.title : id,
+                      // Was s.title, so the list read English in the JA
+                      // build while the editor beside it showed Japanese.
+                      _listLabel(s, locale, id),
                       style: AppTextStyles.labelSmall.copyWith(
                         color: isSelected ? AppColors.goldAccent : AppColors.textSecondary,
                         fontSize: 11,
@@ -258,7 +288,7 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     subtitle: Text(
-                      '${s.battleType.name} / ${s.difficulty}',
+                      '${_battleTypeName(s.battleType.name, l10n)} / ${s.difficulty}',
                       style: TextStyle(fontSize: 9, color: AppColors.textMuted),
                     ),
                     trailing: IconButton(
@@ -274,20 +304,20 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
           // Right: editor form
           Expanded(
             child: _selectedId == null
-                ? Center(child: Text('Select a scenario to edit', style: AppTextStyles.bodySmall))
+                ? Center(child: Text(l10n.adminSelectScenario, style: AppTextStyles.bodySmall))
                 : ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
                       _AdminField(label: l10n.adminTitle, controller: _titleController),
                       _AdminField(label: l10n.adminTitleJa, controller: _titleJaController),
                       _AdminField(label: l10n.adminEnemyName, controller: _enemyNameController),
-                      _AdminField(label: '${l10n.adminEnemyName} (JA)', controller: _enemyNameJaController),
+                      _AdminField(label: l10n.adminEnemyNameJa, controller: _enemyNameJaController),
                       _AdminField(label: l10n.adminCommanderDef, controller: _commanderDefController, maxLines: 6),
-                      _AdminField(label: '${l10n.adminCommanderDef} (JA)', controller: _commanderDefJaController, maxLines: 6),
+                      _AdminField(label: l10n.adminCommanderDefJa, controller: _commanderDefJaController, maxLines: 6),
                       _AdminField(label: l10n.adminDifficulty, controller: _difficultyController),
 
                       // Worldview key dropdown
-                      _SectionLabel(label: 'WORLDVIEW'),
+                      _SectionLabel(label: l10n.adminWorldviewSection),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 14),
                         child: DropdownButtonFormField<String>(
@@ -322,7 +352,10 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
                             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           ),
                           items: ['standard', 'boss', 'history']
-                              .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                              .map((t) => DropdownMenuItem(
+                                    value: t,
+                                    child: Text(_battleTypeName(t, l10n)),
+                                  ))
                               .toList(),
                           onChanged: (v) => setState(() => _battleType = v ?? 'standard'),
                         ),
@@ -332,16 +365,18 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
                       SwitchListTile(
                         value: _isFree,
                         onChanged: (v) => setState(() => _isFree = v),
-                        title: Text('Free', style: AppTextStyles.labelMedium),
+                        title: Text(l10n.adminFreeScenario, style: AppTextStyles.labelMedium),
                         activeTrackColor: AppColors.goldAccent,
                         contentPadding: EdgeInsets.zero,
                       ),
                       const SizedBox(height: 8),
 
                       // Enemy stats section
-                      _SectionLabel(label: 'ENEMY STATS'),
+                      _SectionLabel(label: l10n.adminEnemyStatsSection),
                       ..._enemyStatControllers.entries.map((entry) => _StatRow(
-                            label: entry.key,
+                            // Raw keys before this — the same stat names the
+                            // player sees, so they use the same translation.
+                            label: localizedStatName(entry.key, l10n),
                             controller: entry.value,
                           )),
                       const SizedBox(height: 12),

@@ -62,8 +62,8 @@ class AdminPanelScreen extends ConsumerWidget {
           _AdminCard(
             icon: Icons.settings,
             iconColor: AppColors.steelLight,
-            title: 'System Config',
-            subtitle: 'Fallback prompt, dev UIDs, ad units',
+            title: l10n.adminSystemConfig,
+            subtitle: l10n.adminSystemConfigDesc,
             count: config.devUids.length,
             onTap: () => context.push(RouteNames.adminSystemConfig),
           ),

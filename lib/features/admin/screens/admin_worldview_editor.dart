@@ -89,7 +89,7 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
           controller: keyController,
           style: AppTextStyles.bodySmall,
           decoration: InputDecoration(
-            hintText: 'e.g. cyberpunk_2099',
+            hintText: l10n.adminWorldviewKeyHint,
             hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted),
             enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.textMuted)),
             focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.goldAccent)),

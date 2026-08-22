@@ -7,57 +7,11 @@ import '../../../core/constants/route_names.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/error_snackbar.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/utils/stat_names.dart';
 import '../race_creation_providers.dart';
 import '../widgets/stat_allocator_tile.dart';
 import '../widgets/points_remaining_indicator.dart';
 import '../widgets/race_name_field.dart';
-
-String _localizedStatName(String stat, AppLocalizations l10n) {
-  switch (stat) {
-    case 'strength':
-      return l10n.statStrength;
-    case 'intellect':
-      return l10n.statIntellect;
-    case 'skill':
-      return l10n.statSkill;
-    case 'magic':
-      return l10n.statMagic;
-    case 'art':
-      return l10n.statArt;
-    case 'life':
-      return l10n.statLife;
-    // legacy keys
-    case 'attack':
-      return l10n.statAttack;
-    case 'defense':
-      return l10n.statDefense;
-    case 'speed':
-      return l10n.statSpeed;
-    case 'morale':
-      return l10n.statMorale;
-    case 'leadership':
-      return l10n.statLeadership;
-    default:
-      // A worldview added from the admin panel can define any stat key it likes
-      // (climb_rate, hullStrength, luck...). There is no translation for those,
-      // but showing "climb_rate" raw looks broken — present it as "Climb Rate".
-      return _prettifyStatKey(stat);
-  }
-}
-
-/// Turns an arbitrary stat key into something readable:
-/// `climb_rate` and `climbRate` both become `Climb Rate`.
-String _prettifyStatKey(String key) {
-  if (key.isEmpty) return key;
-  final spaced = key
-      .replaceAll(RegExp(r'[_\-]+'), ' ')
-      .replaceAllMapped(RegExp(r'(?<=[a-z0-9])(?=[A-Z])'), (_) => ' ')
-      .trim();
-  return spaced
-      .split(RegExp(r'\s+'))
-      .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1)}')
-      .join(' ');
-}
 
 class RaceCreationScreen extends ConsumerWidget {
   final bool redirectToBattle;
@@ -164,7 +118,7 @@ class RaceCreationScreen extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: StatAllocatorTile(
                   statKey: stat,
-                  statLabel: _localizedStatName(stat, l10n),
+                  statLabel: localizedStatName(stat, l10n),
                   description: description,
                   value: state.stats[stat] ?? 0,
                   maxValue: state.isBossMode ? 999 : 10,

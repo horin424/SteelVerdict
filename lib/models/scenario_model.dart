@@ -35,14 +35,26 @@ class ScenarioModel {
     this.battleType = BattleType.standard,
   });
 
+  // The `isNotEmpty` check matters as much as the null check: the admin panel
+  // creates a scenario with titleJa: '' and saves whatever is in the text field,
+  // so a blank Japanese field is stored as an empty string rather than null.
+  // Without this, such a scenario renders as an empty line in the Japanese
+  // build — in the admin list and in the player's scenario picker alike.
+  // Mirrors WorldviewModel, which already guarded against this.
   String localizedTitle(String languageCode) =>
-      languageCode == 'ja' && titleJa != null ? titleJa! : title;
+      (languageCode == 'ja' && titleJa != null && titleJa!.isNotEmpty)
+          ? titleJa!
+          : title;
 
   String localizedEnemyName(String languageCode) =>
-      languageCode == 'ja' && enemyNameJa != null ? enemyNameJa! : enemyName;
+      (languageCode == 'ja' && enemyNameJa != null && enemyNameJa!.isNotEmpty)
+          ? enemyNameJa!
+          : enemyName;
 
   String localizedCommanderDefinition(String languageCode) =>
-      languageCode == 'ja' && commanderDefinitionJa != null
+      (languageCode == 'ja' &&
+              commanderDefinitionJa != null &&
+              commanderDefinitionJa!.isNotEmpty)
           ? commanderDefinitionJa!
           : commanderDefinition;
 

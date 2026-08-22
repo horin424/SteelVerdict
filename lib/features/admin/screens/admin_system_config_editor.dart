@@ -91,7 +91,7 @@ class _AdminSystemConfigEditorState
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
-        title: Text('System Config', style: AppTextStyles.headlineMedium),
+        title: Text(l10n.adminSystemConfig, style: AppTextStyles.headlineMedium),
       ),
       body: Column(
         children: [
@@ -100,16 +100,16 @@ class _AdminSystemConfigEditorState
               padding: const EdgeInsets.all(16),
               children: [
                 // ── Fallback Prompt ──────────────────────────────────────
-                _SectionLabel(label: 'FALLBACK PROMPT'),
+                _SectionLabel(label: l10n.adminFallbackPromptSection),
                 _AdminField(
-                  label: 'Used when no worldview/scenario prompt is configured',
+                  label: l10n.adminFallbackPromptHelp,
                   controller: _fallbackPromptController,
                   maxLines: 10,
                 ),
                 const SizedBox(height: 8),
 
                 // ── Dev UIDs ─────────────────────────────────────────────
-                _SectionLabel(label: 'DEV UIDs (admin access)'),
+                _SectionLabel(label: l10n.adminDevUidsSection),
                 ..._devUids.map(
                   (uid) => Padding(
                     padding: const EdgeInsets.only(bottom: 6),
@@ -150,7 +150,7 @@ class _AdminSystemConfigEditorState
                           controller: _newUidController,
                           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary),
                           decoration: InputDecoration(
-                            hintText: 'Paste Firebase UID...',
+                            hintText: l10n.adminDevUidHint,
                             hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted),
                             filled: true,
                             fillColor: AppColors.cardSurface,
@@ -177,13 +177,13 @@ class _AdminSystemConfigEditorState
                 ),
 
                 // ── Ad Unit IDs ──────────────────────────────────────────
-                _SectionLabel(label: 'AD UNIT IDs'),
+                _SectionLabel(label: l10n.adminAdUnitsSection),
                 _AdminField(
-                  label: 'Rewarded Ad Unit ID',
+                  label: l10n.adminRewardedAdUnit,
                   controller: _adRewardedController,
                 ),
                 _AdminField(
-                  label: 'Interstitial Ad Unit ID',
+                  label: l10n.adminInterstitialAdUnit,
                   controller: _adInterstitialController,
                 ),
               ],
