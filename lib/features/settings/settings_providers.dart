@@ -1,17 +1,39 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../splash/splash_providers.dart';
 import '../../services/sound/sound_service_provider.dart';
 
+/// The languages this app ships translations for. Keep in sync with
+/// `supportedLocales` in app.dart and the .arb files in core/l10n.
+const Set<String> kSupportedLanguageCodes = {'en', 'ja'};
+
+/// The device's language, if we have translations for it, else English.
+///
+/// Used only when the user has never chosen a language. This is what makes a
+/// single build work in both markets: a Japanese phone opens in Japanese
+/// without the user having to find the setting first. It replaces the separate
+/// main_ja.dart entry point, which forced Japanese by shipping a second APK.
+Locale _deviceLocale() {
+  final code = PlatformDispatcher.instance.locale.languageCode;
+  return Locale(kSupportedLanguageCodes.contains(code) ? code : 'en');
+}
+
 // Locale provider
 final localeProvider = StateProvider<Locale>((ref) {
-  // Try to load saved locale from settings
   try {
     final storageService = ref.read(hiveStorageServiceProvider);
-    final savedLocale = storageService.getSetting('locale', defaultValue: 'en') as String?;
-    return Locale(savedLocale ?? 'en');
+    // No defaultValue on purpose: a missing key means the user has never
+    // chosen, which is not the same as having chosen English. Passing 'en' here
+    // is what made every first launch English regardless of device language.
+    final savedLocale = storageService.getSetting('locale') as String?;
+    if (savedLocale != null && kSupportedLanguageCodes.contains(savedLocale)) {
+      return Locale(savedLocale);
+    }
+    return _deviceLocale();
   } catch (e) {
-    return const Locale('en');
+    return _deviceLocale();
   }
 });
 

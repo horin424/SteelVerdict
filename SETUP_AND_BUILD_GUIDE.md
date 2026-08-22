@@ -3,7 +3,7 @@
 **Game Name:** Steel Verdict
 **Project Name:** strategy_game
 **Firebase Project:** steelverdict-81c34
-**Platforms:** Android (both EN/JA flavors) + iOS
+**Platforms:** Android (single build, EN + JA) + iOS
 **Last Updated:** April 2026
 
 ---
@@ -383,28 +383,34 @@ After adding all parameters:
 
 ## 5. Building APK for Android
 
-Steel Verdict supports **two language flavors** for Android:
-- **`en`** — English version
-- **`ja`** — Japanese version
+Steel Verdict is **one APK that serves both languages**. There are no build
+flavors.
 
-This means you can build two separate APKs with different app names and configurations.
+### 5.1 How the two languages work
 
-### 5.1 Understanding Build Flavors
+The app picks its language on first launch from the device, and the user can
+change it any time in Settings:
 
-In `android/app/build.gradle.kts`, product flavors are defined:
+| | |
+|---|---|
+| Japanese device | opens in Japanese, launcher shows スティールバーディクト |
+| Any other device | opens in English, launcher shows Steel Verdict |
+| User picks a language in Settings | saved, and wins from then on |
 
-```kotlin
-productFlavors {
-    create("en") {
-        dimension = "lang"
-        resValue("string", "app_name", "Steel Verdict")
-    }
-    create("ja") {
-        dimension = "lang"
-        resValue("string", "app_name", "スティールバーディクト")
-    }
-}
-```
+Two pieces make that work:
+
+- **In-app text** — `localeProvider` in `lib/features/settings/settings_providers.dart`
+  reads the saved choice, and falls back to the device language when the user has
+  never chosen one.
+- **Launcher name** — `android/app/src/main/res/values/strings.xml` and
+  `values-ja/strings.xml`. Android picks the right one automatically.
+
+This replaced a pair of product flavors (`en` / `ja`) and a second entry point
+(`lib/main_ja.dart`) that forced Japanese. Both shipped the *same* package name,
+so the two APKs could never be installed side by side, and installing one
+replaced the other. Adding a language now means adding an `.arb` file, a
+`values-<code>/strings.xml`, and the code to `kSupportedLanguageCodes` — not a
+new APK.
 
 ### 5.2 Install Android Release Keystore (FIRST TIME ONLY)
 
@@ -450,68 +456,42 @@ cd ..
 
 **SAVE THIS KEYSTORE SECURELY!** You cannot update your app on Google Play without it.
 
-### 5.3 Build APK — English Version
+### 5.3 Build APK
 
 ```bash
 # Clean build
 flutter clean
 flutter pub get
 
-# Build APK (English flavor, release mode)
+# One APK, both languages
 flutter build apk \
-  --flavor en \
   --release \
   --split-per-abi
 
 # Output files:
-# build/app/outputs/flutter-apk/app-en-release.apk (universal)
-# build/app/outputs/flutter-apk/app-en-armeabi-v7a-release.apk (ARM 32-bit)
-# build/app/outputs/flutter-apk/app-en-arm64-v8a-release.apk (ARM 64-bit)
+# build/app/outputs/flutter-apk/app-release.apk (universal)
+# build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk (ARM 32-bit)
+# build/app/outputs/flutter-apk/app-arm64-v8a-release.apk (ARM 64-bit)
 ```
 
-### 5.4 Build APK — Japanese Version
+### 5.4 Verify APK
 
 ```bash
-# Build APK (Japanese flavor, release mode)
-flutter build apk \
-  --flavor ja \
-  --release \
-  --split-per-abi
-
-# Output files:
-# build/app/outputs/flutter-apk/app-ja-release.apk (universal)
-# build/app/outputs/flutter-apk/app-ja-armeabi-v7a-release.apk (ARM 32-bit)
-# build/app/outputs/flutter-apk/app-ja-arm64-v8a-release.apk (ARM 64-bit)
-```
-
-### 5.5 Verify APK
-
-```bash
-# Install on connected device/emulator (English)
-flutter install --flavor en
+# Install on connected device/emulator
+flutter install
 
 # Or install APK directly
-adb install -r build/app/outputs/flutter-apk/app-en-release.apk
+adb install -r build/app/outputs/flutter-apk/app-release.apk
 ```
 
-### 5.6 Build App Bundle (For Google Play)
+### 5.5 Build App Bundle (For Google Play)
 
 The App Bundle is required for Google Play Store:
 
 ```bash
-# English flavor
-flutter build appbundle \
-  --flavor en \
-  --release
+flutter build appbundle --release
 
-# Output: build/app/outputs/bundle/enRelease/app-en-release.aab
-
-# Japanese flavor
-flutter build appbundle \
-  --flavor ja \
-  --release
-
-# Output: build/app/outputs/bundle/jaRelease/app-ja-release.aab
+# Output: build/app/outputs/bundle/release/app-release.aab
 ```
 
 ---
@@ -639,7 +619,7 @@ Before uploading to Google Play or App Store, ensure:
 **Android:**
 - [ ] Release keystore created and backed up securely
 - [ ] `android/key.properties` created with correct passwords
-- [ ] App name correct for each flavor (English/Japanese)
+- [ ] Launcher name correct in both languages (values/ and values-ja/strings.xml)
 - [ ] Package name finalized: `com.example.strategy_game` → `com.steelverdict.game`
 - [ ] APK/AAB builds without errors
 - [ ] Tested on multiple Android versions (API 21+)
@@ -734,10 +714,10 @@ keytool -list -v -keystore android/app/release.keystore
 
 ```bash
 # Use split-per-abi to reduce individual APK size:
-flutter build apk --flavor en --release --split-per-abi
+flutter build apk --release --split-per-abi
 
 # Use App Bundle for Play Store (automatically optimizes):
-flutter build appbundle --flavor en --release
+flutter build appbundle --release
 ```
 
 #### 7. **"Scenarios not showing"**
@@ -770,7 +750,7 @@ flutter clean
 rm -rf build ios android/.gradle
 flutter pub get
 flutter pub run build_runner build --delete-conflicting-outputs
-flutter build apk --flavor en --release
+flutter build apk --release
 ```
 
 #### 10. **"App crashes on first launch"**
@@ -803,14 +783,13 @@ flutter test
 flutter analyze
 
 # Build APK
-flutter build apk --flavor en --release
-flutter build apk --flavor ja --release
+flutter build apk --release
 
 # Build app bundle (for Play Store)
-flutter build appbundle --flavor en --release
+flutter build appbundle --release
 
 # Install on device
-flutter install --flavor en
+flutter install
 
 # Run with verbose logging
 flutter run -v

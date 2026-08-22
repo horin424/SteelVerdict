@@ -30,19 +30,6 @@ android {
         versionName = flutter.versionName
     }
 
-    flavorDimensions += "lang"
-
-    productFlavors {
-        create("en") {
-            dimension = "lang"
-            resValue("string", "app_name", "Steel Verdict")
-        }
-        create("ja") {
-            dimension = "lang"
-            resValue("string", "app_name", "スティールバーディクト")
-        }
-    }
-
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

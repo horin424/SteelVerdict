@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launcher name. The Japanese name lives in values-ja/strings.xml and is
+         picked automatically on a Japanese device. This replaces the per-flavor
+         resValue() that used to require a separate APK per language. -->
+    <string name="app_name">Steel Verdict</string>
+</resources>
