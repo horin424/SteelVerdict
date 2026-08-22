@@ -1,0 +1,40 @@
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.iml
+.idea/
+.vscode/
+
+# Android
+android/.gradle/
+android/local.properties
+android/key.properties
+**/*.keystore
+**/*.jks
+android/build/
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/ephemeral/
+
+# Cloud Functions
+functions/node_modules/
+functions/lib/
+firebase-debug.log
+.firebase/
+
+# Secrets — never commit
+*serviceAccount*.json
+*-adminsdk-*.json
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db

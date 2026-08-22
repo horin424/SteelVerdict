@@ -30,7 +30,6 @@ let _rcCacheAt = 0;
 
 // Assembled prompt cache keyed by "worldviewKey:scenarioId:gameMode"
 const _promptCache = new Map<string, string>();
-let _promptCacheAt = 0;
 
 /**
  * Fetch game config from Firestore (system_config/game_config).
@@ -43,10 +42,17 @@ export async function fetchRemoteConfigData(): Promise<RemoteConfigData> {
     return _rcCache;
   }
 
-  // Clear assembled prompt cache when config cache expires
-  if (_promptCacheAt < _rcCacheAt) {
-    _promptCache.clear();
-  }
+  // Past the TTL and about to refetch, so the assembled prompts built from the
+  // old config are stale too.
+  //
+  // This used to read `if (_promptCacheAt < _rcCacheAt)`, which could never be
+  // true: _promptCacheAt was stamped by assemblePrompt *after* _rcCacheAt was
+  // stamped here, so it was always the larger of the two. The prompt cache was
+  // therefore never cleared for the life of a warm instance, and an edit made in
+  // the admin panel could keep serving the old prompt until the instance
+  // recycled — which defeats the whole point of editing prompts without a
+  // release.
+  _promptCache.clear();
 
   try {
     const doc = await admin.firestore()
@@ -138,7 +144,6 @@ export async function assemblePrompt(
 
   const prompt = parts.join("\n\n");
   _promptCache.set(cacheKey, prompt);
-  _promptCacheAt = Date.now();
   return prompt;
 }
 

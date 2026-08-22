@@ -1,9 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/constants/app_constants.dart';
 import '../../services/battle_api/battle_api_service.dart';
 import '../../models/worldview_model.dart';
 import '../../services/game_config/game_config_providers.dart';
 import '../auth/auth_providers.dart';
+
+// selectedWorldviewKeyProvider moved to world_setting_providers.dart so that
+// auth_providers.dart can use it without an import cycle. Re-exported here so
+// the many existing `import 'game_mode_providers.dart'` sites keep working.
+export '../world_setting/world_setting_providers.dart'
+    show selectedWorldviewKeyProvider;
 
 // Selected game mode
 final selectedGameModeProvider = StateProvider<String>((ref) => 'normal');
@@ -11,11 +16,6 @@ final selectedGameModeProvider = StateProvider<String>((ref) => 'normal');
 // Selected AI model
 final selectedModelProvider = StateProvider<ModelChoice>(
   (ref) => ModelChoice.gemini,
-);
-
-// Selected worldview key
-final selectedWorldviewKeyProvider = StateProvider<String>(
-  (ref) => AppConstants.defaultWorldviewKey,
 );
 
 // Available worldviews from Firestore game config

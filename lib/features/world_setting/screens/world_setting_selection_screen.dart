@@ -5,6 +5,7 @@ import '../../../core/constants/route_names.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../features/auth/auth_providers.dart';
 import '../../../features/game_mode_selection/game_mode_providers.dart';
 import '../../../features/settings/settings_providers.dart';
 import '../../../models/worldview_model.dart';
@@ -75,7 +76,18 @@ class WorldSettingSelectionScreen extends ConsumerWidget {
                   onTap: () {
                     ref.read(selectedWorldviewKeyProvider.notifier).state =
                         entry.key;
-                    context.push(RouteNames.battleType);
+                    // A race belongs to a worldview. Without this check, picking
+                    // a world you have no race for walks all the way to the
+                    // battle screen, which then renders with no stats and fails
+                    // on submit. Mirrors the Home PLAY button.
+                    if (ref.read(hasRaceProvider)) {
+                      context.push(RouteNames.battleType);
+                    } else {
+                      context.push(
+                        RouteNames.raceCreation,
+                        extra: {'redirectToBattle': true},
+                      );
+                    }
                   },
                 );
               },

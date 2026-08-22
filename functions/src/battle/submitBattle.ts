@@ -4,6 +4,7 @@ import { GEMINI_API_KEY, CLAUDE_API_KEY, TICKET_COSTS, GEMINI_FLASH_LITE, GEMINI
 import { callGemini, callClaude } from "../utils/ai";
 import { assemblePrompt, formatBattleUserMessage, fetchRemoteConfigData } from "../utils/prompt";
 import { deductTickets, addTickets } from "../utils/firestore";
+import { parseOutcome } from "../utils/outcome";
 
 interface BattleRequest {
   playerStrategy: string;
@@ -160,29 +161,25 @@ export const submitBattle = onCall(
 
 // ─── Content filter ───────────────────────────────────────────────────────────
 
-const BLACKLIST = [
+// Matched on word boundaries. Substring matching rejected ordinary battle prose:
+// "spic" is inside suspicion / conspicuous / despicable, and "chink" is inside
+// "a chink in their armour" - a military idiom a player is very likely to use.
+const BLACKLIST_EN = [
   "fuck", "shit", "bitch", "nigger", "nigga", "faggot", "retard",
   "kike", "spic", "chink", "whore", "cunt", "bastard", "asshole",
-  // Japanese
-  "バカ", "死ね", "クソ", "うざい", "殺す", "ファック",
 ];
 
+// Japanese has no word boundaries, so each term is matched directly. 殺す was
+// removed: "敵将を殺す" is the subject matter of a war game, not abuse.
+const BLACKLIST_JA = ["バカ", "死ね", "クソ", "うざい", "ファック"];
+
+const EN_PATTERNS = BLACKLIST_EN.map(
+  (w) => new RegExp(`\\b${w}\\b`, "iu"),
+);
+
 function containsInappropriateContent(text: string): boolean {
-  const lower = text.toLowerCase();
-  return BLACKLIST.some((word) => lower.includes(word));
-}
-
-// ─── Outcome parsing ──────────────────────────────────────────────────────────
-
-function parseOutcome(text: string): "win" | "loss" | "draw" {
-  const upper = text.toUpperCase();
-  if (upper.includes("VICTORY") || upper.includes("WIN") || upper.includes("VICTORIOUS")) {
-    return "win";
-  }
-  if (upper.includes("DEFEAT") || upper.includes("LOSS") || upper.includes("LOST") || upper.includes("ROUTED")) {
-    return "loss";
-  }
-  return "draw";
+  if (EN_PATTERNS.some((re) => re.test(text))) return true;
+  return BLACKLIST_JA.some((word) => text.includes(word));
 }
 
 function extractShortSummary(text: string, gameMode: string): string {

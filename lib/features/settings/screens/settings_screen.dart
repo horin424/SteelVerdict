@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import '../../../core/constants/route_names.dart';
 import '../../../core/widgets/error_snackbar.dart';
 import '../../../features/auth/auth_providers.dart';
 import '../../../features/splash/splash_providers.dart';
+import '../../../features/world_setting/world_setting_providers.dart';
 import '../../../services/game_config/game_config_providers.dart';
 import '../settings_providers.dart';
 import '../widgets/language_selector.dart';
@@ -434,7 +436,11 @@ class SettingsScreen extends ConsumerWidget {
                                   final storage = ref.read(
                                     hiveStorageServiceProvider,
                                   );
-                                  await storage.deleteRace();
+                                  // Only the race for the world currently
+                                  // selected — races in other worlds are kept.
+                                  await storage.deleteRace(
+                                    ref.read(selectedWorldviewKeyProvider),
+                                  );
                                   ref.invalidate(currentRaceProvider);
                                 }
                               },
@@ -505,36 +511,39 @@ class SettingsScreen extends ConsumerWidget {
                         ],
                       ),
 
-                      // TEMP: UID debug display
-                      const SizedBox(height: 20),
-                      Builder(builder: (context) {
-                        final myUid = authState.valueOrNull?.uid ?? 'not logged in';
-                        final streamValue = ref.watch(gameConfigStreamProvider);
-                        final streamState = streamValue.when(
-                          data: (c) => 'data: devUids=${c.devUids}',
-                          loading: () => 'LOADING...',
-                          error: (e, _) => 'ERROR: $e',
-                        );
-                        final config = ref.watch(gameConfigProvider);
-                        final isMatch = config.devUids.contains(myUid);
-                        return Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.1),
-                            border: Border.all(color: Colors.red),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('DEBUG', style: TextStyle(color: Colors.red, fontSize: 11)),
-                              SelectableText('UID: $myUid', style: const TextStyle(color: Colors.white, fontSize: 11)),
-                              SelectableText('Stream: $streamState', style: const TextStyle(color: Colors.yellow, fontSize: 11)),
-                              Text('Match: $isMatch', style: TextStyle(color: isMatch ? Colors.green : Colors.red, fontSize: 11)),
-                            ],
-                          ),
-                        );
-                      }),
+                      // Admin diagnostics — debug builds only. This panel shipped in
+                      // a release build once and the client reported it as an error.
+                      if (kDebugMode) ...[
+                        const SizedBox(height: 20),
+                        Builder(builder: (context) {
+                          final myUid = authState.valueOrNull?.uid ?? 'not logged in';
+                          final streamValue = ref.watch(gameConfigStreamProvider);
+                          final streamState = streamValue.when(
+                            data: (c) => 'data: devUids=${c.devUids}',
+                            loading: () => 'LOADING...',
+                            error: (e, _) => 'ERROR: $e',
+                          );
+                          final config = ref.watch(gameConfigProvider);
+                          final isMatch = config.devUids.contains(myUid);
+                          return Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.1),
+                              border: Border.all(color: Colors.red),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('DEBUG', style: TextStyle(color: Colors.red, fontSize: 11)),
+                                SelectableText('UID: $myUid', style: const TextStyle(color: Colors.white, fontSize: 11)),
+                                SelectableText('Stream: $streamState', style: const TextStyle(color: Colors.yellow, fontSize: 11)),
+                                Text('Match: $isMatch', style: TextStyle(color: isMatch ? Colors.green : Colors.red, fontSize: 11)),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
 
                       // ADMIN section (only visible to admin users)
                       if (ref.watch(isAdminProvider)) ...[
