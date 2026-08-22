@@ -82,6 +82,34 @@ class _AdminModeAddonsEditorState extends ConsumerState<AdminModeAddonsEditor> {
       ),
       body: Column(
         children: [
+          // Prompts must be authored in English: submitBattle appends a
+          // Japanese-output instruction for JA players, so Japanese written
+          // here reaches English players untranslated. The rule lived only in
+          // PROMPT_CONFIG_GUIDE.md, where an operator would never see it - and
+          // the live worldview prompts had already been written in Japanese.
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.goldAccent.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.goldAccent.withValues(alpha: 0.35)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline, size: 16, color: AppColors.goldAccent),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.adminPromptEnglishOnly,
+                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16),

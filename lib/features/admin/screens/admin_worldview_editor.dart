@@ -217,7 +217,9 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                       ),
                     ),
                     subtitle: Text(
-                      key,
+                      // Prefixed so the English key reads as an identifier
+                      // rather than an untranslated label.
+                      'ID: $key',
                       style: TextStyle(fontSize: 9, color: AppColors.textMuted),
                     ),
                     trailing: IconButton(
@@ -249,6 +251,29 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                       _AdminField(label: l10n.adminTitle, controller: _titleController),
                       _AdminField(label: l10n.adminTitleJa, controller: _titleJaController),
                       _AdminField(label: l10n.adminCommonJudgment, controller: _judgmentController, maxLines: 8),
+                      // This prompt is sent to the AI. submitBattle appends a
+                      // Japanese-output instruction for JA players, so Japanese
+                      // written here reaches English players untranslated - the
+                      // rule lived only in PROMPT_CONFIG_GUIDE.md, and the live
+                      // prompts had already been written in Japanese.
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.info_outline,
+                                size: 14, color: AppColors.goldAccent),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                l10n.adminPromptEnglishOnly,
+                                style: AppTextStyles.labelSmall
+                                    .copyWith(color: AppColors.textMuted),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       _AdminField(label: l10n.adminDescription, controller: _descController, maxLines: 5),
                       _AdminField(label: l10n.adminDescriptionJa, controller: _descJaController, maxLines: 5),
                       const SizedBox(height: 20),

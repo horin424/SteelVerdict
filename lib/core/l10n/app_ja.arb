@@ -509,6 +509,7 @@
   "adminEnemyNameJa": "敵名（日本語）",
   "adminCommanderDefJa": "指揮官定義（日本語）",
   "adminSelectWorldview": "編集する世界設定を選択してください",
+  "adminPromptEnglishOnly": "プロンプトは英語で入力してください。日本語プレイヤーには、システムが自動的に日本語で回答するようAIに指示します。ここに日本語を入力すると、英語プレイヤーにも日本語のレポートが表示されます。",
   "modePvp": "PvP",
   "modePvpDetail": "PvP（詳細）",
   "modeNormalClaude": "ノーマル（Claude）",

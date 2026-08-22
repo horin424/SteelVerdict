@@ -2834,6 +2834,12 @@ abstract class AppLocalizations {
   /// **'Select a worldview to edit'**
   String get adminSelectWorldview;
 
+  /// Admin warning: prompt fields must be written in English
+  ///
+  /// In en, this message translates to:
+  /// **'Write prompts in English. The system automatically tells the AI to answer in Japanese for Japanese players. Japanese text here makes English players receive Japanese battle reports.'**
+  String get adminPromptEnglishOnly;
+
   /// Mode name: PvP
   ///
   /// In en, this message translates to:

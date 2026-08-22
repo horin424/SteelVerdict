@@ -1452,6 +1452,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminSelectWorldview => 'Select a worldview to edit';
 
   @override
+  String get adminPromptEnglishOnly =>
+      'Write prompts in English. The system automatically tells the AI to answer in Japanese for Japanese players. Japanese text here makes English players receive Japanese battle reports.';
+
+  @override
   String get modePvp => 'PvP';
 
   @override

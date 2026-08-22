@@ -1418,6 +1418,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminSelectWorldview => '編集する世界設定を選択してください';
 
   @override
+  String get adminPromptEnglishOnly =>
+      'プロンプトは英語で入力してください。日本語プレイヤーには、システムが自動的に日本語で回答するようAIに指示します。ここに日本語を入力すると、英語プレイヤーにも日本語のレポートが表示されます。';
+
+  @override
   String get modePvp => 'PvP';
 
   @override

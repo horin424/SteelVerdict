@@ -1371,6 +1371,8 @@
   "@adminCommanderDefJa": { "description": "Admin field label: Japanese commander definition" },
   "adminSelectWorldview": "Select a worldview to edit",
   "@adminSelectWorldview": { "description": "Admin worldviews: empty-state hint" },
+  "adminPromptEnglishOnly": "Write prompts in English. The system automatically tells the AI to answer in Japanese for Japanese players. Japanese text here makes English players receive Japanese battle reports.",
+  "@adminPromptEnglishOnly": { "description": "Admin warning: prompt fields must be written in English" },
   "modePvp": "PvP",
   "@modePvp": { "description": "Mode name: PvP" },
   "modePvpDetail": "PvP (detail)",
