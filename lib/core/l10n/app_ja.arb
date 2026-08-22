@@ -508,6 +508,11 @@
   "adminWorldviewKeyHint": "例: cyberpunk_2099",
   "adminEnemyNameJa": "敵名（日本語）",
   "adminCommanderDefJa": "指揮官定義（日本語）",
+  "adminSelectWorldview": "編集する世界設定を選択してください",
+  "modePvp": "PvP",
+  "modePvpDetail": "PvP（詳細）",
+  "modeNormalClaude": "ノーマル（Claude）",
+  "modeNormalGemini": "ノーマル（Gemini）",
   "worldSettingChoose": "世界設定を選択",
   "worldSettingSubtitle": "バトルルールとシナリオを決定する世界を選んでください",
   "worldSettingSelect": "選択"

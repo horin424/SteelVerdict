@@ -168,6 +168,7 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
     final config = ref.watch(gameConfigProvider);
     final worldviews = config.worldviews;
 
@@ -196,12 +197,20 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                     dense: true,
                     selected: isSelected,
                     selectedTileColor: AppColors.goldAccent.withValues(alpha: 0.1),
+                    // Was the raw key, so the Japanese panel listed
+                    // aces_high / feudal_japan / 1830_naval. The key stays as a
+                    // subtitle: two worldviews can share a title (aces_high and
+                    // aces_high_test), and it is the id used everywhere else.
                     title: Text(
-                      key,
+                      worldviews[key]!.localizedTitle(locale),
                       style: AppTextStyles.labelSmall.copyWith(
                         color: isSelected ? AppColors.goldAccent : AppColors.textSecondary,
                         fontSize: 11,
                       ),
+                    ),
+                    subtitle: Text(
+                      key,
+                      style: TextStyle(fontSize: 9, color: AppColors.textMuted),
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, size: 16, color: AppColors.defeatRed),
@@ -218,7 +227,7 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
             child: _selectedKey == null
                 ? Center(
                     child: Text(
-                      'Select a worldview to edit',
+                      l10n.adminSelectWorldview,
                       style: AppTextStyles.bodySmall,
                     ),
                   )

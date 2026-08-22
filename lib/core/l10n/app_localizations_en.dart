@@ -1449,6 +1449,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminCommanderDefJa => 'Commander Definition (JA)';
 
   @override
+  String get adminSelectWorldview => 'Select a worldview to edit';
+
+  @override
+  String get modePvp => 'PvP';
+
+  @override
+  String get modePvpDetail => 'PvP (detail)';
+
+  @override
+  String get modeNormalClaude => 'Normal (Claude)';
+
+  @override
+  String get modeNormalGemini => 'Normal (Gemini)';
+
+  @override
   String get worldSettingChoose => 'Choose World Setting';
 
   @override

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/utils/mode_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/error_snackbar.dart';
@@ -99,7 +100,7 @@ class _AdminCostsEditorState extends ConsumerState<AdminCostsEditor> {
                 ),
                 const SizedBox(height: 10),
                 ..._costControllers.entries.map((entry) => _CostRow(
-                  label: entry.key,
+                  label: localizedModeName(entry.key, l10n),
                   controller: entry.value,
                 )),
                 const SizedBox(height: 24),
@@ -115,7 +116,7 @@ class _AdminCostsEditorState extends ConsumerState<AdminCostsEditor> {
                 ),
                 const SizedBox(height: 10),
                 ..._modelControllers.entries.map((entry) => _ModelRow(
-                  label: entry.key,
+                  label: localizedModeName(entry.key, l10n),
                   controller: entry.value,
                 )),
               ],

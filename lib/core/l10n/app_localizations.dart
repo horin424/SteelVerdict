@@ -2828,6 +2828,36 @@ abstract class AppLocalizations {
   /// **'Commander Definition (JA)'**
   String get adminCommanderDefJa;
 
+  /// Admin worldviews: empty-state hint
+  ///
+  /// In en, this message translates to:
+  /// **'Select a worldview to edit'**
+  String get adminSelectWorldview;
+
+  /// Mode name: PvP
+  ///
+  /// In en, this message translates to:
+  /// **'PvP'**
+  String get modePvp;
+
+  /// Mode name: detailed PvP report
+  ///
+  /// In en, this message translates to:
+  /// **'PvP (detail)'**
+  String get modePvpDetail;
+
+  /// Cost key normal_claude
+  ///
+  /// In en, this message translates to:
+  /// **'Normal (Claude)'**
+  String get modeNormalClaude;
+
+  /// Cost key normal_gemini
+  ///
+  /// In en, this message translates to:
+  /// **'Normal (Gemini)'**
+  String get modeNormalGemini;
+
   /// World setting selection screen title
   ///
   /// In en, this message translates to:

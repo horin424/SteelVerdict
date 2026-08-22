@@ -1415,6 +1415,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminCommanderDefJa => '指揮官定義（日本語）';
 
   @override
+  String get adminSelectWorldview => '編集する世界設定を選択してください';
+
+  @override
+  String get modePvp => 'PvP';
+
+  @override
+  String get modePvpDetail => 'PvP（詳細）';
+
+  @override
+  String get modeNormalClaude => 'ノーマル（Claude）';
+
+  @override
+  String get modeNormalGemini => 'ノーマル（Gemini）';
+
+  @override
   String get worldSettingChoose => '世界設定を選択';
 
   @override
