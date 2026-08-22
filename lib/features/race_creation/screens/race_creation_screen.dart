@@ -16,21 +16,13 @@ String _localizedStatName(String stat, AppLocalizations l10n) {
   switch (stat) {
     case 'strength':
       return l10n.statStrength;
-    // The live config uses 'wisdom' / 'technology' / 'artistry' where this
-    // switch only knew 'intellect' / 'skill' / 'art'. Those three fell through
-    // to the raw key, so the Japanese build showed 筋力 / WISDOM / TECHNOLOGY /
-    // 魔力 / ARTISTRY / 生命 — half the stat names untranslated, on the build
-    // that ships in Japan. Both spellings are accepted now.
     case 'intellect':
-    case 'wisdom':
       return l10n.statIntellect;
     case 'skill':
-    case 'technology':
       return l10n.statSkill;
     case 'magic':
       return l10n.statMagic;
     case 'art':
-    case 'artistry':
       return l10n.statArt;
     case 'life':
       return l10n.statLife;
