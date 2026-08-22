@@ -195,6 +195,14 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                   final isSelected = key == _selectedKey;
                   return ListTile(
                     dense: true,
+                    // A 160px column cannot afford ListTile's default 16px each
+                    // side plus IconButton's 48px touch target - that is half
+                    // the width gone to chrome, which is why long names wrapped
+                    // to four lines. Text now gets the room; the delete button
+                    // sits flush right.
+                    contentPadding: const EdgeInsets.only(left: 10, right: 2),
+                    horizontalTitleGap: 0,
+                    minVerticalPadding: 8,
                     selected: isSelected,
                     selectedTileColor: AppColors.goldAccent.withValues(alpha: 0.1),
                     // Was the raw key, so the Japanese panel listed
@@ -214,6 +222,10 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, size: 16, color: AppColors.defeatRed),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 30, minHeight: 30),
+                      visualDensity: VisualDensity.compact,
+                      splashRadius: 18,
                       onPressed: () => _deleteWorldview(key),
                     ),
                     onTap: () => _loadWorldview(key),
