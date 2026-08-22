@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -8,8 +9,10 @@ class ErrorSnackbar {
 
   static void showError(BuildContext context, String message) {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = appScaffoldMessengerKey.currentState;
+    if (messenger == null) return;
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
       SnackBar(
         content: Row(
           children: [
@@ -40,9 +43,10 @@ class ErrorSnackbar {
         action: SnackBarAction(
           label: AppLocalizations.of(context)!.dismiss,
           textColor: AppColors.goldAccent,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
+          // The captured messenger, not ScaffoldMessenger.of(context): by the
+          // time this fires the raising screen may be gone, and resolving from
+          // its dead context made Dismiss do nothing.
+          onPressed: messenger.hideCurrentSnackBar,
         ),
       ),
     );
@@ -50,8 +54,10 @@ class ErrorSnackbar {
 
   static void showSuccess(BuildContext context, String message) {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = appScaffoldMessengerKey.currentState;
+    if (messenger == null) return;
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
       SnackBar(
         content: Row(
           children: [
@@ -85,8 +91,10 @@ class ErrorSnackbar {
 
   static void showInfo(BuildContext context, String message) {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = appScaffoldMessengerKey.currentState;
+    if (messenger == null) return;
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
       SnackBar(
         content: Row(
           children: [
