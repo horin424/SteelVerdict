@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/utils/mode_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/constants/route_names.dart';
@@ -18,20 +19,6 @@ import '../widgets/strategy_input_field.dart';
 import '../widgets/saved_strategies_picker.dart';
 import '../widgets/battle_stats_summary.dart';
 import '../widgets/general_staff_overlay.dart';
-
-String _localizedGameMode(String mode, String lang) {
-  if (lang != 'ja') return mode.toUpperCase();
-  const ja = {
-    'practice': '練習',
-    'tabletop': 'テーブルトップ',
-    'normal': '通常',
-    'epic': '叙事詩',
-    'boss': 'ボス',
-    'history_puzzle': '歴史パズル',
-    'pvp': 'PvP',
-  };
-  return ja[mode] ?? mode.toUpperCase();
-}
 
 class BattleScreen extends ConsumerStatefulWidget {
   final String scenarioId;
@@ -252,7 +239,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          l10n.battleModeLabel(_localizedGameMode(widget.gameMode, lang)),
+                          l10n.battleModeLabel(localizedModeName(widget.gameMode, l10n)),
                           style: AppTextStyles.labelSmall,
                         ),
                       ],

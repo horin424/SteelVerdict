@@ -2,16 +2,52 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
+/// Short badge for a stat, sized for a small chip.
+///
+/// Two bugs this replaces, both seen on device:
+///   - 'artistry' was missing from the Japanese map, so the row rendered
+///     力 / 知 / 技 / 魔 / A / 生 - one Latin letter among five kanji.
+///   - The English branch took the first three characters, so a worldview with
+///     max_speed and max_altitude showed two chips both reading MAX.
 String _statAbbrev(String key, String lang) {
+  final k = key.toLowerCase();
   if (lang == 'ja') {
     const ja = {
       'attack': '攻', 'defense': '防', 'speed': '速',
       'morale': '士', 'magic': '魔', 'leadership': '指',
-      'wisdom': '知', 'technology': '技', 'art': '芸', 'life': '生', 'strength': '力',
+      'wisdom': '知', 'intellect': '知',
+      'technology': '技', 'skill': '技',
+      'art': '芸', 'artistry': '芸',
+      'life': '生', 'strength': '力',
+      'luck': '運', 'durability': '耐', 'firepower': '火',
     };
-    return ja[key.toLowerCase()] ?? key.substring(0, 1).toUpperCase();
+    final hit = ja[k];
+    if (hit != null) return hit;
+    // Unknown key: fall back to the English badge rather than a lone Latin
+    // letter, which reads as a typo beside kanji.
+    return _asciiAbbrev(k);
   }
-  return key.toUpperCase().substring(0, key.length.clamp(0, 3));
+  return _asciiAbbrev(k);
+}
+
+/// `max_speed` and `maxSpeed` both become `MS`; `strength` becomes `STR`.
+///
+/// Multi-word keys use initials because truncating to three characters made
+/// max_speed and max_altitude collide on `MAX`.
+String _asciiAbbrev(String key) {
+  final words = key
+      .replaceAll(RegExp(r'[_\-]+'), ' ')
+      .replaceAllMapped(RegExp(r'(?<=[a-z0-9])(?=[A-Z])'), (_) => ' ')
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((w) => w.isNotEmpty)
+      .toList();
+  if (words.isEmpty) return key.toUpperCase();
+  if (words.length == 1) {
+    final w = words.first.toUpperCase();
+    return w.substring(0, w.length.clamp(0, 3));
+  }
+  return words.map((w) => w[0].toUpperCase()).join();
 }
 
 class BattleStatsSummary extends StatelessWidget {

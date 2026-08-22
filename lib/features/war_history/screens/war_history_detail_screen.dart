@@ -1,5 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import '../../../services/game_config/game_config_providers.dart';
+import '../scenario_title.dart';
 import 'package:flutter/rendering.dart';
 import '../../../core/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -225,7 +227,12 @@ class _WarHistoryDetailScreenState
                     ),
                   ),
                   Text(
-                    '${_gameModeLabel(record.gameModeEnum, AppLocalizations.of(context)!)} • ${record.scenarioId}',
+                    '${_gameModeLabel(record.gameModeEnum, AppLocalizations.of(context)!)} • ${scenarioDisplayTitle(
+                      config: ref.read(gameConfigProvider),
+                      scenarioId: record.scenarioId,
+                      storedTitle: record.scenarioTitle,
+                      languageCode: Localizations.localeOf(context).languageCode,
+                    )}',
                     style: AppTextStyles.bodySmall,
                   ),
                 ],

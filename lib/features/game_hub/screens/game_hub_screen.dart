@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/utils/stat_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/constants/route_names.dart';
@@ -222,18 +223,6 @@ class _RaceDetail extends StatelessWidget {
 
   const _RaceDetail({required this.race, required this.l10n});
 
-  String _statLabel(String key, AppLocalizations l10n) {
-    switch (key) {
-      case 'strength': return l10n.statStrength;
-      case 'intellect': return l10n.statIntellect;
-      case 'skill': return l10n.statSkill;
-      case 'magic': return l10n.statMagic;
-      case 'art': return l10n.statArt;
-      case 'life': return l10n.statLife;
-      default: return key;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -294,7 +283,7 @@ class _RaceDetail extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: '${_statLabel(e.key, l10n)}  ',
+                          text: '${localizedStatName(e.key, l10n)}  ',
                           style: AppTextStyles.labelSmall.copyWith(
                             color: AppColors.textSecondary,
                           ),

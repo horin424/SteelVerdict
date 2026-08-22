@@ -162,7 +162,7 @@ class _EnContent extends StatelessWidget {
           const _Body('You may use the app anonymously or register with an email address. If you register, we store your email address and a unique user ID in Firebase Authentication.'),
           const _SubTitle('Game Data'),
           const _Body('We store the following in Firebase Firestore:'),
-          const _Bullet('Race name and stats (Strength, Intellect, Skill, Magic, Art, Life)'),
+          const _Bullet('Race name and stats (these vary by world setting)'),
           const _Bullet('Battle history, results, and AI-generated battle reports'),
           const _Bullet('Ticket balance and subscription status'),
           const _Bullet('PvP match data (strategies submitted, outcomes)'),
@@ -243,18 +243,18 @@ class _JaContent extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '鋼鉄の審判  ·  最終更新日：2026年3月28日',
+          '鋼鉄の裁き  ·  最終更新日：2026年3月28日',
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: 12),
-        const _Body('本プライバシーポリシーは、鋼鉄の審判（以下「本アプリ」）がご利用者の情報をどのように収集・利用・保護するかについて説明します。'),
+        const _Body('本プライバシーポリシーは、鋼鉄の裁き（以下「本アプリ」）がご利用者の情報をどのように収集・利用・保護するかについて説明します。'),
 
         _Section(title: '1. 収集する情報', children: [
           const _SubTitle('アカウント情報'),
           const _Body('本アプリは匿名またはメールアドレスで利用できます。メールアドレスで登録された場合、Firebase Authentication にメールアドレスと一意のユーザーIDを保存します。'),
           const _SubTitle('ゲームデータ'),
           const _Body('以下のデータを Firebase Firestore に保存します：'),
-          const _Bullet('種族名および能力値（Strength・Intellect・Skill・Magic・Art・Life）'),
+          const _Bullet('種族名および能力値（世界設定ごとに異なります）'),
           const _Bullet('戦闘履歴・結果・AIが生成した戦闘レポート'),
           const _Bullet('チケット残高とサブスクリプションの状態'),
           const _Bullet('PvP対戦データ（提出した戦略・結果）'),
@@ -309,7 +309,7 @@ class _JaContent extends StatelessWidget {
         const SizedBox(height: 32),
         Center(
           child: Text(
-            '© 2026 鋼鉄の審判. All rights reserved.',
+            '© 2026 鋼鉄の裁き. All rights reserved.',
             style: AppTextStyles.labelSmall.copyWith(color: AppColors.textMuted),
           ),
         ),

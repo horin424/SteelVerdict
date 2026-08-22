@@ -48,7 +48,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get splashInitializing => '初期化中...';
 
   @override
-  String get splashTagline => '戦略を書け。戦場を制せ。';
+  String get splashTagline => '戦略を書け。戦場を制せよ。';
 
   @override
   String get authTitle => 'スティールバーディクト';
@@ -551,7 +551,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pvpSubmitStrategy => '戦略を提出';
 
   @override
-  String get pvpTimerExpired => '期限切れ';
+  String get pvpTimerExpired => '時間切れ';
 
   @override
   String get pvpWaitingForOpponent => '対戦相手を待っています...';
@@ -863,7 +863,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pvpStatusActive => '進行中';
 
   @override
-  String get pvpStatusResolved => '解決済み';
+  String get pvpStatusResolved => '決着済み';
 
   @override
   String get pvpStatusTimedOut => 'タイムアウト';
@@ -1027,7 +1027,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get statLife => '生命';
 
   @override
-  String get statWisdom => '知力';
+  String get statWisdom => '知恵';
 
   @override
   String get statTechnology => '技術';

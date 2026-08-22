@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../models/battle_record_model.dart';
+import '../../../services/game_config/game_config_providers.dart';
+import '../scenario_title.dart';
 
-class HistoryListTile extends StatelessWidget {
+class HistoryListTile extends ConsumerWidget {
   final BattleRecordModel record;
   final VoidCallback onTap;
   final VoidCallback onToggleFavorite;
@@ -47,7 +50,7 @@ class HistoryListTile extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final outcome = record.outcomeEnum;
     final outcomeColor = _outcomeColor(outcome);
@@ -87,9 +90,16 @@ class HistoryListTile extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            record.scenarioTitle.isNotEmpty
-                                ? record.scenarioTitle
-                                : record.scenarioId,
+                            // Resolved against live config so the row shows
+                            // the scenario's name in the current language, not
+                            // the raw id older records stored.
+                            scenarioDisplayTitle(
+                              config: ref.watch(gameConfigProvider),
+                              scenarioId: record.scenarioId,
+                              storedTitle: record.scenarioTitle,
+                              languageCode:
+                                  Localizations.localeOf(context).languageCode,
+                            ),
                             style: AppTextStyles.headlineSmall,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

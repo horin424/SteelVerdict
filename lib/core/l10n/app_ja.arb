@@ -15,7 +15,7 @@
   "tickets": "チケット",
 
   "splashInitializing": "初期化中...",
-  "splashTagline": "戦略を書け。戦場を制せ。",
+  "splashTagline": "戦略を書け。戦場を制せよ。",
 
   "authTitle": "スティールバーディクト",
   "authSubtitle": "戦場へ",
@@ -186,7 +186,7 @@
   "pvpYourStrategy": "あなたの戦略",
   "pvpStrategyHint": "戦闘戦略を記述...",
   "pvpSubmitStrategy": "戦略を提出",
-  "pvpTimerExpired": "期限切れ",
+  "pvpTimerExpired": "時間切れ",
   "pvpWaitingForOpponent": "対戦相手を待っています...",
   "pvpSubmitYourStrategy": "戦略を提出してください！",
   "pvpOpponentStatsHidden": "対戦相手の情報は非表示",
@@ -297,7 +297,7 @@
 
   "pvpStatusWaiting": "待機中",
   "pvpStatusActive": "進行中",
-  "pvpStatusResolved": "解決済み",
+  "pvpStatusResolved": "決着済み",
   "pvpStatusTimedOut": "タイムアウト",
 
   "pvpLoadingMatch": "マッチ読み込み中...",
@@ -365,7 +365,7 @@
   "statSkill": "技巧",
   "statArt": "芸術",
   "statLife": "生命",
-  "statWisdom": "知力",
+  "statWisdom": "知恵",
   "statTechnology": "技術",
   "statArtistry": "芸術",
 

@@ -261,7 +261,7 @@ class _JaContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        const _Body('このガイドでは、鋼鉄の審判の基本操作、ゲームの流れ、サポートの案内をまとめています。'),
+        const _Body('このガイドでは、鋼鉄の裁きの基本操作、ゲームの流れ、サポートの案内をまとめています。'),
 
         _Section(
           title: '1. はじめに',
@@ -275,12 +275,12 @@ class _JaContent extends StatelessWidget {
         _Section(
           title: '2. ゲームモード',
           children: [
-            const _SubTitle('通常'),
+            const _SubTitle('ノーマル'),
             const _Body('標準的な戦闘体験と詳細なレポートが表示されます。'),
-            const _SubTitle('卓上'),
-            const _Body('勝率の推定に重点を置いた高速シミュレーションです。'),
-            const _SubTitle('叙事詩'),
-            const _Body('利用可能な場合は Claude を使った、より劇的な戦闘レポートです。'),
+            const _SubTitle('テーブルトップ'),
+            const _Body('詳細な内訳付きの高度な戦術分析です。'),
+            const _SubTitle('エピック'),
+            const _Body('利用可能な場合は Claude を使用し、より劇的な戦闘レポートを生成します。'),
             const _SubTitle('練習'),
             const _Body('戦略を試しながら学べる無料モードです。'),
           ],
@@ -307,7 +307,7 @@ class _JaContent extends StatelessWidget {
         const SizedBox(height: 32),
         Center(
           child: Text(
-            'Steel Verdict サポート',
+            '鋼鉄の裁き サポート',
             style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.textMuted,
             ),

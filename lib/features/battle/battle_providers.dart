@@ -10,6 +10,7 @@ import '../splash/splash_providers.dart';
 import '../home/home_providers.dart';
 import '../game_mode_selection/game_mode_providers.dart';
 import '../settings/settings_providers.dart';
+import '../../services/game_config/game_config_providers.dart';
 
 
 // Battle API service provider
@@ -254,7 +255,11 @@ class BattleController extends StateNotifier<BattleControllerState> {
         outcome: response.outcome,
         createdAt: DateTime.now(),
         isFavorite: false,
-        scenarioTitle: scenarioId,
+        // Was scenarioId, so every war-history row was titled SCENARIO_001.
+        // Stored as a fallback only; the display resolves against live config.
+        scenarioTitle:
+            _ref.read(gameConfigProvider).scenarios[scenarioId]?.title ??
+                scenarioId,
       );
 
       final storageService = _ref.read(hiveStorageServiceProvider);

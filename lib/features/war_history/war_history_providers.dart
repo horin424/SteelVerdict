@@ -6,6 +6,8 @@ import '../../services/battle_api/battle_api_service.dart';
 import '../splash/splash_providers.dart';
 import '../battle/battle_providers.dart';
 import '../settings/settings_providers.dart';
+import 'scenario_title.dart';
+import '../../services/game_config/game_config_providers.dart';
 
 // Battle records provider
 final battleRecordsProvider = FutureProvider<List<BattleRecordModel>>((ref) async {
@@ -96,7 +98,14 @@ class WarHistoryController extends StateNotifier<WarHistoryControllerState> {
         longNarrative: narrative,
         createdAt: DateTime.now(),
         sharedToX: false,
-        title: 'The ${record.scenarioTitle.isNotEmpty ? record.scenarioTitle : record.scenarioId} Chronicle',
+        // Was an English template wrapped around the raw scenario id, so the
+        // shared parchment read "The SCENARIO_001 Chronicle" in both languages.
+        title: scenarioDisplayTitle(
+          config: _ref.read(gameConfigProvider),
+          scenarioId: record.scenarioId,
+          storedTitle: record.scenarioTitle,
+          languageCode: _ref.read(localeProvider).languageCode,
+        ),
       );
 
       final storageService = _ref.read(hiveStorageServiceProvider);

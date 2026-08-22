@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/route_names.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/utils/stat_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../features/auth/auth_providers.dart';
@@ -174,6 +175,7 @@ class _WorldSettingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final c = _colorsFor(worldview.worldviewKey);
     return GestureDetector(
       onTap: onTap,
@@ -283,7 +285,10 @@ class _WorldSettingCard extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                worldview.getStatDescription(stat, locale),
+                                // Was getStatDescription, which returns a full
+                                // sentence squeezed into a 9px pill - and the raw
+                                // key when a description is missing.
+                                localizedStatName(stat, l10n),
                                 style: TextStyle(
                                   color: c.accent.withValues(alpha: 0.9),
                                   fontSize: 9,
