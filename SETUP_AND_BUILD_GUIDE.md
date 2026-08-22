@@ -388,14 +388,19 @@ flavors.
 
 ### 5.1 How the two languages work
 
-The app picks its language on first launch from the device, and the user can
-change it any time in Settings:
+A new install always opens in **Japanese**, and the user can switch to English
+any time in Settings:
 
 | | |
 |---|---|
-| Japanese device | opens in Japanese, launcher shows スティールバーディクト |
-| Any other device | opens in English, launcher shows Steel Verdict |
+| First launch, any device | opens in Japanese |
 | User picks a language in Settings | saved, and wins from then on |
+| Launcher icon name | follows the device language: スティールバーディクト on a Japanese device, Steel Verdict otherwise |
+
+The in-app default is set by `kDefaultLocale` in
+`lib/features/settings/settings_providers.dart`. The launcher name is separate -
+Android resolves it from `values/strings.xml` and `values-ja/strings.xml` before
+the app runs, so it follows the device and not this setting.
 
 Two pieces make that work:
 

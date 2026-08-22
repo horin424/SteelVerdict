@@ -1,5 +1,3 @@
-import 'dart:ui' show PlatformDispatcher;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../splash/splash_providers.dart';
@@ -9,31 +7,32 @@ import '../../services/sound/sound_service_provider.dart';
 /// `supportedLocales` in app.dart and the .arb files in core/l10n.
 const Set<String> kSupportedLanguageCodes = {'en', 'ja'};
 
-/// The device's language, if we have translations for it, else English.
+/// The language a brand-new install opens in.
 ///
-/// Used only when the user has never chosen a language. This is what makes a
-/// single build work in both markets: a Japanese phone opens in Japanese
-/// without the user having to find the setting first. It replaces the separate
-/// main_ja.dart entry point, which forced Japanese by shipping a second APK.
-Locale _deviceLocale() {
-  final code = PlatformDispatcher.instance.locale.languageCode;
-  return Locale(kSupportedLanguageCodes.contains(code) ? code : 'en');
-}
+/// Japanese, deliberately, and not the device language. Yoshimoto asked for
+/// this on 2026-08-22: the app is aimed at the Japanese market first, so it
+/// should present as a Japanese product on first run even on an English
+/// handset. English remains one tap away in Settings.
+///
+/// This replaces an earlier device-language default. That default was right for
+/// the single-APK change it came with, but it meant a Japanese title shown to a
+/// reviewer or client on an English device opened in English.
+const Locale kDefaultLocale = Locale('ja');
 
 // Locale provider
 final localeProvider = StateProvider<Locale>((ref) {
   try {
     final storageService = ref.read(hiveStorageServiceProvider);
     // No defaultValue on purpose: a missing key means the user has never
-    // chosen, which is not the same as having chosen English. Passing 'en' here
-    // is what made every first launch English regardless of device language.
+    // chosen, which is not the same as having chosen a language. Whatever they
+    // pick in Settings is saved and wins from then on.
     final savedLocale = storageService.getSetting('locale') as String?;
     if (savedLocale != null && kSupportedLanguageCodes.contains(savedLocale)) {
       return Locale(savedLocale);
     }
-    return _deviceLocale();
+    return kDefaultLocale;
   } catch (e) {
-    return _deviceLocale();
+    return kDefaultLocale;
   }
 });
 
