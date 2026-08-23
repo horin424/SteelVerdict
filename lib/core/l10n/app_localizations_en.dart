@@ -1533,6 +1533,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errRaceSaveFailed => 'Could not save your race. Please try again.';
 
   @override
+  String get errRaceIncomplete =>
+      'Please fill in race name and allocate some stat points.';
+
+  @override
   String get errNoRaceFound => 'No race found. Create a race first.';
 
   @override

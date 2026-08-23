@@ -124,7 +124,7 @@ class RaceCreationController extends StateNotifier<RaceCreationState> {
 
   Future<bool> saveRace() async {
     if (!state.isValid) {
-      state = state.copyWith(errorMessage: 'Please fill in race name and allocate some stat points.');
+      state = state.copyWith(errorMessage: 'err_race_incomplete');
       return false;
     }
 

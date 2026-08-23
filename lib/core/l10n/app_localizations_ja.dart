@@ -1497,6 +1497,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errRaceSaveFailed => '種族を保存できませんでした。もう一度お試しください。';
 
   @override
+  String get errRaceIncomplete => '種族名を入力し、ステータスポイントを配分してください。';
+
+  @override
   String get errNoRaceFound => '種族が見つかりません。先に種族を作成してください。';
 
   @override

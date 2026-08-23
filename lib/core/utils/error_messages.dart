@@ -40,6 +40,8 @@ String localizedError(String raw, AppLocalizations l10n) {
       return l10n.errRaceSaveFailed;
     case 'err_no_race_found':
       return l10n.errNoRaceFound;
+    case 'err_race_incomplete':
+      return l10n.errRaceIncomplete;
     case 'err_skip_no_tickets':
       return l10n.skipAdNoTickets;
 

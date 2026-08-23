@@ -611,9 +611,16 @@ class SettingsScreen extends ConsumerWidget {
                 await settingsController.setLocale(code);
                 if (context.mounted) {
                   Navigator.pop(context);
+                  // Look the string up in the language just chosen rather than
+                  // through this context. setLocale returns before the frame
+                  // that rebuilds Localizations, so of(context) still resolves
+                  // to the outgoing language — switching to Japanese announced
+                  // itself with "Language changed!".
                   ErrorSnackbar.showSuccess(
                     context,
-                    AppLocalizations.of(context)!.settingsLanguageChanged,
+                    lookupAppLocalizations(
+                      Locale(code),
+                    ).settingsLanguageChanged,
                   );
                 }
               },

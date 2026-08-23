@@ -2990,6 +2990,12 @@ abstract class AppLocalizations {
   /// **'Could not save your race. Please try again.'**
   String get errRaceSaveFailed;
 
+  /// Race creation validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in race name and allocate some stat points.'**
+  String get errRaceIncomplete;
+
   /// Error: battle without a race
   ///
   /// In en, this message translates to:

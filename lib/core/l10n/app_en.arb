@@ -1426,6 +1426,8 @@
   "@errChronicleFailed": { "description": "Error: chronicle generation" },
   "errRaceSaveFailed": "Could not save your race. Please try again.",
   "@errRaceSaveFailed": { "description": "Error: race save" },
+  "errRaceIncomplete": "Please fill in race name and allocate some stat points.",
+  "@errRaceIncomplete": { "description": "Race creation validation error" },
   "errNoRaceFound": "No race found. Create a race first.",
   "@errNoRaceFound": { "description": "Error: battle without a race" },
   "parchmentYearOfBattles": "{year} — A Year of Great Battles",
