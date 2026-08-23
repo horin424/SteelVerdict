@@ -2096,6 +2096,48 @@ abstract class AppLocalizations {
   /// **'Artistry'**
   String get statArtistry;
 
+  /// Stat name: durability
+  ///
+  /// In en, this message translates to:
+  /// **'Durability'**
+  String get statDurability;
+
+  /// Stat name: maneuverability
+  ///
+  /// In en, this message translates to:
+  /// **'Maneuverability'**
+  String get statManeuverability;
+
+  /// Stat name: max speed
+  ///
+  /// In en, this message translates to:
+  /// **'Max Speed'**
+  String get statMaxSpeed;
+
+  /// Stat name: firepower
+  ///
+  /// In en, this message translates to:
+  /// **'Firepower'**
+  String get statFirepower;
+
+  /// Stat name: max altitude
+  ///
+  /// In en, this message translates to:
+  /// **'Max Altitude'**
+  String get statMaxAltitude;
+
+  /// Stat name: acceleration
+  ///
+  /// In en, this message translates to:
+  /// **'Acceleration'**
+  String get statAcceleration;
+
+  /// Stat name: luck
+  ///
+  /// In en, this message translates to:
+  /// **'Luck'**
+  String get statLuck;
+
   /// Label for race overview field
   ///
   /// In en, this message translates to:
@@ -2881,6 +2923,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select'**
   String get worldSettingSelect;
+
+  /// PvP match card column header
+  ///
+  /// In en, this message translates to:
+  /// **'ACTION'**
+  String get pvpActionLabel;
+
+  /// PvP match card: the local player
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get pvpYou;
+
+  /// Error: no signed-in user
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in.'**
+  String get errNotSignedIn;
+
+  /// Error: no race yet
+  ///
+  /// In en, this message translates to:
+  /// **'Create a race first.'**
+  String get errCreateRaceFirst;
+
+  /// Error: matchmaking
+  ///
+  /// In en, this message translates to:
+  /// **'Matchmaking failed. Please try again.'**
+  String get errMatchmakingFailed;
+
+  /// Error: strategy submit
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit. Please try again.'**
+  String get errSubmitFailed;
+
+  /// Error: rewarded ad not completed
+  ///
+  /// In en, this message translates to:
+  /// **'The ad was not finished.'**
+  String get errAdNotCompleted;
+
+  /// Error: scenario unlock
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock failed. Please try again.'**
+  String get errUnlockFailed;
+
+  /// Error: purchase
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase failed. Please try again.'**
+  String get errPurchaseFailed;
+
+  /// Error: chronicle generation
+  ///
+  /// In en, this message translates to:
+  /// **'Could not generate the chronicle. Please try again.'**
+  String get errChronicleFailed;
+
+  /// Error: race save
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your race. Please try again.'**
+  String get errRaceSaveFailed;
+
+  /// Error: battle without a race
+  ///
+  /// In en, this message translates to:
+  /// **'No race found. Create a race first.'**
+  String get errNoRaceFound;
+
+  /// Parchment subtitle baked into the shared image
+  ///
+  /// In en, this message translates to:
+  /// **'{year} — A Year of Great Battles'**
+  String parchmentYearOfBattles(String year);
+
+  /// Error: insufficient tickets
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough tickets. You need {count}.'**
+  String errNotEnoughTicketsNeed(String count);
+
+  /// Subscription price with period suffix
+  ///
+  /// In en, this message translates to:
+  /// **'¥{amount}/mo'**
+  String shopPricePerMonth(String amount);
 }
 
 class _AppLocalizationsDelegate

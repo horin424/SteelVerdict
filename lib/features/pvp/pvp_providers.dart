@@ -54,13 +54,13 @@ class PvpMatchmakingController extends StateNotifier<PvpMatchmakingState> {
       final authState = _ref.read(authStateChangesProvider);
       final user = authState.valueOrNull;
       if (user == null) {
-        state = state.copyWith(isSearching: false, error: 'Not signed in.');
+        state = state.copyWith(isSearching: false, error: 'err_not_signed_in');
         return null;
       }
 
       final race = _ref.read(currentRaceProvider);
       if (race == null) {
-        state = state.copyWith(isSearching: false, error: 'Create a race first.');
+        state = state.copyWith(isSearching: false, error: 'err_create_race_first');
         return null;
       }
 
@@ -100,7 +100,7 @@ class PvpMatchmakingController extends StateNotifier<PvpMatchmakingState> {
       state = state.copyWith(isSearching: false, createdMatch: match);
       return match;
     } catch (e) {
-      state = state.copyWith(isSearching: false, error: 'Matchmaking failed: $e');
+      state = state.copyWith(isSearching: false, error: 'err_matchmaking_failed');
       return null;
     }
   }
@@ -147,7 +147,7 @@ class PvpBattleController extends StateNotifier<PvpBattleState> {
       final authState = _ref.read(authStateChangesProvider);
       final user = authState.valueOrNull;
       if (user == null) {
-        state = state.copyWith(isSubmitting: false, error: 'Not signed in.');
+        state = state.copyWith(isSubmitting: false, error: 'err_not_signed_in');
         return false;
       }
 
@@ -157,7 +157,7 @@ class PvpBattleController extends StateNotifier<PvpBattleState> {
       state = state.copyWith(isSubmitting: false, isSubmitted: true);
       return true;
     } catch (e) {
-      state = state.copyWith(isSubmitting: false, error: 'Failed to submit: $e');
+      state = state.copyWith(isSubmitting: false, error: 'err_submit_failed');
       return false;
     }
   }

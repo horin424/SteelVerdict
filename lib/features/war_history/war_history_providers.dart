@@ -115,7 +115,7 @@ class WarHistoryController extends StateNotifier<WarHistoryControllerState> {
       state = state.copyWith(isGenerating: false, generatedNarrative: narrative);
       return history;
     } catch (e) {
-      state = state.copyWith(isGenerating: false, error: 'Failed to generate chronicle: $e');
+      state = state.copyWith(isGenerating: false, error: 'err_chronicle_failed');
       return null;
     }
   }

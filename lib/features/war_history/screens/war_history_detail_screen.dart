@@ -15,6 +15,7 @@ import '../war_history_providers.dart';
 import '../widgets/parchment_render_widget.dart';
 import '../../../features/battle/widgets/battle_report_display.dart';
 import '../../../features/game_mode_selection/game_mode_providers.dart';
+import '../../../core/utils/error_messages.dart';
 
 class WarHistoryDetailScreen extends ConsumerStatefulWidget {
   final String recordId;
@@ -89,7 +90,7 @@ class _WarHistoryDetailScreenState
     } else if (mounted) {
       final state = ref.read(warHistoryControllerProvider);
       if (state.error != null) {
-        ErrorSnackbar.showError(context, state.error!);
+        ErrorSnackbar.showError(context, localizedError(state.error!, AppLocalizations.of(context)!));
       }
     }
   }

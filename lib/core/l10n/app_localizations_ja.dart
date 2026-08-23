@@ -262,7 +262,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String raceCreationWorld(String world) {
-    return 'ワールド: $world';
+    return '世界設定: $world';
   }
 
   @override
@@ -354,7 +354,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameModeNormalDesc => 'AI審判による標準バトル（フルレポート）。';
 
   @override
-  String get gameModeTabletopDesc => '詳細分析付きの高度な戦術分析。';
+  String get gameModeTabletopDesc => '詳細な内訳付きの高度な戦術分析。';
 
   @override
   String get gameModeEpicDesc => 'キャンペーン形式のナラティブバトル。';
@@ -457,7 +457,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get generalStaffTitle => '参謀本部';
 
   @override
-  String get generalStaffAnalyzing => '作戦を分析中...';
+  String get generalStaffAnalyzing => '戦略を分析中...';
 
   @override
   String get generalStaffMsg1 => '戦術状況を確認中...';
@@ -695,7 +695,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsSignOut => 'ログアウト';
 
   @override
-  String get settingsSignOutConfirm => '本当にサインアウトしますか？';
+  String get settingsSignOutConfirm => '本当にログアウトしますか？';
 
   @override
   String get settingsPrivacyPolicy => 'プライバシーポリシー';
@@ -1036,6 +1036,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String get statArtistry => '芸術';
 
   @override
+  String get statDurability => '耐久性';
+
+  @override
+  String get statManeuverability => '機動性';
+
+  @override
+  String get statMaxSpeed => '最高速度';
+
+  @override
+  String get statFirepower => '火力';
+
+  @override
+  String get statMaxAltitude => '最大高度';
+
+  @override
+  String get statAcceleration => '加速';
+
+  @override
+  String get statLuck => '運';
+
+  @override
   String get raceOverviewLabel => '種族の概要';
 
   @override
@@ -1066,19 +1087,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get authErrSignInFailed => 'サインインに失敗しました。';
 
   @override
-  String get authErrSignOutFailed => 'サインアウトに失敗しました。';
+  String get authErrSignOutFailed => 'ログアウトに失敗しました。';
 
   @override
-  String get battleSaveStrategy => '作戦を保存';
+  String get battleSaveStrategy => '戦略を保存';
 
   @override
-  String get battleSaveStrategyDialogTitle => '作戦を保存';
+  String get battleSaveStrategyDialogTitle => '戦略を保存';
 
   @override
-  String get battleSaveStrategyNameHint => '作戦名を入力...';
+  String get battleSaveStrategyNameHint => '戦略名を入力...';
 
   @override
-  String get battleSaveStrategySuccess => '作戦を保存しました！';
+  String get battleSaveStrategySuccess => '戦略を保存しました！';
 
   @override
   String get battleSaveStrategyLimitReached =>
@@ -1189,10 +1210,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get battleTypeHistoryBadge => 'パズル';
 
   @override
-  String get pvpOpponentSubmittedUrge => '相手が戦略を送信しました — 今すぐ送信してください！';
+  String get pvpOpponentSubmittedUrge => '対戦相手が戦略を提出しました。今すぐ提出してください！';
 
   @override
-  String get pvpBothSubmittedResolving => '両者送信済み — バトル解決中...';
+  String get pvpBothSubmittedResolving => '両者提出済み。バトルを判定中...';
 
   @override
   String get gameHubMyRace => 'マイ種族';
@@ -1255,7 +1276,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsBgmVolume => 'BGM音量';
 
   @override
-  String get settingsSfxVolume => '効果音音量';
+  String get settingsSfxVolume => '効果音の音量';
 
   @override
   String get gameModeModelSelect => 'AIモデル';
@@ -1441,4 +1462,55 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get worldSettingSelect => '選択';
+
+  @override
+  String get pvpActionLabel => 'アクション';
+
+  @override
+  String get pvpYou => 'あなた';
+
+  @override
+  String get errNotSignedIn => 'サインインしていません。';
+
+  @override
+  String get errCreateRaceFirst => '先に種族を作成してください。';
+
+  @override
+  String get errMatchmakingFailed => 'マッチングに失敗しました。もう一度お試しください。';
+
+  @override
+  String get errSubmitFailed => '提出に失敗しました。もう一度お試しください。';
+
+  @override
+  String get errAdNotCompleted => '広告が最後まで再生されませんでした。';
+
+  @override
+  String get errUnlockFailed => '解放に失敗しました。もう一度お試しください。';
+
+  @override
+  String get errPurchaseFailed => '購入に失敗しました。もう一度お試しください。';
+
+  @override
+  String get errChronicleFailed => '戦記を生成できませんでした。もう一度お試しください。';
+
+  @override
+  String get errRaceSaveFailed => '種族を保存できませんでした。もう一度お試しください。';
+
+  @override
+  String get errNoRaceFound => '種族が見つかりません。先に種族を作成してください。';
+
+  @override
+  String parchmentYearOfBattles(String year) {
+    return '$year年 — 激戦の記録';
+  }
+
+  @override
+  String errNotEnoughTicketsNeed(String count) {
+    return 'チケットが足りません。$count枚必要です。';
+  }
+
+  @override
+  String shopPricePerMonth(String amount) {
+    return '¥$amount/月';
+  }
 }

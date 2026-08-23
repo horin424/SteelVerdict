@@ -11,6 +11,7 @@ import '../../../features/auth/auth_providers.dart';
 import '../pvp_providers.dart';
 import '../widgets/match_card.dart';
 import '../../../models/pvp_match_model.dart';
+import '../../../core/utils/error_messages.dart';
 
 class PvpLobbyScreen extends ConsumerWidget {
   const PvpLobbyScreen({super.key});
@@ -82,7 +83,7 @@ class PvpLobbyScreen extends ConsumerWidget {
                                 } else if (context.mounted) {
                                   final state = ref.read(pvpMatchmakingControllerProvider);
                                   if (state.error != null) {
-                                    ErrorSnackbar.showError(context, state.error!);
+                                    ErrorSnackbar.showError(context, localizedError(state.error!, AppLocalizations.of(context)!));
                                   }
                                 }
                               },

@@ -20,6 +20,9 @@ String _statAbbrev(String key, String lang) {
       'art': '芸', 'artistry': '芸',
       'life': '生', 'strength': '力',
       'luck': '運', 'durability': '耐', 'firepower': '火',
+      'maneuverability': '機', 'acceleration': '加',
+      'max_speed': '速', 'maxspeed': '速',
+      'max_altitude': '高', 'maxaltitude': '高',
     };
     final hit = ja[k];
     if (hit != null) return hit;

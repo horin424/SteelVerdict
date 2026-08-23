@@ -18,6 +18,13 @@ class SubscriptionPlanCard extends StatelessWidget {
     required this.onSubscribe,
   });
 
+  /// The stored price is "¥500/mo"; only the period suffix needs translating,
+  /// so split on the slash rather than duplicating three amounts as keys.
+  String _localizedPrice(String raw, AppLocalizations l10n) {
+    final amount = raw.replaceAll('¥', '').split('/').first;
+    return l10n.shopPricePerMonth(amount);
+  }
+
   String _localizedTitle(String productId, AppLocalizations l10n) {
     switch (productId) {
       case 'strategy_game_sub_500_monthly': return l10n.subscriptionCommander;
@@ -110,7 +117,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    plan.price,
+                    _localizedPrice(plan.price, l10n),
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.goldAccent,
                     ),

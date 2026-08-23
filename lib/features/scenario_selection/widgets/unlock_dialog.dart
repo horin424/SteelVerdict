@@ -5,6 +5,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../models/scenario_model.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../scenario_providers.dart';
+import '../../../core/utils/error_messages.dart';
 
 class UnlockDialog extends ConsumerWidget {
   final ScenarioModel scenario;
@@ -106,7 +107,7 @@ class UnlockDialog extends ConsumerWidget {
           if (unlockState.error != null) ...[
             const SizedBox(height: 12),
             Text(
-              unlockState.error!,
+              localizedError(unlockState.error!, l10n),
               style: AppTextStyles.bodySmall.copyWith(color: AppColors.warRedBright),
             ),
           ],

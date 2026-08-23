@@ -85,7 +85,7 @@ class MatchCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          'ACTION',
+                          l10n.pvpActionLabel,
                           style: AppTextStyles.labelSmall.copyWith(
                             color: config.bannerColor,
                             fontSize: 9,
@@ -127,12 +127,12 @@ class MatchCard extends StatelessWidget {
                       Row(
                         children: [
                           _SubmitChip(
-                            label: 'You',
+                            label: l10n.pvpYou,
                             submitted: hasSubmitted,
                           ),
                           const SizedBox(width: 8),
                           _SubmitChip(
-                            label: opponentRaceName.isEmpty ? 'Opponent' : opponentRaceName,
+                            label: opponentRaceName.isEmpty ? l10n.pvpOpponent : opponentRaceName,
                             submitted: opponentSubmitted,
                           ),
                         ],

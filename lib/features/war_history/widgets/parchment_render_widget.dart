@@ -59,7 +59,9 @@ class ParchmentRenderWidget extends StatelessWidget {
 
             // Date
             Text(
-              '${date.year} — A Year of Great Battles',
+              // Baked into the PNG a player shares, so it has to follow the
+              // app language like the footer two lines below already does.
+              AppLocalizations.of(context)!.parchmentYearOfBattles(date.year.toString()),
               style: AppTextStyles.labelMedium.copyWith(
                 color: AppColors.inkBrownLight,
                 fontStyle: FontStyle.italic,

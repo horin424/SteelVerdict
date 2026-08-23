@@ -10,6 +10,7 @@ import '../pvp_providers.dart';
 import '../widgets/opponent_stats_panel.dart';
 import '../widgets/pvp_countdown_timer.dart';
 import '../../../models/pvp_match_model.dart';
+import '../../../core/utils/error_messages.dart';
 
 class PvpBattleScreen extends ConsumerStatefulWidget {
   final String matchId;
@@ -52,7 +53,7 @@ class _PvpBattleScreenState extends ConsumerState<PvpBattleScreen> {
     } else if (mounted) {
       final state = ref.read(pvpBattleControllerProvider);
       if (state.error != null) {
-        ErrorSnackbar.showError(context, state.error!);
+        ErrorSnackbar.showError(context, localizedError(state.error!, AppLocalizations.of(context)!));
       }
     }
   }

@@ -3,6 +3,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/stat_bar.dart';
+import '../../../core/utils/stat_names.dart';
 
 class OpponentStatsPanel extends StatelessWidget {
   final String opponentName;
@@ -16,6 +17,7 @@ class OpponentStatsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (stats.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -57,7 +59,10 @@ class OpponentStatsPanel extends StatelessWidget {
           ...stats.entries.map((e) => Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: StatBar(
-              label: e.key,
+              // Was e.key, so the PvP battle screen printed raw strength /
+              // wisdom / artistry in both languages - the one stat site that
+              // never adopted the shared helper.
+              label: localizedStatName(e.key, l10n),
               value: e.value,
               maxValue: maxStat > 0 ? maxStat : 10,
               barColor: AppColors.warRed.withValues(alpha: 0.8),

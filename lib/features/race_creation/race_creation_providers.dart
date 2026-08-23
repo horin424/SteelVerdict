@@ -147,7 +147,7 @@ class RaceCreationController extends StateNotifier<RaceCreationState> {
     } catch (e) {
       state = state.copyWith(
         isSaving: false,
-        errorMessage: 'Failed to save race: $e',
+        errorMessage: 'err_race_save_failed',
       );
       return false;
     }

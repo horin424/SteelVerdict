@@ -41,6 +41,28 @@ String localizedStatName(String stat, AppLocalizations l10n) {
     case 'artistry':
       return l10n.statArtistry;
 
+    // Keys the aviation worldview (aces_high) defines. Without these the
+    // Japanese build showed Durability / Maneuverability / Max Speed / Firepower
+    // / Max Altitude / Acceleration in Latin beside 筋力 and 魔力 on other
+    // worlds. 火力 / 最大高度 / 加速 follow the wording the client's own AI
+    // output already uses.
+    case 'durability':
+      return l10n.statDurability;
+    case 'maneuverability':
+      return l10n.statManeuverability;
+    case 'max_speed':
+    case 'maxSpeed':
+      return l10n.statMaxSpeed;
+    case 'firepower':
+      return l10n.statFirepower;
+    case 'max_altitude':
+    case 'maxAltitude':
+      return l10n.statMaxAltitude;
+    case 'acceleration':
+      return l10n.statAcceleration;
+    case 'luck':
+      return l10n.statLuck;
+
     // legacy keys
     case 'attack':
       return l10n.statAttack;

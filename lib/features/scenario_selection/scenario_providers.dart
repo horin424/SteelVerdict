@@ -88,10 +88,10 @@ class ScenarioUnlockController extends StateNotifier<ScenarioUnlockState> {
         state = state.copyWith(isUnlocking: false);
         return true;
       }
-      state = state.copyWith(isUnlocking: false, error: 'Ad not completed.');
+      state = state.copyWith(isUnlocking: false, error: 'err_ad_not_completed');
       return false;
     } catch (e) {
-      state = state.copyWith(isUnlocking: false, error: 'Failed: $e');
+      state = state.copyWith(isUnlocking: false, error: 'err_unlock_failed');
       return false;
     }
   }
@@ -105,7 +105,7 @@ class ScenarioUnlockController extends StateNotifier<ScenarioUnlockState> {
       state = state.copyWith(isUnlocking: false);
       return true;
     } catch (e) {
-      state = state.copyWith(isUnlocking: false, error: 'Purchase failed: $e');
+      state = state.copyWith(isUnlocking: false, error: 'err_purchase_failed');
       return false;
     }
   }

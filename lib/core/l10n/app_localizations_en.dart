@@ -1052,6 +1052,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statArtistry => 'Artistry';
 
   @override
+  String get statDurability => 'Durability';
+
+  @override
+  String get statManeuverability => 'Maneuverability';
+
+  @override
+  String get statMaxSpeed => 'Max Speed';
+
+  @override
+  String get statFirepower => 'Firepower';
+
+  @override
+  String get statMaxAltitude => 'Max Altitude';
+
+  @override
+  String get statAcceleration => 'Acceleration';
+
+  @override
+  String get statLuck => 'Luck';
+
+  @override
   String get raceOverviewLabel => 'Race Overview';
 
   @override
@@ -1476,4 +1497,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get worldSettingSelect => 'Select';
+
+  @override
+  String get pvpActionLabel => 'ACTION';
+
+  @override
+  String get pvpYou => 'You';
+
+  @override
+  String get errNotSignedIn => 'Not signed in.';
+
+  @override
+  String get errCreateRaceFirst => 'Create a race first.';
+
+  @override
+  String get errMatchmakingFailed => 'Matchmaking failed. Please try again.';
+
+  @override
+  String get errSubmitFailed => 'Failed to submit. Please try again.';
+
+  @override
+  String get errAdNotCompleted => 'The ad was not finished.';
+
+  @override
+  String get errUnlockFailed => 'Unlock failed. Please try again.';
+
+  @override
+  String get errPurchaseFailed => 'Purchase failed. Please try again.';
+
+  @override
+  String get errChronicleFailed =>
+      'Could not generate the chronicle. Please try again.';
+
+  @override
+  String get errRaceSaveFailed => 'Could not save your race. Please try again.';
+
+  @override
+  String get errNoRaceFound => 'No race found. Create a race first.';
+
+  @override
+  String parchmentYearOfBattles(String year) {
+    return '$year — A Year of Great Battles';
+  }
+
+  @override
+  String errNotEnoughTicketsNeed(String count) {
+    return 'Not enough tickets. You need $count.';
+  }
+
+  @override
+  String shopPricePerMonth(String amount) {
+    return '¥$amount/mo';
+  }
 }

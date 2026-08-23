@@ -19,6 +19,7 @@ import '../widgets/strategy_input_field.dart';
 import '../widgets/saved_strategies_picker.dart';
 import '../widgets/battle_stats_summary.dart';
 import '../widgets/general_staff_overlay.dart';
+import '../../../core/utils/error_messages.dart';
 
 class BattleScreen extends ConsumerStatefulWidget {
   final String scenarioId;
@@ -142,18 +143,13 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
       // Practice mode ad choice — show dialog
       _showAdChoiceDialog(strategy);
     } else if (state.errorMessage != null) {
-      final raw = state.errorMessage!;
-      final String msg;
-      if (raw == 'content_filter_blocked') {
-        msg = l10n.contentFilterBlocked;
-      } else if (raw == 'battle_failed_retry') {
-        msg = l10n.battleFailedRetry;
-      } else if (raw == 'battle_sign_in_required') {
-        msg = l10n.battleSignInRequired;
-      } else {
-        msg = raw;
-      }
-      ErrorSnackbar.showError(context, msg);
+      // The `else { msg = raw; }` this replaces is how English error strings
+      // reached Japanese players: any code the chain did not know was printed
+      // verbatim. The shared resolver covers every code in one place.
+      ErrorSnackbar.showError(
+        context,
+        localizedError(state.errorMessage!, l10n),
+      );
     }
   }
 

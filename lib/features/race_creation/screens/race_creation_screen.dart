@@ -12,6 +12,7 @@ import '../race_creation_providers.dart';
 import '../widgets/stat_allocator_tile.dart';
 import '../widgets/points_remaining_indicator.dart';
 import '../widgets/race_name_field.dart';
+import '../../../core/utils/error_messages.dart';
 
 class RaceCreationScreen extends ConsumerWidget {
   final bool redirectToBattle;
@@ -138,7 +139,7 @@ class RaceCreationScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Text(
-                  state.errorMessage!,
+                  localizedError(state.errorMessage!, l10n),
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.warRedBright,
                   ),
@@ -165,7 +166,7 @@ class RaceCreationScreen extends ConsumerWidget {
                         }
                       } else if (context.mounted &&
                           state.errorMessage != null) {
-                        ErrorSnackbar.showError(context, state.errorMessage!);
+                        ErrorSnackbar.showError(context, localizedError(state.errorMessage!, l10n));
                       }
                     }
                   : null,

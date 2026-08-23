@@ -84,7 +84,7 @@ class BattleController extends StateNotifier<BattleControllerState> {
       _ref.invalidate(currentUserModelProvider);
     } on FirebaseFunctionsException catch (e) {
       if (e.code == 'failed-precondition') {
-        state = state.copyWith(errorMessage: 'Not enough tickets to skip.');
+        state = state.copyWith(errorMessage: 'err_skip_no_tickets');
         // Show ad anyway since they can't skip
         try {
           final adService = _ref.read(adServiceProvider);
@@ -103,7 +103,7 @@ class BattleController extends StateNotifier<BattleControllerState> {
       return true;
     } on FirebaseFunctionsException catch (e) {
       if (e.code == 'failed-precondition') {
-        state = state.copyWith(errorMessage: 'Not enough tickets to skip.');
+        state = state.copyWith(errorMessage: 'err_skip_no_tickets');
       }
       return false;
     }
@@ -121,7 +121,7 @@ class BattleController extends StateNotifier<BattleControllerState> {
       if (race == null) {
         state = state.copyWith(
           isSubmitting: false,
-          errorMessage: 'No race found. Please create a race first.',
+          errorMessage: 'err_no_race_found',
         );
         return null;
       }
@@ -135,7 +135,7 @@ class BattleController extends StateNotifier<BattleControllerState> {
         if (userModel != null && userModel.ticketCount < cost) {
           state = state.copyWith(
             isSubmitting: false,
-            errorMessage: 'Not enough tickets. You need $cost ticket(s).',
+            errorMessage: 'err_not_enough_tickets:\$cost',
           );
           return null;
         }
