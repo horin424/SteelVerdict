@@ -535,6 +535,8 @@
   "errPurchaseFailed": "購入に失敗しました。もう一度お試しください。",
   "errChronicleFailed": "戦記を生成できませんでした。もう一度お試しください。",
   "errRaceSaveFailed": "種族を保存できませんでした。もう一度お試しください。",
+  "commonReadMore": "続きを読む",
+  "commonShowLess": "閉じる",
   "errRaceIncomplete": "種族名を入力し、ステータスポイントを配分してください。",
   "errNoRaceFound": "種族が見つかりません。先に種族を作成してください。",
   "parchmentYearOfBattles": "{year}年 — 激戦の記録",

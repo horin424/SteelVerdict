@@ -55,11 +55,8 @@ class RaceCreationScreen extends ConsumerWidget {
                     style: AppTextStyles.headlineSmall,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    worldview.localizedDescription(locale),
-                    style: AppTextStyles.bodySmall,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  _WorldviewDescription(
+                    text: worldview.localizedDescription(locale),
                   ),
                 ],
               ),
@@ -176,6 +173,79 @@ class RaceCreationScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// The world's description, collapsed to two lines with a control to open it.
+///
+/// It was previously clamped to two lines with no way past the ellipsis, which
+/// is the "cannot read the description to the end" the client reported. It is
+/// not expanded outright because this same field is also the system prompt sent
+/// to the AI, so on some worlds it runs to several screens of instructions -
+/// dropping all of that into the header would bury the form underneath it.
+///
+/// Note this makes the prompt text fully readable rather than partly readable.
+/// Separating the player-facing description from the AI prompt is the actual
+/// fix for that, and needs a data-model change plus someone to write the
+/// descriptions.
+class _WorldviewDescription extends StatefulWidget {
+  final String text;
+  const _WorldviewDescription({required this.text});
+
+  @override
+  State<_WorldviewDescription> createState() => _WorldviewDescriptionState();
+}
+
+class _WorldviewDescriptionState extends State<_WorldviewDescription> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final textScaler = MediaQuery.textScalerOf(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Only offer the control when there is something behind the ellipsis.
+        // Measured with the same scaler the Text below will use, so a large
+        // system font size does not make this disagree with what is rendered.
+        final painter = TextPainter(
+          text: TextSpan(text: widget.text, style: AppTextStyles.bodySmall),
+          maxLines: 2,
+          textScaler: textScaler,
+          textDirection: Directionality.of(context),
+        )..layout(maxWidth: constraints.maxWidth);
+        final overflows = painter.didExceedMaxLines;
+        painter.dispose();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.text,
+              style: AppTextStyles.bodySmall,
+              maxLines: _expanded ? null : 2,
+              overflow: _expanded ? TextOverflow.clip : TextOverflow.ellipsis,
+            ),
+            if (overflows)
+              GestureDetector(
+                onTap: () => setState(() => _expanded = !_expanded),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    _expanded ? l10n.commonShowLess : l10n.commonReadMore,
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: AppColors.goldAccent,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

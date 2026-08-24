@@ -2990,6 +2990,18 @@ abstract class AppLocalizations {
   /// **'Could not save your race. Please try again.'**
   String get errRaceSaveFailed;
 
+  /// Expand a truncated block of text
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get commonReadMore;
+
+  /// Collapse an expanded block of text
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get commonShowLess;
+
   /// Race creation validation error
   ///
   /// In en, this message translates to:

@@ -75,8 +75,9 @@ class WorldSettingSelectionScreen extends ConsumerWidget {
                   worldview: entry.value,
                   locale: locale,
                   onTap: () {
-                    ref.read(selectedWorldviewKeyProvider.notifier).state =
-                        entry.key;
+                    ref
+                        .read(selectedWorldviewKeyProvider.notifier)
+                        .select(entry.key);
                     // A race belongs to a worldview. Without this check, picking
                     // a world you have no race for walks all the way to the
                     // battle screen, which then renders with no stats and fails

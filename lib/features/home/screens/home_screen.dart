@@ -548,9 +548,9 @@ class _WorldSettingBanner extends ConsumerWidget {
               final isSelected =
                   entry.key == selectedKey || (selectedKey.isEmpty && index == 0);
               return GestureDetector(
-                onTap: () =>
-                    ref.read(selectedWorldviewKeyProvider.notifier).state =
-                        entry.key,
+                onTap: () => ref
+                    .read(selectedWorldviewKeyProvider.notifier)
+                    .select(entry.key),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   padding:
