@@ -1,6 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
-import { GEMINI_FLASH_LITE, GEMINI_FLASH, CLAUDE_HAIKU } from "./config";
+import {
+  GEMINI_FLASH_LITE,
+  GEMINI_FLASH,
+  CLAUDE_HAIKU,
+  REPORT_MAX_TOKENS,
+} from "./config";
 
 /**
  * Call Gemini with optional cached system prompt.
@@ -11,7 +16,7 @@ export async function callGemini(
   systemPrompt: string,
   userMessage: string,
   modelId: string = GEMINI_FLASH_LITE,
-  maxTokens = 1024,
+  maxTokens = REPORT_MAX_TOKENS,
 ): Promise<string> {
   console.log(`[callGemini] using model: ${modelId}`);
   const genAI = new GoogleGenerativeAI(apiKey);
@@ -36,7 +41,7 @@ export async function callClaude(
   systemPrompt: string,
   userMessage: string,
   modelId: string = CLAUDE_HAIKU,
-  maxTokens = 1024,
+  maxTokens = REPORT_MAX_TOKENS,
 ): Promise<string> {
   // Anthropic prompt caching (beta): mark system prompt for caching so repeated
   // identical prompts are served from Anthropic's cache rather than re-processed.
@@ -73,5 +78,14 @@ export async function callGeminiFlash(
   systemPrompt: string,
   userMessage: string,
 ): Promise<string> {
-  return callGemini(apiKey, systemPrompt, userMessage, GEMINI_FLASH);
+  // Passes the budget explicitly. This used to fall through to callGemini's
+  // default, which was 1024 - so PvP verdicts were truncated the same way solo
+  // reports were, and for the same reason.
+  return callGemini(
+    apiKey,
+    systemPrompt,
+    userMessage,
+    GEMINI_FLASH,
+    REPORT_MAX_TOKENS,
+  );
 }

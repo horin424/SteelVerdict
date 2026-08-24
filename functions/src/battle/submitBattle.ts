@@ -1,6 +1,14 @@
 import * as admin from "firebase-admin";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { GEMINI_API_KEY, CLAUDE_API_KEY, TICKET_COSTS, GEMINI_FLASH_LITE, GEMINI_FLASH } from "../utils/config";
+import {
+  GEMINI_API_KEY,
+  CLAUDE_API_KEY,
+  TICKET_COSTS,
+  GEMINI_FLASH_LITE,
+  GEMINI_FLASH,
+  REPORT_MAX_TOKENS,
+  EPIC_MAX_TOKENS,
+} from "../utils/config";
 import { callGemini, callClaude } from "../utils/ai";
 import { assemblePrompt, formatBattleUserMessage, fetchRemoteConfigData } from "../utils/prompt";
 import { deductTickets, addTickets } from "../utils/firestore";
@@ -103,7 +111,7 @@ export const submitBattle = onCall(
     // 7. Call AI — refund tickets if the API fails
     let reportText: string;
     try {
-      const maxTokens = gameMode === "epic" ? 2048 : 1024;
+      const maxTokens = gameMode === "epic" ? EPIC_MAX_TOKENS : REPORT_MAX_TOKENS;
       if (modelChoice === "claude") {
         const rcModels = rcData.model_config ?? {};
         const claudeModel = rcModels["claude"] ?? undefined;

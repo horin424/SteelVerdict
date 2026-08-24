@@ -115,7 +115,7 @@ exports.submitBattle = (0, https_1.onCall)({ secrets: [config_1.GEMINI_API_KEY, 
     // 7. Call AI — refund tickets if the API fails
     let reportText;
     try {
-        const maxTokens = gameMode === "epic" ? 2048 : 1024;
+        const maxTokens = gameMode === "epic" ? config_1.EPIC_MAX_TOKENS : config_1.REPORT_MAX_TOKENS;
         if (modelChoice === "claude") {
             const rcModels = (_h = rcData.model_config) !== null && _h !== void 0 ? _h : {};
             const claudeModel = (_j = rcModels["claude"]) !== null && _j !== void 0 ? _j : undefined;

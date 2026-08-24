@@ -13,7 +13,7 @@ const config_1 = require("./config");
  * Call Gemini with optional cached system prompt.
  * Returns the text response.
  */
-async function callGemini(apiKey, systemPrompt, userMessage, modelId = config_1.GEMINI_FLASH_LITE, maxTokens = 1024) {
+async function callGemini(apiKey, systemPrompt, userMessage, modelId = config_1.GEMINI_FLASH_LITE, maxTokens = config_1.REPORT_MAX_TOKENS) {
     console.log(`[callGemini] using model: ${modelId}`);
     const genAI = new generative_ai_1.GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
@@ -30,7 +30,7 @@ async function callGemini(apiKey, systemPrompt, userMessage, modelId = config_1.
  * System prompts >= 1024 tokens use Anthropic prompt caching (beta) to
  * reduce cost on repeated identical system prompts across warm invocations.
  */
-async function callClaude(apiKey, systemPrompt, userMessage, modelId = config_1.CLAUDE_HAIKU, maxTokens = 1024) {
+async function callClaude(apiKey, systemPrompt, userMessage, modelId = config_1.CLAUDE_HAIKU, maxTokens = config_1.REPORT_MAX_TOKENS) {
     // Anthropic prompt caching (beta): mark system prompt for caching so repeated
     // identical prompts are served from Anthropic's cache rather than re-processed.
     // The beta header enables the feature; cache_control marks the cacheable block.
@@ -60,6 +60,9 @@ async function callClaude(apiKey, systemPrompt, userMessage, modelId = config_1.
  * Call Gemini Flash for PvP (fixed model for fairness).
  */
 async function callGeminiFlash(apiKey, systemPrompt, userMessage) {
-    return callGemini(apiKey, systemPrompt, userMessage, config_1.GEMINI_FLASH);
+    // Passes the budget explicitly. This used to fall through to callGemini's
+    // default, which was 1024 - so PvP verdicts were truncated the same way solo
+    // reports were, and for the same reason.
+    return callGemini(apiKey, systemPrompt, userMessage, config_1.GEMINI_FLASH, config_1.REPORT_MAX_TOKENS);
 }
 //# sourceMappingURL=ai.js.map
