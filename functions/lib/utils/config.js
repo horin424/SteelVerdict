@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EPIC_MAX_TOKENS = exports.REPORT_MAX_TOKENS = exports.CLAUDE_HAIKU = exports.GEMINI_FLASH = exports.GEMINI_FLASH_LITE = exports.TICKET_COSTS = exports.APPLE_SHARED_SECRET = exports.GOOGLE_PLAY_SERVICE_ACCOUNT = exports.CLAUDE_API_KEY = exports.GEMINI_API_KEY = void 0;
+exports.CHRONICLE_MAX_TOKENS = exports.EPIC_MAX_TOKENS = exports.REPORT_MAX_TOKENS = exports.CLAUDE_HAIKU = exports.GEMINI_FLASH = exports.GEMINI_FLASH_LITE = exports.TICKET_COSTS = exports.APPLE_SHARED_SECRET = exports.GOOGLE_PLAY_SERVICE_ACCOUNT = exports.CLAUDE_API_KEY = exports.GEMINI_API_KEY = void 0;
 const params_1 = require("firebase-functions/params");
 // Store API keys as Firebase Secrets (never in code)
 // Set via: firebase functions:secrets:set GEMINI_API_KEY
@@ -49,4 +49,10 @@ exports.CLAUDE_HAIKU = "claude-haiku-4-5-20251001";
 // expose - it needs the newer @google/genai SDK.
 exports.REPORT_MAX_TOKENS = 8192;
 exports.EPIC_MAX_TOKENS = 16384;
+// The chronicle prompt asks for roughly 3000 characters. This was 1500, with
+// the comment "~3000 chars = 1500 tokens" - a ratio that holds for English and
+// is backwards for Japanese, where a character is around a token or more. The
+// Japanese chronicle therefore ran out mid-word; one observed ending was the
+// fragment "指揮官のWis".
+exports.CHRONICLE_MAX_TOKENS = 6144;
 //# sourceMappingURL=config.js.map

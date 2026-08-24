@@ -51,3 +51,10 @@ export const CLAUDE_HAIKU     = "claude-haiku-4-5-20251001";
 // expose - it needs the newer @google/genai SDK.
 export const REPORT_MAX_TOKENS = 8192;
 export const EPIC_MAX_TOKENS   = 16384;
+
+// The chronicle prompt asks for roughly 3000 characters. This was 1500, with
+// the comment "~3000 chars = 1500 tokens" - a ratio that holds for English and
+// is backwards for Japanese, where a character is around a token or more. The
+// Japanese chronicle therefore ran out mid-word; one observed ending was the
+// fragment "指揮官のWis".
+export const CHRONICLE_MAX_TOKENS = 6144;

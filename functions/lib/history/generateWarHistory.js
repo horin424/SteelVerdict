@@ -55,7 +55,7 @@ ${data.shortReport ? `Battle Summary: ${data.shortReport}` : ""}
 Write the full chronicle now (approximately 3000 characters):`;
     let chronicleText;
     try {
-        chronicleText = await (0, ai_1.callClaude)(config_1.CLAUDE_API_KEY.value(), systemPrompt, userMessage, config_1.CLAUDE_HAIKU, 1500);
+        chronicleText = await (0, ai_1.callClaude)(config_1.CLAUDE_API_KEY.value(), systemPrompt, userMessage, config_1.CLAUDE_HAIKU, config_1.CHRONICLE_MAX_TOKENS);
     }
     catch (err) {
         console.error("generateWarHistory AI error:", err);
