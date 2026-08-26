@@ -6,6 +6,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/error_snackbar.dart';
+import '../../../models/worldview_model.dart';
 import '../../../services/game_config/game_config_providers.dart';
 
 class AdminWorldviewEditor extends ConsumerStatefulWidget {
@@ -64,6 +65,22 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
             'commonJudgment': _judgmentController.text,
             'worldviewDescription': _descController.text,
             'worldviewDescriptionJa': _descJaController.text,
+            // Written twice on purpose.
+            //
+            // functions/src/utils/prompt.ts assembles the AI prompt with
+            //   worldview.common_judgment ?? worldview.commonJudgment
+            //   worldview.worldview_description ?? worldview.worldviewDescription
+            // - snake_case first. The seed data carries snake_case, so on every
+            // seeded world the snake value won and the camelCase written here was
+            // never read. The panel reported "saved", this screen redisplayed the
+            // new text because the Dart model reads camelCase, and the AI went on
+            // using the old wording indefinitely.
+            //
+            // Writing both keeps whichever the function prefers in step with what
+            // was typed. Remove this only together with the ?? in prompt.ts.
+            'common_judgment': _judgmentController.text,
+            'worldview_description': _descController.text,
+            'worldview_description_ja': _descJaController.text,
             // Preserve existing stats and statDescriptions
             'stats': ref.read(gameConfigProvider).worldviews[_selectedKey]?.stats ?? [],
             'statDescriptions': ref.read(gameConfigProvider).worldviews[_selectedKey]?.statDescriptions ?? {},
@@ -121,8 +138,19 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
               'commonJudgment': '',
               'worldviewDescription': '',
               'worldviewDescriptionJa': '',
-              'stats': ['strength', 'intellect', 'skill', 'magic', 'art', 'life'],
-              'statDescriptions': {},
+              'common_judgment': '',
+              'worldview_description': '',
+              'worldview_description_ja': '',
+              // Seeded from the live default world rather than a literal list.
+              //
+              // This used to hardcode strength/intellect/skill/magic/art/life with
+              // no statDescriptions. Those are legacy keys: every world actually in
+              // the config uses wisdom/technology/artistry, so a newly created world
+              // came out with a stat set no other world shares and with nothing
+              // written under any of them on the race screen. There is no admin UI
+              // for stats, so it could not be corrected afterwards either.
+              'stats': _defaultStats(),
+              'statDescriptions': _defaultStatDescriptions(),
             },
           },
         }, SetOptions(merge: true));
@@ -133,6 +161,29 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
         if (mounted) ErrorSnackbar.showError(context, l10n.adminSaveError(e.toString()));
       }
     }
+  }
+
+  /// Stats for a newly created world, taken from the live default world so a
+  /// new world matches the ones already in the config. Falls back to the model's
+  /// built-in default only if the config has not loaded.
+  List<String> _defaultStats() {
+    final fromConfig = ref
+        .read(gameConfigProvider)
+        .worldviews[AppConstants.defaultWorldviewKey]
+        ?.stats;
+    if (fromConfig != null && fromConfig.isNotEmpty) return fromConfig;
+    return WorldviewModel.defaultWorldview().stats;
+  }
+
+  /// Descriptions for those stats, so the race screen is not blank under each
+  /// one. Same source and same fallback as _defaultStats.
+  Map<String, Map<String, String>> _defaultStatDescriptions() {
+    final fromConfig = ref
+        .read(gameConfigProvider)
+        .worldviews[AppConstants.defaultWorldviewKey]
+        ?.statDescriptions;
+    if (fromConfig != null && fromConfig.isNotEmpty) return fromConfig;
+    return WorldviewModel.defaultWorldview().statDescriptions;
   }
 
   Future<void> _deleteWorldview(String key) async {

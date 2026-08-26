@@ -45,25 +45,57 @@ class GameConfigModel {
     if (worldviews.isEmpty) {
       worldviews[defaultWorldview.worldviewKey] = defaultWorldview;
     } else {
+      // Prefer the live default world's stats over the model's built-in ones:
+      // the built-in list is the legacy strength/intellect/skill/magic/art/life,
+      // while every world actually in the config uses wisdom/technology/artistry.
+      final liveDefault = worldviews[defaultWorldview.worldviewKey];
+      final fallbackStats =
+          (liveDefault != null && liveDefault.stats.isNotEmpty)
+              ? liveDefault.stats
+              : defaultWorldview.stats;
+      final fallbackStatDescriptions =
+          (liveDefault != null && liveDefault.statDescriptions.isNotEmpty)
+              ? liveDefault.statDescriptions
+              : defaultWorldview.statDescriptions;
+
       for (final key in worldviews.keys.toList()) {
-        if (key == defaultWorldview.worldviewKey) {
-          final wv = worldviews[key]!;
-          if (wv.titleJa == null || wv.worldviewDescriptionJa == null) {
-            worldviews[key] = WorldviewModel(
-              worldviewKey: wv.worldviewKey,
-              title: wv.title,
-              titleJa: wv.titleJa ?? defaultWorldview.titleJa,
-              stats: wv.stats.isNotEmpty ? wv.stats : defaultWorldview.stats,
-              statDescriptions: wv.statDescriptions.isNotEmpty
-                  ? wv.statDescriptions
-                  : defaultWorldview.statDescriptions,
-              commonJudgment: wv.commonJudgment,
-              worldviewDescription: wv.worldviewDescription,
-              worldviewDescriptionJa:
-                  wv.worldviewDescriptionJa ?? defaultWorldview.worldviewDescriptionJa,
-            );
-          }
-        }
+        final wv = worldviews[key]!;
+        final isDefault = key == defaultWorldview.worldviewKey;
+
+        // A world with no stats cannot be played at all. The race screen draws
+        // the "Allocate stats" heading with nothing under it, so there is no way
+        // to spend the 30 points, and Create Race stays disabled forever. There
+        // is no admin UI for stats either, so an admin cannot repair it - the
+        // only route was editing Firestore directly.
+        //
+        // This repair used to be reachable only for the default world, and only
+        // when that world was also missing its JA fields, so it never fired for
+        // anything else. feudal_japan is live in exactly this state.
+        final needsStats = wv.stats.isEmpty;
+
+        // Supplementing JA text from the built-in defaults is still only right
+        // for the default world - another world's Japanese is not interchangeable
+        // with the fantasy world's.
+        final needsJa = isDefault &&
+            (wv.titleJa == null || wv.worldviewDescriptionJa == null);
+
+        if (!needsStats && !needsJa) continue;
+
+        worldviews[key] = WorldviewModel(
+          worldviewKey: wv.worldviewKey,
+          title: wv.title,
+          titleJa: needsJa ? (wv.titleJa ?? defaultWorldview.titleJa) : wv.titleJa,
+          stats: needsStats ? fallbackStats : wv.stats,
+          statDescriptions: wv.statDescriptions.isNotEmpty
+              ? wv.statDescriptions
+              : fallbackStatDescriptions,
+          commonJudgment: wv.commonJudgment,
+          worldviewDescription: wv.worldviewDescription,
+          worldviewDescriptionJa: needsJa
+              ? (wv.worldviewDescriptionJa ??
+                  defaultWorldview.worldviewDescriptionJa)
+              : wv.worldviewDescriptionJa,
+        );
       }
     }
 
