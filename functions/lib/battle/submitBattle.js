@@ -108,9 +108,22 @@ exports.submitBattle = (0, https_1.onCall)({ secrets: [config_1.GEMINI_API_KEY, 
     // 5. Assemble prompt
     const worldviewKey = (_g = data.worldviewKey) !== null && _g !== void 0 ? _g : "1830_fantasy";
     const basePrompt = await (0, prompt_1.assemblePrompt)(worldviewKey, data.scenarioId, gameMode);
+    // Pin the output language at both ends.
+    //
+    // Only the Japanese branch existed. English players got no language
+    // instruction at all, and the assembled prompt is largely worldview text
+    // written by the client - which is Japanese even in the English fields.
+    // With nothing telling it otherwise the model follows the language of its
+    // own system prompt, so an English player got English on one battle and
+    // Japanese on the next. Observed on device: an English normal battle came
+    // back in English, and the epic chronicle right after it came back in
+    // Japanese.
+    //
+    // This does not make the prompt English. It stops the language of the
+    // report from depending on it.
     const systemPrompt = data.locale === "ja"
         ? `${basePrompt}\n\n必ず日本語で回答してください。`
-        : basePrompt;
+        : `${basePrompt}\n\nAlways write your entire response in English.`;
     const userMessage = (0, prompt_1.formatBattleUserMessage)(data.playerStrategy, data.raceStats, data.raceName);
     // 7. Call AI — refund tickets if the API fails
     let reportText;
@@ -178,9 +191,19 @@ function extractShortSummary(text, gameMode) {
         // For tabletop, the whole response IS the win rate (~20 chars)
         return text.trim().substring(0, 60);
     }
-    // First sentence up to 120 chars
+    // First sentence, trimmed to 120 characters on a word boundary.
+    //
+    // This used to cut at exactly 120 characters, which lands mid-word: the
+    // result banner read "...but high Life (8) and Streng". Back up to the last
+    // space so the summary ends on a whole word. A string with no space in the
+    // first 120 characters is a script that does not use them (Japanese), where
+    // cutting at the character boundary is already correct.
     const firstSentence = text.split(/[.!？。]/)[0].trim();
-    return firstSentence.substring(0, 120);
+    if (firstSentence.length <= 120)
+        return firstSentence;
+    const clipped = firstSentence.substring(0, 120);
+    const lastSpace = clipped.lastIndexOf(" ");
+    return (lastSpace > 60 ? clipped.substring(0, lastSpace) : clipped) + "…";
 }
 async function updateLastLogin(uid) {
     try {
