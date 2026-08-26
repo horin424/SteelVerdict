@@ -12,6 +12,7 @@ import '../../../features/settings/settings_providers.dart';
 import '../home_providers.dart';
 import '../widgets/ad_ticket_button.dart';
 import '../../../services/sound/sound_service_provider.dart';
+import '../../../services/game_config/game_config_providers.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -492,6 +493,22 @@ class _WorldSettingBanner extends ConsumerWidget {
     final worldviews = ref.watch(availableWorldviewsProvider);
     final selectedKey = ref.watch(selectedWorldviewKeyProvider);
     final locale = ref.watch(localeProvider).languageCode;
+
+    // The fallback config carries a single worldview, so rendering it before the
+    // real one arrives shows one chip and then silently grows to six.
+    if (!ref.watch(gameConfigLoadedProvider)) {
+      return const SizedBox(
+        height: 36,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
 
     if (worldviews.isEmpty) {
       return Text(

@@ -23,6 +23,22 @@ final gameConfigStreamProvider = StreamProvider<GameConfigModel>((ref) {
   });
 });
 
+/// Whether the config has actually arrived from Firestore.
+///
+/// gameConfigProvider hands out GameConfigModel.defaults() while the stream is
+/// still loading, and that fallback contains exactly one worldview. Anything
+/// drawing a list of worlds therefore shows a single world for the first moment
+/// after launch and the full set once the snapshot lands - reported as "on a new
+/// account only one world setting appears, and after playing a match all six
+/// appear". Playing a match was incidental; the stream had simply arrived by
+/// then.
+///
+/// Screens that list worlds should wait for this rather than render the
+/// fallback as though it were the real configuration.
+final gameConfigLoadedProvider = Provider<bool>((ref) {
+  return ref.watch(gameConfigStreamProvider).hasValue;
+});
+
 /// Synchronous provider that returns the latest game config.
 /// Falls back to RC-based config, then defaults.
 final gameConfigProvider = Provider<GameConfigModel>((ref) {
