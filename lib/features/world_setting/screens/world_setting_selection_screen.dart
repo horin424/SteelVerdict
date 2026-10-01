@@ -6,6 +6,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/utils/stat_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/expandable_description.dart';
 import '../../../features/auth/auth_providers.dart';
 import '../../../features/game_mode_selection/game_mode_providers.dart';
 import '../../../features/settings/settings_providers.dart';
@@ -259,8 +260,9 @@ class _WorldSettingCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text(
-                          worldview.localizedDescription(locale),
+                        ExpandableDescription(
+                          text: worldview.localizedDescription(locale),
+                          collapsedMaxLines: 3,
                           style: AppTextStyles.bodySmall.copyWith(
                             color: Colors.white.withValues(alpha: 0.75),
                             height: 1.4,

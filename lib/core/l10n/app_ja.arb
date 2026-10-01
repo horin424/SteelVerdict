@@ -147,6 +147,14 @@
   "battleVictoryFull": "勝利！",
   "battleDefeatFull": "敗北",
   "battleDrawFull": "引き分け",
+  "readMore": "もっと見る",
+  "showLess": "閉じる",
+  "battleSurvivedDays": "{days}日間生存",
+  "@battleSurvivedDays": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
   "battleSaveToHistory": "戦史に保存",
   "battleNoReport": "レポートがありません。",
   "battleReport": "戦闘レポート",
@@ -229,6 +237,9 @@
   "settingsClearData": "全データを削除",
   "settingsClearDataConfirm": "全てのローカルデータを完全に削除します。元に戻せません。",
   "settingsAllDataCleared": "全データを削除しました。",
+  "settingsDeleteAccount": "アカウント削除",
+  "settingsDeleteAccountConfirm": "アカウント、クラウド上のデータ、チケットを完全に削除します。この操作は取り消せません。",
+  "settingsDeleteAccountFailed": "アカウントを削除できませんでした。もう一度お試しください。",
   "settingsRace": "種族",
   "settingsViewRace": "マイ種族",
   "settingsViewRaceNoRace": "まだ種族が作成されていません。",

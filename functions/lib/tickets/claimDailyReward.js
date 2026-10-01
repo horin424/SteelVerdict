@@ -91,17 +91,43 @@ exports.claimDailyReward = (0, https_1.onCall)(async (request) => {
     });
     return { ticketsAdded: amount, newTicketCount: newCount };
 });
+/** Soft daily cap — prevents unauthenticated spam / API abuse while still
+ *  allowing generous rewarded-ad farming. Adjust via code if product wants more. */
+const MAX_AD_TICKET_CLAIMS_PER_DAY = 20;
+const TICKETS_PER_AD = 2;
 /**
- * earnAdTickets — grant 2 tickets for watching a rewarded ad.
- * No limit per day (spec: "no limit").
+ * earnAdTickets — grant tickets for watching a rewarded ad.
+ * Server-side daily claim cap (client cannot bypass).
  */
 exports.earnAdTickets = (0, https_1.onCall)(async (request) => {
     if (!request.auth) {
         throw new https_1.HttpsError("unauthenticated", "Authentication required.");
     }
     const uid = request.auth.uid;
-    const newCount = await (0, firestore_1.addTickets)(uid, 2);
-    return { ticketsAdded: 2, newTicketCount: newCount };
+    const ref = admin.firestore().collection("users").doc(uid);
+    const todayUtc = toUtcDateString(new Date());
+    let newCount = 0;
+    let ticketsAdded = 0;
+    await admin.firestore().runTransaction(async (tx) => {
+        var _a, _b, _c;
+        const snap = await tx.get(ref);
+        if (!snap.exists)
+            throw new https_1.HttpsError("not-found", "User not found.");
+        const data = snap.data();
+        const claimsDate = (_a = data.adTicketClaimsDate) !== null && _a !== void 0 ? _a : "";
+        const claimsCount = claimsDate === todayUtc ? ((_b = data.adTicketClaimsCount) !== null && _b !== void 0 ? _b : 0) : 0;
+        if (claimsCount >= MAX_AD_TICKET_CLAIMS_PER_DAY) {
+            throw new https_1.HttpsError("resource-exhausted", "Daily ad ticket limit reached. Try again tomorrow.");
+        }
+        ticketsAdded = TICKETS_PER_AD;
+        newCount = ((_c = data.ticketCount) !== null && _c !== void 0 ? _c : 0) + ticketsAdded;
+        tx.update(ref, {
+            ticketCount: newCount,
+            adTicketClaimsDate: todayUtc,
+            adTicketClaimsCount: claimsCount + 1,
+        });
+    });
+    return { ticketsAdded, newTicketCount: newCount };
 });
 function toUtcDateString(date) {
     return date.toISOString().substring(0, 10); // "YYYY-MM-DD"

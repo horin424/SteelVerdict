@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Steel Verdict Admin (PC)</title>
+  <style>
+    :root {
+      --bg: #0d1b2a;
+      --card: #1b2838;
+      --text: #e8eef5;
+      --muted: #8b9bb4;
+      --accent: #c9a227;
+      --danger: #c0392b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Hiragino Sans", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #243447;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    header h1 { margin: 0; font-size: 18px; color: var(--accent); }
+    main { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
+    input, textarea, select, button {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
+    }
+    textarea { min-height: 220px; resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+    button {
+      background: var(--accent);
+      color: #1a1200;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    button.secondary { background: #334155; color: var(--text); }
+    button.danger { background: var(--danger); color: #fff; }
+    .row { display: grid; grid-template-columns: 240px 1fr; gap: 16px; }
+    @media (max-width: 800px) { .row { grid-template-columns: 1fr; } }
+    .list button {
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid #334155;
+      margin: 0 0 8px;
+    }
+    .list button.active { border-color: var(--accent); color: var(--accent); }
+    .muted { color: var(--muted); font-size: 13px; }
+    #status { min-height: 1.2em; color: var(--accent); font-size: 13px; }
+    #loginPanel input { margin-bottom: 8px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Steel Verdict · Admin (PC)</h1>
+    <span class="muted" id="userLabel">未ログイン</span>
+  </header>
+  <main>
+    <div class="card" id="setupPanel">
+      <p class="muted">
+        Firebase Web アプリの設定を貼り付けてください（Console → Project settings → Your apps → Web）。
+        管理者アカウントでログインすると、世界観の長文プロンプトを PC から編集できます。
+      </p>
+      <label>firebaseConfig (JSON)</label>
+      <textarea id="firebaseConfig" placeholder='{"apiKey":"...","authDomain":"...","projectId":"steelverdict-81c34","appId":"..."}'></textarea>
+      <button id="saveConfigBtn">設定を保存して続ける</button>
+    </div>
+
+    <div class="card hidden" id="loginPanel">
+      <label>Email</label>
+      <input id="email" type="email" autocomplete="username" />
+      <label>Password</label>
+      <input id="password" type="password" autocomplete="current-password" />
+      <button id="loginBtn">ログイン</button>
+      <button class="secondary" id="logoutBtn">ログアウト</button>
+      <p id="status"></p>
+    </div>
+
+    <div class="hidden" id="editorPanel">
+      <div class="row">
+        <div class="card list" id="worldviewList"></div>
+        <div class="card">
+          <label>Worldview key</label>
+          <input id="wvKey" readonly />
+          <label>Title (EN)</label>
+          <input id="title" />
+          <label>Title (JA)</label>
+          <input id="titleJa" />
+          <label>common_judgment / commonJudgment</label>
+          <textarea id="judgment"></textarea>
+          <label>worldview_description (EN)</label>
+          <textarea id="desc" style="min-height:140px"></textarea>
+          <label>worldview_description (JA)</label>
+          <textarea id="descJa" style="min-height:140px"></textarea>
+          <label>result_type</label>
+          <select id="resultType">
+            <option value="battle">battle</option>
+            <option value="survival">survival</option>
+          </select>
+          <button id="saveBtn">保存</button>
+          <p id="saveStatus" class="muted"></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+    const CONFIG_KEY = "sv_admin_firebase_config";
+    let app, auth, db;
+    let worldviews = {};
+    let selectedKey = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(msg) { $("status").textContent = msg || ""; }
+
+    function boot(config) {
+      app = initializeApp(config);
+      auth = getAuth(app);
+      db = getFirestore(app);
+      $("setupPanel").classList.add("hidden");
+      $("loginPanel").classList.remove("hidden");
+
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          $("userLabel").textContent = "未ログイン";
+          $("editorPanel").classList.add("hidden");
+          return;
+        }
+        $("userLabel").textContent = user.email || user.uid;
+        $("editorPanel").classList.remove("hidden");
+        await loadWorldviews();
+      });
+    }
+
+    const saved = localStorage.getItem(CONFIG_KEY);
+    if (saved) {
+      try { boot(JSON.parse(saved)); } catch (_) {}
+    }
+
+    $("saveConfigBtn").onclick = () => {
+      try {
+        const config = JSON.parse($("firebaseConfig").value);
+        localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+        boot(config);
+      } catch (e) {
+        alert("JSON が不正です: " + e.message);
+      }
+    };
+
+    $("loginBtn").onclick = async () => {
+      try {
+        await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
+        setStatus("ログインしました");
+      } catch (e) {
+        setStatus(e.message);
+      }
+    };
+
+    $("logoutBtn").onclick = async () => {
+      await signOut(auth);
+      setStatus("ログアウトしました");
+    };
+
+    async function loadWorldviews() {
+      const snap = await getDoc(doc(db, "system_config", "game_config"));
+      worldviews = (snap.exists() && snap.data().worldviews) || {};
+      const list = $("worldviewList");
+      list.innerHTML = "<p class='muted'>Worldviews</p>";
+      Object.keys(worldviews).sort().forEach((key) => {
+        const btn = document.createElement("button");
+        btn.textContent = key;
+        btn.onclick = () => selectWorldview(key, btn);
+        list.appendChild(btn);
+      });
+    }
+
+    function selectWorldview(key, btn) {
+      selectedKey = key;
+      [...$("worldviewList").querySelectorAll("button")].forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const wv = worldviews[key] || {};
+      $("wvKey").value = key;
+      $("title").value = wv.title || "";
+      $("titleJa").value = wv.titleJa || "";
+      $("judgment").value = wv.common_judgment || wv.commonJudgment || "";
+      $("desc").value = wv.worldview_description || wv.worldviewDescription || "";
+      $("descJa").value = wv.worldviewDescriptionJa || "";
+      $("resultType").value = wv.result_type || wv.resultType || "battle";
+      $("saveStatus").textContent = "";
+    }
+
+    $("saveBtn").onclick = async () => {
+      if (!selectedKey) return;
+      const payload = {
+        worldviews: {
+          [selectedKey]: {
+            ...(worldviews[selectedKey] || {}),
+            worldviewKey: selectedKey,
+            title: $("title").value,
+            titleJa: $("titleJa").value,
+            commonJudgment: $("judgment").value,
+            common_judgment: $("judgment").value,
+            worldviewDescription: $("desc").value,
+            worldview_description: $("desc").value,
+            worldviewDescriptionJa: $("descJa").value,
+            resultType: $("resultType").value,
+            result_type: $("resultType").value,
+          },
+        },
+      };
+      try {
+        await setDoc(doc(db, "system_config", "game_config"), payload, { merge: true });
+        worldviews[selectedKey] = payload.worldviews[selectedKey];
+        $("saveStatus").textContent = "保存しました";
+      } catch (e) {
+        $("saveStatus").textContent = "保存失敗: " + e.message;
+      }
+    };
+  </script>
+</body>
+</html>

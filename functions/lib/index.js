@@ -33,13 +33,15 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validatePurchase = exports.generateWarHistory = exports.checkDeserters = exports.findOrCreatePvpMatch = exports.skipAd = exports.claimXShareReward = exports.earnAdTickets = exports.claimDailyReward = exports.judgeCompletedPvpMatch = exports.submitBattle = exports.onUserCreated = void 0;
+exports.validatePurchase = exports.generateWarHistory = exports.checkDeserters = exports.submitPvpStrategy = exports.findOrCreatePvpMatch = exports.skipAd = exports.claimXShareReward = exports.earnAdTickets = exports.claimDailyReward = exports.judgeCompletedPvpMatch = exports.submitBattle = exports.deleteAccount = exports.onUserCreated = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK (must be first)
 admin.initializeApp();
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 var onUserCreated_1 = require("./auth/onUserCreated");
 Object.defineProperty(exports, "onUserCreated", { enumerable: true, get: function () { return onUserCreated_1.onUserCreated; } });
+var deleteAccount_1 = require("./auth/deleteAccount");
+Object.defineProperty(exports, "deleteAccount", { enumerable: true, get: function () { return deleteAccount_1.deleteAccount; } });
 // ─── Battle ───────────────────────────────────────────────────────────────────
 var submitBattle_1 = require("./battle/submitBattle");
 Object.defineProperty(exports, "submitBattle", { enumerable: true, get: function () { return submitBattle_1.submitBattle; } });
@@ -56,6 +58,8 @@ Object.defineProperty(exports, "skipAd", { enumerable: true, get: function () { 
 // ─── PvP ──────────────────────────────────────────────────────────────────────
 var findOrCreatePvpMatch_1 = require("./pvp/findOrCreatePvpMatch");
 Object.defineProperty(exports, "findOrCreatePvpMatch", { enumerable: true, get: function () { return findOrCreatePvpMatch_1.findOrCreatePvpMatch; } });
+var submitPvpStrategy_1 = require("./pvp/submitPvpStrategy");
+Object.defineProperty(exports, "submitPvpStrategy", { enumerable: true, get: function () { return submitPvpStrategy_1.submitPvpStrategy; } });
 var checkDeserters_1 = require("./pvp/checkDeserters");
 Object.defineProperty(exports, "checkDeserters", { enumerable: true, get: function () { return checkDeserters_1.checkDeserters; } });
 // ─── War History ──────────────────────────────────────────────────────────────

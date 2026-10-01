@@ -41,131 +41,159 @@ const ai_1 = require("../utils/ai");
 const prompt_1 = require("../utils/prompt");
 const firestore_1 = require("../utils/firestore");
 const outcome_1 = require("../utils/outcome");
+function maxTokensForMode(gameMode) {
+    switch (gameMode) {
+        case "practice":
+            return 1024;
+        case "tabletop":
+            return 1024;
+        case "pvp":
+            return 1024;
+        case "epic":
+            return 16384;
+        case "normal":
+        case "boss":
+        case "history_puzzle":
+        default:
+            return 8192;
+    }
+}
 /**
  * submitBattle — the core AI battle judging function.
  *
  * Prompt construction order (spec-compliant):
  *   [System prompt]
- *   1. common_judgment          — worldview judgment rules (Remote Config)
- *   2. worldview_description    — setting/era description (Remote Config)
- *   3. mode_addons              — mode-specific instructions (Remote Config)
- *   4. commander_definition     — enemy general character (Remote Config, if applicable)
+ *   1. common_judgment
+ *   2. worldview_description
+ *   3. mode_addons
+ *   4. commander_definition
+ *   + output contract (anti-leak + [[RESULT:...]] marker)
  *   [User message]
- *   5. player_stats             — race name + stat values
- *   6. player_strategy          — the player's submitted strategy text
- *
- * Flow:
- *   1. Verify auth
- *   2. Validate input + content filter
- *   3. Calculate ticket cost
- *   4. Deduct tickets (atomic transaction — prevents fraud)
- *   5. Assemble system prompt from Remote Config (parts 1-4)
- *   6. Format user message (parts 5-6)
- *   7. Call AI model
- *   8. On AI failure → REFUND tickets, throw error
- *   9. Parse outcome from response
- *   10. Return BattleResponse
+ *   5. player_stats
+ *   6. player_strategy
  */
 exports.submitBattle = (0, https_1.onCall)({ secrets: [config_1.GEMINI_API_KEY, config_1.CLAUDE_API_KEY], timeoutSeconds: 120 }, async (request) => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
-    // 1. Auth check
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
     if (!request.auth) {
         throw new https_1.HttpsError("unauthenticated", "Authentication required.");
     }
     const uid = request.auth.uid;
     const data = request.data;
-    // 2. Input validation
     if (!data.playerStrategy || data.playerStrategy.trim().length === 0) {
         throw new https_1.HttpsError("invalid-argument", "Strategy is required.");
+    }
+    const strategyLen = data.playerStrategy.trim().length;
+    if (strategyLen < 5) {
+        throw new https_1.HttpsError("invalid-argument", "Strategy is too short.");
+    }
+    if (strategyLen > 2000) {
+        throw new https_1.HttpsError("invalid-argument", "Strategy exceeds 2000 characters.");
     }
     if (!data.scenarioId || !data.gameMode) {
         throw new https_1.HttpsError("invalid-argument", "scenarioId and gameMode are required.");
     }
-    // 2b. Content filter — blacklist check
     if (containsInappropriateContent(data.playerStrategy)) {
         throw new https_1.HttpsError("invalid-argument", "CONTENT_FILTER_BLOCKED");
     }
     if (data.raceName && containsInappropriateContent(data.raceName)) {
         throw new https_1.HttpsError("invalid-argument", "CONTENT_FILTER_BLOCKED");
     }
+    // Soft-validate race stats (30-point budget, 0–10 per stat).
+    if (data.raceStats) {
+        const values = Object.values(data.raceStats);
+        const sum = values.reduce((a, b) => a + (Number(b) || 0), 0);
+        if (sum > 30 || values.some((v) => Number(v) < 0 || Number(v) > 10)) {
+            throw new https_1.HttpsError("invalid-argument", "Invalid raceStats.");
+        }
+    }
     const gameMode = data.gameMode;
-    const isPractice = gameMode === "practice" || gameMode === "tabletop" || gameMode === "history_puzzle";
-    const modelChoice = isPractice ? "gemini" : ((_a = data.modelChoice) !== null && _a !== void 0 ? _a : "gemini");
-    // 3. Ticket cost — prefer Remote Config, fall back to hardcoded defaults
+    // Flash-Lite only for short practice/tabletop. history_puzzle needs a real report.
+    const useLiteModel = gameMode === "practice" || gameMode === "tabletop";
+    const isFreeMode = useLiteModel || gameMode === "history_puzzle";
+    const modelChoice = useLiteModel ? "gemini" : ((_a = data.modelChoice) !== null && _a !== void 0 ? _a : "gemini");
     const rcData = await (0, prompt_1.fetchRemoteConfigData)();
     const rcCosts = (_b = rcData.ticket_costs) !== null && _b !== void 0 ? _b : {};
-    const cost = isPractice
+    // Prefer mode-specific cost (boss/epic/normal/pvp), then model keys, then defaults.
+    const cost = isFreeMode
         ? ((_c = rcCosts["practice"]) !== null && _c !== void 0 ? _c : config_1.TICKET_COSTS.practice)
         : modelChoice === "claude"
             ? ((_d = rcCosts["claude"]) !== null && _d !== void 0 ? _d : config_1.TICKET_COSTS.claude)
-            : ((_e = rcCosts["gemini"]) !== null && _e !== void 0 ? _e : config_1.TICKET_COSTS.gemini);
-    // 4. Deduct tickets (skipped for practice and dev UIDs)
-    const devUids = (_f = rcData.dev_uids) !== null && _f !== void 0 ? _f : [];
+            : ((_g = (_f = (_e = rcCosts[gameMode]) !== null && _e !== void 0 ? _e : rcCosts["gemini"]) !== null && _f !== void 0 ? _f : config_1.TICKET_COSTS[gameMode]) !== null && _g !== void 0 ? _g : config_1.TICKET_COSTS.gemini);
+    const devUids = (_h = rcData.dev_uids) !== null && _h !== void 0 ? _h : [];
     const isDevUser = devUids.includes(uid);
     if (cost > 0 && !isDevUser) {
         await (0, firestore_1.deductTickets)(uid, cost);
     }
-    // 5. Assemble prompt
-    const worldviewKey = (_g = data.worldviewKey) !== null && _g !== void 0 ? _g : "1830_fantasy";
+    const worldviewKey = (_j = data.worldviewKey) !== null && _j !== void 0 ? _j : "1830_fantasy";
     const basePrompt = await (0, prompt_1.assemblePrompt)(worldviewKey, data.scenarioId, gameMode);
     const systemPrompt = data.locale === "ja"
-        ? `${basePrompt}\n\n必ず日本語で回答してください。`
+        ? `${basePrompt}\n\n必ず日本語で回答してください。結果マーカー [[RESULT:...]] はそのまま英語形式で出力してください。`
         : basePrompt;
     const userMessage = (0, prompt_1.formatBattleUserMessage)(data.playerStrategy, data.raceStats, data.raceName);
-    // 7. Call AI — refund tickets if the API fails
     let reportText;
     try {
-        const maxTokens = gameMode === "epic" ? 2048 : 1024;
+        const maxTokens = maxTokensForMode(gameMode);
         if (modelChoice === "claude") {
-            const rcModels = (_h = rcData.model_config) !== null && _h !== void 0 ? _h : {};
-            const claudeModel = (_j = rcModels["claude"]) !== null && _j !== void 0 ? _j : undefined;
+            const rcModels = (_k = rcData.model_config) !== null && _k !== void 0 ? _k : {};
+            const claudeModel = (_l = rcModels["claude"]) !== null && _l !== void 0 ? _l : undefined;
             reportText = await (0, ai_1.callClaude)(config_1.CLAUDE_API_KEY.value(), systemPrompt, userMessage, claudeModel, maxTokens);
         }
         else {
-            const rcModels = (_k = rcData.model_config) !== null && _k !== void 0 ? _k : {};
-            const modelId = isPractice
-                ? ((_l = rcModels["gemini_flash_lite"]) !== null && _l !== void 0 ? _l : config_1.GEMINI_FLASH_LITE)
-                : ((_m = rcModels["gemini_flash"]) !== null && _m !== void 0 ? _m : config_1.GEMINI_FLASH);
+            const rcModels = (_m = rcData.model_config) !== null && _m !== void 0 ? _m : {};
+            const modelId = useLiteModel
+                ? ((_o = rcModels["gemini_flash_lite"]) !== null && _o !== void 0 ? _o : config_1.GEMINI_FLASH_LITE)
+                : ((_p = rcModels["gemini_flash"]) !== null && _p !== void 0 ? _p : config_1.GEMINI_FLASH);
             reportText = await (0, ai_1.callGemini)(config_1.GEMINI_API_KEY.value(), systemPrompt, userMessage, modelId, maxTokens);
         }
     }
     catch (err) {
         console.error("AI call failed:", err);
-        // Refund tickets — spec: "If the API fails → ticket must be refunded"
-        if (cost > 0 && !isDevUser) {
-            try {
-                await (0, firestore_1.addTickets)(uid, cost);
-                console.log(`Refunded ${cost} ticket(s) to ${uid} after AI failure.`);
-            }
-            catch (refundErr) {
-                console.error("Ticket refund failed:", refundErr);
-            }
-        }
+        await refundTickets(uid, cost, isDevUser);
         throw new https_1.HttpsError("internal", "AI service error. Please try again.");
     }
-    // 7. Parse outcome keyword from the AI response
-    const outcome = (0, outcome_1.parseOutcome)(reportText);
-    // 8. Short summary (first sentence or first 120 chars)
-    const shortSummary = extractShortSummary(reportText, gameMode);
-    // Update lastLoginAt for PvP matching priority (fire-and-forget)
+    if (!reportText || !reportText.trim()) {
+        console.error("AI returned empty report", { worldviewKey, gameMode, uid });
+        await refundTickets(uid, cost, isDevUser);
+        throw new https_1.HttpsError("internal", "AI returned an empty report. Please try again.");
+    }
+    const parsed = (0, outcome_1.parseOutcome)(reportText);
+    if (!parsed) {
+        console.error("Failed to parse battle outcome. Raw (truncated):", reportText.substring(0, 500));
+        await refundTickets(uid, cost, isDevUser);
+        throw new https_1.HttpsError("internal", "OUTCOME_PARSE_FAILED: Could not determine battle result. Please try again.");
+    }
+    // Strip structured markers from all player-facing text.
+    const cleanedReport = (0, outcome_1.stripResultMarkers)(reportText);
+    const displayReport = gameMode === "tabletop"
+        ? cleanedReport.substring(0, 80)
+        : cleanedReport;
+    if (!displayReport) {
+        console.error("Report empty after stripping markers");
+        await refundTickets(uid, cost, isDevUser);
+        throw new https_1.HttpsError("internal", "AI returned an empty report. Please try again.");
+    }
+    const shortSummary = extractShortSummary(displayReport, gameMode);
     updateLastLogin(uid);
-    return {
-        reportText,
-        outcome,
-        shortSummary,
-        ticketsConsumed: cost,
-    };
+    void updateWinLoss(uid, parsed.outcome);
+    return Object.assign({ reportText: displayReport, outcome: parsed.outcome, shortSummary, ticketsConsumed: cost, worldviewKey }, (parsed.survivalDays !== undefined
+        ? { survivalDays: parsed.survivalDays }
+        : {}));
 });
-// ─── Content filter ───────────────────────────────────────────────────────────
-// Matched on word boundaries. Substring matching rejected ordinary battle prose:
-// "spic" is inside suspicion / conspicuous / despicable, and "chink" is inside
-// "a chink in their armour" - a military idiom a player is very likely to use.
+async function refundTickets(uid, cost, isDevUser) {
+    if (cost > 0 && !isDevUser) {
+        try {
+            await (0, firestore_1.addTickets)(uid, cost);
+            console.log(`Refunded ${cost} ticket(s) to ${uid}.`);
+        }
+        catch (refundErr) {
+            console.error("Ticket refund failed:", refundErr);
+        }
+    }
+}
 const BLACKLIST_EN = [
     "fuck", "shit", "bitch", "nigger", "nigga", "faggot", "retard",
     "kike", "spic", "chink", "whore", "cunt", "bastard", "asshole",
 ];
-// Japanese has no word boundaries, so each term is matched directly. 殺す was
-// removed: "敵将を殺す" is the subject matter of a war game, not abuse.
 const BLACKLIST_JA = ["バカ", "死ね", "クソ", "うざい", "ファック"];
 const EN_PATTERNS = BLACKLIST_EN.map((w) => new RegExp(`\\b${w}\\b`, "iu"));
 function containsInappropriateContent(text) {
@@ -175,10 +203,8 @@ function containsInappropriateContent(text) {
 }
 function extractShortSummary(text, gameMode) {
     if (gameMode === "tabletop") {
-        // For tabletop, the whole response IS the win rate (~20 chars)
         return text.trim().substring(0, 60);
     }
-    // First sentence up to 120 chars
     const firstSentence = text.split(/[.!？。]/)[0].trim();
     return firstSentence.substring(0, 120);
 }
@@ -190,7 +216,21 @@ async function updateLastLogin(uid) {
             .update({ lastLoginAt: Date.now() });
     }
     catch (_a) {
-        // Non-critical — ignore
+        // Non-critical
+    }
+}
+async function updateWinLoss(uid, outcome) {
+    try {
+        const ref = admin.firestore().collection("users").doc(uid);
+        if (outcome === "win") {
+            await ref.update({ totalWins: admin.firestore.FieldValue.increment(1) });
+        }
+        else if (outcome === "loss") {
+            await ref.update({ totalLosses: admin.firestore.FieldValue.increment(1) });
+        }
+    }
+    catch (err) {
+        console.warn("updateWinLoss failed:", err);
     }
 }
 //# sourceMappingURL=submitBattle.js.map

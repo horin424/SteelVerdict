@@ -137,6 +137,8 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
           'shortSummary': result.shortSummary,
           'scenarioId': widget.scenarioId,
           'gameMode': widget.gameMode,
+          if (result.survivalDays != null) 'survivalDays': result.survivalDays,
+          if (result.worldviewKey != null) 'worldviewKey': result.worldviewKey,
         },
       );
     } else if (state.showAdChoice) {

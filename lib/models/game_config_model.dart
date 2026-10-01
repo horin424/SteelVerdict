@@ -32,9 +32,11 @@ class GameConfigModel {
       for (final entry in worldviewsRaw.entries) {
         final key = entry.key.toString();
         try {
-          worldviews[key] = WorldviewModel.fromJson(
-            Map<String, dynamic>.from(entry.value as Map),
-          );
+          // Always inject the map key. Manual Firebase edits often omit
+          // worldviewKey inside the object; an empty key made races save under
+          // "race_" and every subsequent Play redirect to race creation.
+          final raw = Map<String, dynamic>.from(entry.value as Map);
+          worldviews[key] = WorldviewModel.fromJson(raw, keyFallback: key);
         } catch (e) {
           // skip malformed entries
         }
@@ -50,7 +52,9 @@ class GameConfigModel {
           final wv = worldviews[key]!;
           if (wv.titleJa == null || wv.worldviewDescriptionJa == null) {
             worldviews[key] = WorldviewModel(
-              worldviewKey: wv.worldviewKey,
+              worldviewKey: wv.worldviewKey.isNotEmpty
+                  ? wv.worldviewKey
+                  : key,
               title: wv.title,
               titleJa: wv.titleJa ?? defaultWorldview.titleJa,
               stats: wv.stats.isNotEmpty ? wv.stats : defaultWorldview.stats,
@@ -61,6 +65,7 @@ class GameConfigModel {
               worldviewDescription: wv.worldviewDescription,
               worldviewDescriptionJa:
                   wv.worldviewDescriptionJa ?? defaultWorldview.worldviewDescriptionJa,
+              resultType: wv.resultType,
             );
           }
         }
@@ -76,6 +81,7 @@ class GameConfigModel {
         try {
           scenarios[key] = ScenarioModel.fromJson(
             Map<String, dynamic>.from(entry.value as Map),
+            idFallback: key,
           );
         } catch (e) {
           // skip malformed entries

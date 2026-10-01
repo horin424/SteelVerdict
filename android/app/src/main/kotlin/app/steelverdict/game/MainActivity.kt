@@ -1,4 +1,4 @@
-package com.example.strategy_game
+package app.steelverdict.game
 
 import io.flutter.embedding.android.FlutterActivity
 

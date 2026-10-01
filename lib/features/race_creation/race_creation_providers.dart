@@ -9,17 +9,35 @@ import '../world_setting/world_setting_providers.dart';
 
 // The worldview the race is being created for.
 //
-// This used to read AppConstants.defaultWorldviewKey unconditionally, so no
-// matter which world the player picked, race creation always offered the
-// 1830 Fantasy stats (Strength/Wisdom/Technology/Magic/Artistry/Life) and saved
-// the race with worldviewKey '1830_fantasy'. A Last Breath player could never
-// put a point into Luck, and the Magic they were forced to spend on was not
-// read by that world's judging at all.
+// Must follow the player's SELECTED worldview. Falling back to 1830_fantasy
+// whenever the selected key was briefly missing from config caused races to
+// be saved under the wrong key, so Play kept sending players to race creation.
 final activeWorldviewProvider = Provider<WorldviewModel>((ref) {
   final config = ref.watch(gameConfigProvider);
   final selectedKey = ref.watch(selectedWorldviewKeyProvider);
-  return config.worldviews[selectedKey] ??
-      config.worldviews[AppConstants.defaultWorldviewKey] ??
+
+  if (selectedKey.isNotEmpty && config.worldviews.containsKey(selectedKey)) {
+    final wv = config.worldviews[selectedKey]!;
+    // Guard: if Firestore omitted worldviewKey inside the object, still use
+    // the map key so saveRace writes race_<selectedKey>.
+    if (wv.worldviewKey.isEmpty || wv.worldviewKey != selectedKey) {
+      return WorldviewModel(
+        worldviewKey: selectedKey,
+        title: wv.title,
+        titleJa: wv.titleJa,
+        stats: wv.stats,
+        statDescriptions: wv.statDescriptions,
+        commonJudgment: wv.commonJudgment,
+        worldviewDescription: wv.worldviewDescription,
+        worldviewDescriptionJa: wv.worldviewDescriptionJa,
+        resultType: wv.resultType,
+      );
+    }
+    return wv;
+  }
+
+  // Fallback ONLY when there is no valid selected worldview in config.
+  return config.worldviews[AppConstants.defaultWorldviewKey] ??
       WorldviewModel.defaultWorldview();
 });
 
@@ -130,10 +148,18 @@ class RaceCreationController extends StateNotifier<RaceCreationState> {
 
     state = state.copyWith(isSaving: true, errorMessage: null);
     try {
+      final selectedKey = _ref.read(selectedWorldviewKeyProvider);
       final worldview = _ref.read(activeWorldviewProvider);
+      // Always persist under the selected worldview key — never an empty or
+      // fantasy-fallback key when the player explicitly chose another world.
+      final key = selectedKey.isNotEmpty
+          ? selectedKey
+          : (worldview.worldviewKey.isNotEmpty
+              ? worldview.worldviewKey
+              : AppConstants.defaultWorldviewKey);
       final race = RaceModel.create(
         raceName: state.raceName.trim(),
-        worldviewKey: worldview.worldviewKey,
+        worldviewKey: key,
         stats: Map<String, int>.from(state.stats),
         overview: state.overview.trim(),
       );

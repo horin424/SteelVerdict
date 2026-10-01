@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io' show Platform;
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'purchase_service.dart';
@@ -20,6 +22,8 @@ class ProductIds {
     tickets30,
     scenarioPack1,
   };
+
+  static bool isSubscription(String productId) => productId.contains('_sub_');
 }
 
 class IapPurchaseService implements PurchaseService {
@@ -27,6 +31,9 @@ class IapPurchaseService implements PurchaseService {
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   final StreamController<List<PurchaseDetails>> _purchaseController =
       StreamController.broadcast();
+
+  /// Product IDs currently being verified server-side (dedupe stream events).
+  final Set<String> _verifying = {};
 
   @override
   Future<void> initialize() async {
@@ -49,18 +56,54 @@ class IapPurchaseService implements PurchaseService {
     for (final purchase in purchases) {
       if (purchase.status == PurchaseStatus.purchased ||
           purchase.status == PurchaseStatus.restored) {
-        // In a real app, verify the purchase with your server
-        if (purchase.pendingCompletePurchase) {
-          try {
-            await _iap.completePurchase(purchase);
-          } catch (e) {
-            debugPrint('completePurchase error: $e');
+        final key = '${purchase.productID}:${purchase.purchaseID ?? purchase.verificationData.serverVerificationData.hashCode}';
+        if (_verifying.contains(key)) continue;
+        _verifying.add(key);
+        try {
+          final ok = await _validateWithServer(purchase);
+          if (!ok) {
+            debugPrint('Server rejected purchase ${purchase.productID}');
+            continue;
           }
+          if (purchase.pendingCompletePurchase) {
+            await _iap.completePurchase(purchase);
+          }
+        } catch (e) {
+          debugPrint('Purchase verify/complete error: $e');
+        } finally {
+          _verifying.remove(key);
         }
       } else if (purchase.status == PurchaseStatus.error) {
         debugPrint('Purchase error: ${purchase.error}');
       }
     }
+  }
+
+  Future<bool> _validateWithServer(PurchaseDetails purchase) async {
+    final platform = (!kIsWeb && Platform.isIOS) ? 'ios' : 'android';
+    final isSubscription = ProductIds.isSubscription(purchase.productID);
+    final callable = FirebaseFunctions.instance.httpsCallable(
+      'validatePurchase',
+      options: HttpsCallableOptions(timeout: const Duration(seconds: 60)),
+    );
+
+    final payload = <String, dynamic>{
+      'platform': platform,
+      'productId': purchase.productID,
+      'isSubscription': isSubscription,
+    };
+
+    if (platform == 'android') {
+      payload['purchaseToken'] =
+          purchase.verificationData.serverVerificationData;
+    } else {
+      payload['receiptData'] =
+          purchase.verificationData.serverVerificationData;
+    }
+
+    final result = await callable.call(payload);
+    final data = Map<String, dynamic>.from(result.data as Map);
+    return data['granted'] != null;
   }
 
   @override
@@ -91,8 +134,7 @@ class IapPurchaseService implements PurchaseService {
       final product = response.productDetails.first;
       final param = PurchaseParam(productDetails: product);
 
-      final isSubscription = productId.contains('sub');
-      if (isSubscription) {
+      if (ProductIds.isSubscription(productId)) {
         await _iap.buyNonConsumable(purchaseParam: param);
       } else {
         await _iap.buyConsumable(purchaseParam: param);

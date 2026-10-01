@@ -14,7 +14,10 @@ service cloud.firestore {
         && request.auth.uid == uid
         && !request.resource.data.diff(resource.data).affectedKeys()
             .hasAny(["ticketCount", "subscriptionTier", "isBossEnabled",
-                      "lastDailyRewardAt", "subscriptionUpdatedAt"]);
+                      "lastDailyRewardAt", "subscriptionUpdatedAt",
+                      "lastXShareRewardAt", "adTicketClaimsDate",
+                      "adTicketClaimsCount", "totalWins", "totalLosses",
+                      "scenarioPack1Unlocked"]);
 
       // Creation is done by Cloud Function (onUserCreated trigger)
       allow create: if false;

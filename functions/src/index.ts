@@ -5,6 +5,7 @@ admin.initializeApp();
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export { onUserCreated } from "./auth/onUserCreated";
+export { deleteAccount } from "./auth/deleteAccount";
 
 // ─── Battle ───────────────────────────────────────────────────────────────────
 export { submitBattle } from "./battle/submitBattle";
@@ -17,6 +18,7 @@ export { skipAd } from "./tickets/skipAd";
 
 // ─── PvP ──────────────────────────────────────────────────────────────────────
 export { findOrCreatePvpMatch } from "./pvp/findOrCreatePvpMatch";
+export { submitPvpStrategy } from "./pvp/submitPvpStrategy";
 export { checkDeserters } from "./pvp/checkDeserters";
 
 // ─── War History ──────────────────────────────────────────────────────────────

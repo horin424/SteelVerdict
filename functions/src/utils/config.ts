@@ -15,7 +15,11 @@ export const TICKET_COSTS = {
   claude: 3,
   practice: 0,
   tabletop: 0, // ad covers it; skip costs 1 — handled client-side
-  pvp: 1,       // fixed Gemini Flash for fairness
+  normal: 1,
+  epic: 3,
+  boss: 5,
+  history_puzzle: 0,
+  pvp: 1, // fixed Gemini Flash for fairness
 };
 
 // Model IDs

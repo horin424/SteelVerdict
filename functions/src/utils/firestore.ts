@@ -109,4 +109,6 @@ export interface FirestorePvpMatch {
   status: string;
   createdAt: number;
   expiresAt: number;
+  /** Optional — when set, PvP judging uses this worldview instead of fantasy. */
+  worldviewKey?: string;
 }

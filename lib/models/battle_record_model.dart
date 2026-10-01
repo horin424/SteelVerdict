@@ -43,7 +43,8 @@ enum GameMode {
 enum BattleOutcome {
   win,
   loss,
-  draw;
+  draw,
+  survival;
 
   String get displayName {
     switch (this) {
@@ -53,6 +54,8 @@ enum BattleOutcome {
         return 'Defeat';
       case BattleOutcome.draw:
         return 'Draw';
+      case BattleOutcome.survival:
+        return 'Survival';
     }
   }
 
@@ -64,7 +67,14 @@ enum BattleOutcome {
       case 'loss':
       case 'defeat':
         return BattleOutcome.loss;
+      case 'survival':
+        return BattleOutcome.survival;
+      case 'draw':
+      case 'stalemate':
+        return BattleOutcome.draw;
       default:
+        // Unknown is NOT treated as draw for display — callers should prefer
+        // checking the raw string. Kept as draw only for legacy Hive rows.
         return BattleOutcome.draw;
     }
   }
@@ -102,6 +112,12 @@ class BattleRecordModel extends HiveObject {
   @HiveField(9)
   final String scenarioTitle;
 
+  @HiveField(10)
+  final String worldviewKey;
+
+  @HiveField(11)
+  final int? survivalDays;
+
   BattleRecordModel({
     required this.id,
     required this.scenarioId,
@@ -113,6 +129,8 @@ class BattleRecordModel extends HiveObject {
     required this.createdAt,
     required this.isFavorite,
     required this.scenarioTitle,
+    this.worldviewKey = '',
+    this.survivalDays,
   });
 
   GameMode get gameModeEnum => GameMode.fromString(gameMode);
@@ -128,12 +146,14 @@ class BattleRecordModel extends HiveObject {
       playerStats: (json['playerStats'] as Map<dynamic, dynamic>?)
               ?.map((k, v) => MapEntry(k.toString(), (v as num).toInt())) ??
           {},
-      outcome: json['outcome'] as String? ?? 'draw',
+      outcome: json['outcome'] as String? ?? '',
       createdAt: json['createdAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int)
           : DateTime.now(),
       isFavorite: json['isFavorite'] as bool? ?? false,
       scenarioTitle: json['scenarioTitle'] as String? ?? '',
+      worldviewKey: json['worldviewKey'] as String? ?? '',
+      survivalDays: (json['survivalDays'] as num?)?.toInt(),
     );
   }
 
@@ -149,6 +169,8 @@ class BattleRecordModel extends HiveObject {
       'createdAt': createdAt.millisecondsSinceEpoch,
       'isFavorite': isFavorite,
       'scenarioTitle': scenarioTitle,
+      'worldviewKey': worldviewKey,
+      if (survivalDays != null) 'survivalDays': survivalDays,
     };
   }
 
@@ -163,6 +185,8 @@ class BattleRecordModel extends HiveObject {
     DateTime? createdAt,
     bool? isFavorite,
     String? scenarioTitle,
+    String? worldviewKey,
+    int? survivalDays,
   }) {
     return BattleRecordModel(
       id: id ?? this.id,
@@ -175,6 +199,8 @@ class BattleRecordModel extends HiveObject {
       createdAt: createdAt ?? this.createdAt,
       isFavorite: isFavorite ?? this.isFavorite,
       scenarioTitle: scenarioTitle ?? this.scenarioTitle,
+      worldviewKey: worldviewKey ?? this.worldviewKey,
+      survivalDays: survivalDays ?? this.survivalDays,
     );
   }
 }

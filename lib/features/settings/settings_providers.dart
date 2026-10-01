@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../splash/splash_providers.dart';
@@ -143,6 +144,25 @@ class SettingsController extends StateNotifier<SettingsControllerState> {
       return true;
     } catch (e) {
       state = state.copyWith(isClearingData: false, message: 'Failed to clear data: $e');
+      return false;
+    }
+  }
+
+  /// Deletes Firebase Auth account + Firestore user doc, then local data.
+  Future<bool> deleteAccount() async {
+    state = state.copyWith(isClearingData: true, message: null);
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('deleteAccount');
+      await callable.call();
+      final storageService = _ref.read(hiveStorageServiceProvider);
+      await storageService.clearAll();
+      state = state.copyWith(isClearingData: false, message: 'Account deleted.');
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isClearingData: false,
+        message: 'Failed to delete account: $e',
+      );
       return false;
     }
   }

@@ -447,6 +447,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get battleDrawFull => 'DRAW';
 
   @override
+  String get readMore => 'Read more';
+
+  @override
+  String get showLess => 'Show less';
+
+  @override
+  String battleSurvivedDays(int days) {
+    return 'Survived $days days';
+  }
+
+  @override
   String get battleSaveToHistory => 'Save to History';
 
   @override
@@ -687,6 +698,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAllDataCleared => 'All data cleared.';
+
+  @override
+  String get settingsDeleteAccount => 'Delete Account';
+
+  @override
+  String get settingsDeleteAccountConfirm =>
+      'This permanently deletes your account, cloud data, and tickets. This cannot be undone.';
+
+  @override
+  String get settingsDeleteAccountFailed =>
+      'Could not delete account. Please try again.';
 
   @override
   String get settingsRace => 'Race';

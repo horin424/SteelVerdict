@@ -8,6 +8,8 @@ class WorldviewModel {
   final String commonJudgment;
   final String worldviewDescription;
   final String? worldviewDescriptionJa;
+  /// "battle" (default) or "survival" (e.g. Last Breath — days survived).
+  final String resultType;
 
   const WorldviewModel({
     required this.worldviewKey,
@@ -18,7 +20,10 @@ class WorldviewModel {
     required this.commonJudgment,
     required this.worldviewDescription,
     this.worldviewDescriptionJa,
+    this.resultType = 'battle',
   });
+
+  bool get isSurvivalMode => resultType == 'survival';
 
   String localizedTitle(String locale) =>
       (locale == 'ja' && titleJa != null && titleJa!.isNotEmpty) ? titleJa! : title;
@@ -28,34 +33,54 @@ class WorldviewModel {
           ? worldviewDescriptionJa!
           : worldviewDescription;
 
-  factory WorldviewModel.fromJson(Map<String, dynamic> json) {
+  factory WorldviewModel.fromJson(Map<String, dynamic> json, {String? keyFallback}) {
     final rawStats = json['stats'];
     final statsList = rawStats is List
         ? rawStats.map((e) => e.toString()).toList()
         : <String>[];
 
-    final rawDescs = json['statDescriptions'] as Map<dynamic, dynamic>?;
+    // Support camelCase (admin panel) and snake_case (manual Firebase / seed).
+    final rawDescs = json['statDescriptions'] ?? json['stat_descriptions'];
     final statDescriptions = <String, Map<String, String>>{};
-    if (rawDescs != null) {
+    if (rawDescs is Map) {
       for (final entry in rawDescs.entries) {
         final key = entry.key.toString();
-        final inner = entry.value as Map<dynamic, dynamic>?;
-        if (inner != null) {
+        final value = entry.value;
+        if (value is Map) {
           statDescriptions[key] =
-              inner.map((k, v) => MapEntry(k.toString(), v.toString()));
+              value.map((k, v) => MapEntry(k.toString(), v.toString()));
+        } else if (value != null) {
+          // Spec sample uses plain strings: { "芸術": "工兵・築城…" }
+          final text = value.toString();
+          statDescriptions[key] = {'en': text, 'ja': text};
         }
       }
     }
 
+    final keyFromJson = json['worldviewKey'] as String?;
+    final worldviewKey = (keyFromJson != null && keyFromJson.isNotEmpty)
+        ? keyFromJson
+        : (keyFallback ?? '');
+
+    final rawResultType =
+        (json['resultType'] ?? json['result_type']) as String?;
+    final resultType =
+        (rawResultType != null && rawResultType.isNotEmpty) ? rawResultType : 'battle';
+
     return WorldviewModel(
-      worldviewKey: json['worldviewKey'] as String? ?? '',
+      worldviewKey: worldviewKey,
       title: json['title'] as String? ?? '',
-      titleJa: json['titleJa'] as String?,
+      titleJa: json['titleJa'] as String? ?? json['title_ja'] as String?,
       stats: statsList,
       statDescriptions: statDescriptions,
-      commonJudgment: json['commonJudgment'] as String? ?? '',
-      worldviewDescription: json['worldviewDescription'] as String? ?? '',
-      worldviewDescriptionJa: json['worldviewDescriptionJa'] as String?,
+      commonJudgment: (json['commonJudgment'] ?? json['common_judgment'] ?? '')
+          as String,
+      worldviewDescription:
+          (json['worldviewDescription'] ?? json['worldview_description'] ?? '')
+              as String,
+      worldviewDescriptionJa: json['worldviewDescriptionJa'] as String? ??
+          json['worldview_description_ja'] as String?,
+      resultType: resultType,
     );
   }
 
@@ -68,7 +93,9 @@ class WorldviewModel {
       'statDescriptions': statDescriptions,
       'commonJudgment': commonJudgment,
       'worldviewDescription': worldviewDescription,
-      if (worldviewDescriptionJa != null) 'worldviewDescriptionJa': worldviewDescriptionJa,
+      if (worldviewDescriptionJa != null)
+        'worldviewDescriptionJa': worldviewDescriptionJa,
+      'resultType': resultType,
     };
   }
 
@@ -76,7 +103,7 @@ class WorldviewModel {
   String getStatDescription(String statKey, String locale) {
     final desc = statDescriptions[statKey];
     if (desc == null) return statKey;
-    return desc[locale] ?? desc['en'] ?? statKey;
+    return desc[locale] ?? desc['en'] ?? desc['ja'] ?? statKey;
   }
 
   /// Default worldview for fallback.
@@ -118,6 +145,7 @@ class WorldviewModel {
           'An early 19th century world where magic and gunpowder coexist. Great empires clash over vast territories.',
       worldviewDescriptionJa:
           '魔法と火薬が共存する19世紀初頭の世界。大帝国が広大な領土をめぐって激突する。',
+      resultType: 'battle',
     );
   }
 }

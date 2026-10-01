@@ -20,7 +20,12 @@ export async function judgePvpMatch(
   match: FirestorePvpMatch,
   geminiApiKey: string,
 ): Promise<void> {
-  const systemPrompt = await assemblePrompt("1830_fantasy", "pvp", "pvp");
+  // Prefer the match's worldview when present; never silently force fantasy
+  // when both players fought under another world.
+  const worldviewKey =
+    (match as FirestorePvpMatch & { worldviewKey?: string }).worldviewKey ||
+    "1830_fantasy";
+  const systemPrompt = await assemblePrompt(worldviewKey, "pvp", "pvp");
   const userMessage = formatPvpUserMessage(
     match.playerAStrategy,
     match.playerAStats,
@@ -56,14 +61,21 @@ export function parsePvpResponse(
   playerAUid: string,
   playerBUid: string,
 ): { winner: string; shortReport: string } {
-  const upper = text.toUpperCase();
-
   let winner = "draw";
-  if (upper.includes("WINNER: PLAYER A")) {
+  if (
+    /WINNER\s*:\s*PLAYER\s*A/i.test(text) ||
+    /勝者\s*[:：]\s*(プレイヤー\s*)?A/i.test(text)
+  ) {
     winner = playerAUid;
-  } else if (upper.includes("WINNER: PLAYER B")) {
+  } else if (
+    /WINNER\s*:\s*PLAYER\s*B/i.test(text) ||
+    /勝者\s*[:：]\s*(プレイヤー\s*)?B/i.test(text)
+  ) {
     winner = playerBUid;
-  } else if (upper.includes("WINNER: DRAW")) {
+  } else if (
+    /WINNER\s*:\s*DRAW/i.test(text) ||
+    /勝者\s*[:：]\s*引き分け/i.test(text)
+  ) {
     winner = "draw";
   }
 

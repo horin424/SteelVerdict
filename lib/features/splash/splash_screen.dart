@@ -73,7 +73,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _initialize() async {
     await Future.delayed(const Duration(milliseconds: 500));
     try {
-      await ref.read(initializationProvider.future);
+      // Cap wait so a slow network / hung Remote Config cannot pin splash forever.
+      await ref
+          .read(initializationProvider.future)
+          .timeout(const Duration(seconds: 15));
     } catch (e) {
       debugPrint('Initialization error: $e');
     }
@@ -83,7 +86,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    final user = await ref.read(authStateChangesProvider.future);
+    // authStateChanges can hang if Firebase Auth never emits (bad network,
+    // Play Services issues on emulators). Time out and treat as logged-out.
+    Object? user;
+    try {
+      user = await ref
+          .read(authStateChangesProvider.future)
+          .timeout(const Duration(seconds: 10));
+    } catch (e) {
+      debugPrint('Auth state wait timed out: $e');
+      user = null;
+    }
     if (!mounted) return;
     if (user != null) {
       context.go(RouteNames.home);

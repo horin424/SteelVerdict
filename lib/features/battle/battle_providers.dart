@@ -178,6 +178,7 @@ class BattleController extends StateNotifier<BattleControllerState> {
           strategy: strategy,
           response: response,
           raceStats: race.stats,
+          worldviewKey: selectedWorldview,
         );
       }
 
@@ -205,6 +206,9 @@ class BattleController extends StateNotifier<BattleControllerState> {
       final String errorMessage;
       if (msg.contains('CONTENT_FILTER_BLOCKED')) {
         errorMessage = 'content_filter_blocked';
+      } else if (msg.contains('OUTCOME_PARSE_FAILED') ||
+          msg.contains('empty report')) {
+        errorMessage = 'battle_failed_retry';
       } else if (msg.contains('Not enough tickets')) {
         errorMessage = msg;
       } else if (msg.contains('Authentication')) {
@@ -243,6 +247,7 @@ class BattleController extends StateNotifier<BattleControllerState> {
     required String strategy,
     required BattleResponse response,
     required Map<String, int> raceStats,
+    required String worldviewKey,
   }) async {
     try {
       final record = BattleRecordModel(
@@ -255,11 +260,13 @@ class BattleController extends StateNotifier<BattleControllerState> {
         outcome: response.outcome,
         createdAt: DateTime.now(),
         isFavorite: false,
-        // Was scenarioId, so every war-history row was titled SCENARIO_001.
-        // Stored as a fallback only; the display resolves against live config.
         scenarioTitle:
             _ref.read(gameConfigProvider).scenarios[scenarioId]?.title ??
                 scenarioId,
+        worldviewKey: worldviewKey.isNotEmpty
+            ? worldviewKey
+            : (response.worldviewKey ?? ''),
+        survivalDays: response.survivalDays,
       );
 
       final storageService = _ref.read(hiveStorageServiceProvider);

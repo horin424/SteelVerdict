@@ -72,6 +72,7 @@ class PvpMatchmakingController extends StateNotifier<PvpMatchmakingState> {
       final result = await callable.call({
         'raceName': race.raceName,
         'raceStats': race.stats,
+        'worldviewKey': race.worldviewKey,
       });
 
       final data = result.data as Map<String, dynamic>;
@@ -151,11 +152,28 @@ class PvpBattleController extends StateNotifier<PvpBattleState> {
         return false;
       }
 
-      final firestoreService = _ref.read(firestoreServiceProvider);
-      await firestoreService.submitPvpStrategy(matchId, user.uid, strategy);
+      // Server-side: ticket deduction + strategy write (cannot be bypassed).
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'submitPvpStrategy',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 30)),
+      );
+      await callable.call({
+        'matchId': matchId,
+        'strategy': strategy,
+      });
 
+      _ref.invalidate(activePvpMatchesProvider);
+      _ref.invalidate(currentUserModelProvider);
       state = state.copyWith(isSubmitting: false, isSubmitted: true);
       return true;
+    } on FirebaseFunctionsException catch (e) {
+      state = state.copyWith(
+        isSubmitting: false,
+        error: e.message?.contains('Not enough tickets') == true
+            ? e.message
+            : 'err_submit_failed',
+      );
+      return false;
     } catch (e) {
       state = state.copyWith(isSubmitting: false, error: 'err_submit_failed');
       return false;

@@ -25,6 +25,8 @@ class HistoryListTile extends ConsumerWidget {
       case BattleOutcome.win: return l10n.battleResultVictory;
       case BattleOutcome.loss: return l10n.battleResultDefeat;
       case BattleOutcome.draw: return l10n.battleResultDraw;
+      case BattleOutcome.survival:
+        return l10n.battleSurvivedDays(record.survivalDays ?? 0);
     }
   }
 
@@ -44,6 +46,8 @@ class HistoryListTile extends ConsumerWidget {
         return AppColors.victoryGreen;
       case BattleOutcome.loss:
         return AppColors.warRedBright;
+      case BattleOutcome.survival:
+        return AppColors.goldAccent;
       case BattleOutcome.draw:
         return AppColors.drawGray;
     }

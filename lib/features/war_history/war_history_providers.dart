@@ -1,11 +1,12 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../../models/battle_record_model.dart';
 import '../../models/war_history_model.dart';
-import '../../services/battle_api/battle_api_service.dart';
 import '../splash/splash_providers.dart';
-import '../battle/battle_providers.dart';
 import '../settings/settings_providers.dart';
+import '../auth/auth_providers.dart';
+import '../world_setting/world_setting_providers.dart';
 import 'scenario_title.dart';
 import '../../services/game_config/game_config_providers.dart';
 
@@ -77,43 +78,79 @@ class WarHistoryController extends StateNotifier<WarHistoryControllerState> {
   Future<WarHistoryModel?> generateWarChronicle(BattleRecordModel record) async {
     state = state.copyWith(isGenerating: true, error: null);
     try {
-      // Use the battle API to generate a long narrative
-      final battleApiService = _ref.read(battleApiServiceProvider);
       final locale = _ref.read(localeProvider).languageCode;
-      final response = await battleApiService.submitBattle(
-        BattleRequest(
-          playerStrategy: record.playerStrategy,
-          raceStats: record.playerStats,
-          scenarioId: record.scenarioId,
-          gameMode: 'epic', // Use epic mode for narrative generation
-          modelChoice: ModelChoice.gemini,
-          locale: locale,
-        ),
+      final race = _ref.read(currentRaceProvider);
+      final config = _ref.read(gameConfigProvider);
+      final scenario = config.scenarios[record.scenarioId];
+
+      // Prefer the worldview stored with the battle. Falling back to the
+      // currently selected world (not fantasy) only for legacy Hive rows.
+      final worldviewKey = record.worldviewKey.isNotEmpty
+          ? record.worldviewKey
+          : (_ref.read(selectedWorldviewKeyProvider));
+
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'generateWarHistory',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 120)),
       );
 
-      final narrative = response.reportText;
+      final result = await callable.call({
+        'battleTitle': scenarioDisplayTitle(
+          config: config,
+          scenarioId: record.scenarioId,
+          storedTitle: record.scenarioTitle,
+          languageCode: locale,
+        ),
+        'playerStrategy': record.playerStrategy,
+        'raceStats': record.playerStats,
+        'raceName': race?.raceName ?? 'Unknown',
+        'opponentName': scenario?.localizedEnemyName(locale) ?? '',
+        'outcome': record.outcome,
+        'scenarioId': record.scenarioId,
+        'shortReport': record.aiReport.length > 200
+            ? record.aiReport.substring(0, 200)
+            : record.aiReport,
+        'worldviewKey': worldviewKey,
+        'locale': locale,
+        if (record.survivalDays != null) 'survivalDays': record.survivalDays,
+      });
+
+      final data = Map<String, dynamic>.from(result.data as Map);
+      final narrative = data['chronicleText'] as String? ?? '';
+      if (narrative.isEmpty) {
+        state = state.copyWith(isGenerating: false, error: 'err_chronicle_failed');
+        return null;
+      }
+
       final history = WarHistoryModel(
         id: const Uuid().v4(),
         sourceRecordId: record.id,
         longNarrative: narrative,
         createdAt: DateTime.now(),
         sharedToX: false,
-        // Was an English template wrapped around the raw scenario id, so the
-        // shared parchment read "The SCENARIO_001 Chronicle" in both languages.
         title: scenarioDisplayTitle(
-          config: _ref.read(gameConfigProvider),
+          config: config,
           scenarioId: record.scenarioId,
           storedTitle: record.scenarioTitle,
-          languageCode: _ref.read(localeProvider).languageCode,
+          languageCode: locale,
         ),
       );
 
       final storageService = _ref.read(hiveStorageServiceProvider);
       await storageService.saveWarHistory(history);
       _ref.invalidate(warHistoriesProvider);
+      _ref.invalidate(currentUserModelProvider);
 
       state = state.copyWith(isGenerating: false, generatedNarrative: narrative);
       return history;
+    } on FirebaseFunctionsException catch (e) {
+      state = state.copyWith(
+        isGenerating: false,
+        error: e.message?.contains('Not enough tickets') == true
+            ? e.message
+            : 'err_chronicle_failed',
+      );
+      return null;
     } catch (e) {
       state = state.copyWith(isGenerating: false, error: 'err_chronicle_failed');
       return null;

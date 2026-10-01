@@ -920,6 +920,24 @@ abstract class AppLocalizations {
   /// **'DRAW'**
   String get battleDrawFull;
 
+  /// Expand long worldview description
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get readMore;
+
+  /// Collapse expanded worldview description
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get showLess;
+
+  /// Survival-mode primary result label
+  ///
+  /// In en, this message translates to:
+  /// **'Survived {days} days'**
+  String battleSurvivedDays(int days);
+
   /// Save battle to history button
   ///
   /// In en, this message translates to:
@@ -1381,6 +1399,15 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All data cleared.'**
   String get settingsAllDataCleared;
+
+  /// Delete account button label
+  String get settingsDeleteAccount;
+
+  /// Delete account confirmation
+  String get settingsDeleteAccountConfirm;
+
+  /// Delete account failure message
+  String get settingsDeleteAccountFailed;
 
   /// Race section label in settings
   ///

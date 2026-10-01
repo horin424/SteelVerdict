@@ -13,6 +13,7 @@ import '../widgets/stat_allocator_tile.dart';
 import '../widgets/points_remaining_indicator.dart';
 import '../widgets/race_name_field.dart';
 import '../../../core/utils/error_messages.dart';
+import '../../../core/widgets/expandable_description.dart';
 
 class RaceCreationScreen extends ConsumerWidget {
   final bool redirectToBattle;
@@ -55,11 +56,10 @@ class RaceCreationScreen extends ConsumerWidget {
                     style: AppTextStyles.headlineSmall,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    worldview.localizedDescription(locale),
+                  ExpandableDescription(
+                    text: worldview.localizedDescription(locale),
+                    collapsedMaxLines: 2,
                     style: AppTextStyles.bodySmall,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -160,7 +160,10 @@ class RaceCreationScreen extends ConsumerWidget {
                           l10n.raceCreationSuccess,
                         );
                         if (redirectToBattle) {
-                          context.go(RouteNames.worldSetting);
+                          // World was already chosen; go straight to battle type.
+                          // Returning to worldSetting re-checked hasRace and,
+                          // when worldviewKey was empty, sent players back here.
+                          context.go(RouteNames.battleType);
                         } else {
                           context.go(RouteNames.home);
                         }

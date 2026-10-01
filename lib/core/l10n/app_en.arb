@@ -436,6 +436,20 @@
   "battleDrawFull": "DRAW",
   "@battleDrawFull": { "description": "Draw full caps display" },
 
+  "readMore": "Read more",
+  "@readMore": { "description": "Expand long worldview description" },
+
+  "showLess": "Show less",
+  "@showLess": { "description": "Collapse expanded worldview description" },
+
+  "battleSurvivedDays": "Survived {days} days",
+  "@battleSurvivedDays": {
+    "description": "Survival-mode primary result label",
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+
   "battleSaveToHistory": "Save to History",
   "@battleSaveToHistory": { "description": "Save battle to history button" },
 
@@ -675,6 +689,15 @@
 
   "settingsAllDataCleared": "All data cleared.",
   "@settingsAllDataCleared": { "description": "Data cleared success message" },
+
+  "settingsDeleteAccount": "Delete Account",
+  "@settingsDeleteAccount": { "description": "Delete account button label" },
+
+  "settingsDeleteAccountConfirm": "This permanently deletes your account, cloud data, and tickets. This cannot be undone.",
+  "@settingsDeleteAccountConfirm": { "description": "Delete account confirmation" },
+
+  "settingsDeleteAccountFailed": "Could not delete account. Please try again.",
+  "@settingsDeleteAccountFailed": { "description": "Delete account failure message" },
 
   "settingsRace": "Race",
   "@settingsRace": { "description": "Race section label in settings" },

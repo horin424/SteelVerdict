@@ -1,34 +1,28 @@
-export type Outcome = "win" | "loss" | "draw";
+export type Outcome = "win" | "loss" | "draw" | "survival";
+
+export interface ParsedOutcome {
+  outcome: Outcome;
+  /** Present when outcome === "survival". */
+  survivalDays?: number;
+}
 
 /**
  * Parses the battle outcome out of an AI-written report.
  *
- * The previous implementation did `text.toUpperCase().includes("WIN")` and
- * checked win before loss. Two things were wrong with that:
+ * Preferred format (instructed in prompt.ts):
+ *   [[RESULT:VICTORY]] | [[RESULT:DEFEAT]] | [[RESULT:DRAW]]
+ *   [[RESULT:SURVIVAL|days=17]]
  *
- *   - "WIN" is a substring of WING, DRAWING, WINDING, SWING, TWIN, WINTER.
- *     A report saying "the enemy's left wing collapsed ... DEFEAT" parsed as a
- *     player *victory*, because the win branch ran first.
- *   - Only English was recognised, so a Japanese report could never be anything
- *     but a draw - which is exactly what the client reported.
+ * Legacy: trailing VICTORY / DEFEAT / STALEMATE (EN) or 勝利 / 敗北 / 引き分け (JA).
  *
- * Strategy here, in order of confidence:
- *
- *   1. The prompts (see PROMPT_CONFIG_GUIDE.md) instruct the model to end its
- *      response with VICTORY / DEFEAT / STALEMATE on its own line. If one of the
- *      last few lines is a bare outcome keyword, trust that above everything.
- *   2. Otherwise take the *last* outcome keyword in the text, matched on word
- *      boundaries. Last rather than first, because reports narrate the battle
- *      and then announce the result.
- *   3. If nothing matches at all, "draw" - same fallback as before.
- *
- * Known limit: a report can legitimately contain "the enemy was defeated",
- * which is a player win phrased with a loss keyword. No keyword scan can settle
- * that. Keeping the model disciplined about the trailing keyword (rule 1) is
- * what makes this reliable; rules 2-3 are a safety net.
+ * IMPORTANT: an unparseable response is NOT a draw. Callers must treat
+ * `null` as a parsing error (refund + retry), never silently store a draw.
  */
 
-// Standalone keywords, used for rule 1 - a whole line that is just the verdict.
+const RESULT_MARKER =
+  /\[\[\s*RESULT\s*:\s*(VICTORY|DEFEAT|DRAW|STALEMATE|SURVIVAL|WIN|LOSS)(?:\s*[|,]\s*days\s*=\s*(\d+))?\s*\]\]/i;
+
+// Standalone keywords, used for legacy trailing-line detection.
 const STANDALONE: Array<[RegExp, Outcome]> = [
   [/^(VICTORY|WIN|WON|TRIUMPH)$/i, "win"],
   [/^(DEFEAT|DEFEATED|LOSS|LOST)$/i, "loss"],
@@ -38,17 +32,13 @@ const STANDALONE: Array<[RegExp, Outcome]> = [
   [/^(引き分け|引分|痛み分け|膠着)$/u, "draw"],
 ];
 
-// In-text keywords, used for rule 2.
-//
-// Note the omission of a bare English "DRAW": "draw the enemy into the valley"
-// is ordinary strategy prose, and treating it as a verdict caused false draws.
-// STALEMATE and the Japanese terms are unambiguous, so those stay.
+// In-text keywords — last match wins. Used only as legacy fallback.
 const IN_TEXT: Array<[RegExp, Outcome]> = [
-  [/\b(VICTORY|VICTORIOUS|WINS?|WON|WINNING|TRIUMPHED)\b/gi, "win"],
-  [/\b(DEFEAT|DEFEATED|LOSS|LOST|ROUTED|ANNIHILATED)\b/gi, "loss"],
-  [/\b(STALEMATE|DRAWN|INCONCLUSIVE)\b/gi, "draw"],
-  [/(勝利|勝ち|大勝)/gu, "win"],
-  [/(敗北|敗戦|負け|惨敗)/gu, "loss"],
+  [/\b(VICTORY|VICTORIOUS|TRIUMPHED)\b/gi, "win"],
+  [/\b(DEFEAT|DEFEATED|ROUTED|ANNIHILATED)\b/gi, "loss"],
+  [/\b(STALEMATE|INCONCLUSIVE)\b/gi, "draw"],
+  [/(勝利|大勝)/gu, "win"],
+  [/(敗北|敗戦|惨敗)/gu, "loss"],
   [/(引き分け|引分|痛み分け|膠着)/gu, "draw"],
 ];
 
@@ -60,26 +50,51 @@ function bareLine(line: string): string {
     .trim();
 }
 
-export function parseOutcome(text: string): Outcome {
-  if (!text) return "draw";
+/**
+ * Returns the parsed outcome, or null if nothing reliable was found.
+ * Does NOT default to draw.
+ */
+export function parseOutcome(text: string): ParsedOutcome | null {
+  if (!text || !text.trim()) return null;
 
-  // Rule 1 - a trailing line that is nothing but the verdict.
+  // Rule 0 — structured marker (highest confidence). Prefer the last marker.
+  let markerMatch: RegExpExecArray | null = null;
+  RESULT_MARKER.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  const markerRe = new RegExp(RESULT_MARKER.source, "gi");
+  while ((m = markerRe.exec(text)) !== null) {
+    markerMatch = m;
+  }
+  if (markerMatch) {
+    const token = markerMatch[1].toUpperCase();
+    if (token === "SURVIVAL") {
+      const days = markerMatch[2] ? parseInt(markerMatch[2], 10) : undefined;
+      return { outcome: "survival", survivalDays: Number.isFinite(days) ? days : undefined };
+    }
+    if (token === "VICTORY" || token === "WIN") return { outcome: "win" };
+    if (token === "DEFEAT" || token === "LOSS") return { outcome: "loss" };
+    if (token === "DRAW" || token === "STALEMATE") return { outcome: "draw" };
+  }
+
+  // Rule 1 — a trailing line that is nothing but the verdict.
   const lines = text
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter((l) => l.length > 0);
 
   for (const line of lines.slice(-4).reverse()) {
+    // Skip the structured marker line itself if still present.
+    if (RESULT_MARKER.test(line)) continue;
     const bare = bareLine(line);
     if (!bare) continue;
     for (const [re, outcome] of STANDALONE) {
-      if (re.test(bare)) return outcome;
+      if (re.test(bare)) return { outcome };
     }
   }
 
-  // Rule 2 - last keyword anywhere in the text.
+  // Rule 2 — last keyword anywhere in the text (legacy only).
   let bestIndex = -1;
-  let bestOutcome: Outcome = "draw";
+  let bestOutcome: Outcome | null = null;
   for (const [re, outcome] of IN_TEXT) {
     re.lastIndex = 0;
     let match: RegExpExecArray | null;
@@ -88,10 +103,20 @@ export function parseOutcome(text: string): Outcome {
         bestIndex = match.index;
         bestOutcome = outcome;
       }
-      if (match.index === re.lastIndex) re.lastIndex++; // guard zero-width
+      if (match.index === re.lastIndex) re.lastIndex++;
     }
   }
 
-  // Rule 3 - nothing recognised.
-  return bestIndex === -1 ? "draw" : bestOutcome;
+  if (bestOutcome !== null) return { outcome: bestOutcome };
+
+  // Rule 3 — unparseable. Caller must error, not invent a draw.
+  return null;
+}
+
+/** Remove structured result markers from player-facing report text. */
+export function stripResultMarkers(text: string): string {
+  return text
+    .replace(new RegExp(RESULT_MARKER.source, "gi"), "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }

@@ -107,33 +107,6 @@ class SettingsScreen extends ConsumerWidget {
                       _SettingsGroup(
                         children: [
                           _SettingRow(
-                            icon: Icons.person_outline,
-                            iconColor: AppColors.blue,
-                            title: l10n.settingsPersonalInfo,
-                            onTap: () {
-                              ErrorSnackbar.showError(
-                                context,
-                                l10n.settingsComingSoon,
-                              );
-                            },
-                          ),
-                          _Divider(),
-                          _SettingRow(
-                            icon: Icons.lock_outline,
-                            iconColor: AppColors.purple,
-                            title: l10n.settingsChangePassword,
-                            onTap: isAnonymous
-                                ? () => ErrorSnackbar.showError(
-                                    context,
-                                    l10n.settingsLinkAccountFirst,
-                                  )
-                                : () => ErrorSnackbar.showError(
-                                    context,
-                                    l10n.settingsComingSoon,
-                                  ),
-                          ),
-                          _Divider(),
-                          _SettingRow(
                             icon: Icons.link,
                             iconColor: AppColors.teal,
                             title: l10n.settingsLinkedAccounts,
@@ -143,6 +116,109 @@ class SettingsScreen extends ConsumerWidget {
                             onTap: isAnonymous
                                 ? () => context.push(RouteNames.accountLink)
                                 : null,
+                          ),
+                          _Divider(),
+                          _SettingRow(
+                            icon: Icons.person_off_outlined,
+                            iconColor: AppColors.defeatRed,
+                            title: l10n.settingsDeleteAccount,
+                            isDestructive: true,
+                            isLoading: settingsState.isClearingData,
+                            onTap: () async {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) {
+                                  final controller = TextEditingController();
+                                  final confirmWord = l10n.deleteConfirmWord;
+                                  return StatefulBuilder(
+                                    builder: (ctx, setState) => AlertDialog(
+                                      backgroundColor: AppColors.navyMid,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      title: Text(
+                                        l10n.settingsDeleteAccount,
+                                        style: AppTextStyles.headlineSmall,
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            l10n.settingsDeleteAccountConfirm,
+                                            style: AppTextStyles.bodySmall,
+                                          ),
+                                          const SizedBox(height: 16),
+                                          TextField(
+                                            controller: controller,
+                                            autofocus: true,
+                                            style: AppTextStyles.bodySmall,
+                                            decoration: InputDecoration(
+                                              hintText: l10n.deleteConfirmHint,
+                                              hintStyle: AppTextStyles.bodySmall
+                                                  .copyWith(
+                                                    color: AppColors.textMuted,
+                                                  ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: AppColors.textMuted,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: AppColors.defeatRed,
+                                                ),
+                                              ),
+                                            ),
+                                            onChanged: (_) => setState(() {}),
+                                          ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(ctx, false),
+                                          child: Text(
+                                            l10n.cancel,
+                                            style: AppTextStyles.labelMedium,
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed:
+                                              controller.text == confirmWord
+                                              ? () => Navigator.pop(ctx, true)
+                                              : null,
+                                          child: Text(
+                                            l10n.delete,
+                                            style: AppTextStyles.labelMedium
+                                                .copyWith(
+                                                  color:
+                                                      controller.text ==
+                                                          confirmWord
+                                                      ? AppColors.defeatRed
+                                                      : AppColors.textMuted,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                              if (confirmed == true && context.mounted) {
+                                final success = await settingsController
+                                    .deleteAccount();
+                                if (success && context.mounted) {
+                                  context.go(RouteNames.auth);
+                                } else if (context.mounted) {
+                                  ErrorSnackbar.showError(
+                                    context,
+                                    l10n.settingsDeleteAccountFailed,
+                                  );
+                                }
+                              }
+                            },
                           ),
                         ],
                       ),

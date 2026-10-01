@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 interface FindMatchRequest {
   raceName: string;
   raceStats: Record<string, number>;
+  worldviewKey?: string;
 }
 
 /**
@@ -104,6 +105,7 @@ export const findOrCreatePvpMatch = onCall(async (request) => {
     status: "waiting",
     createdAt: now,
     expiresAt,
+    worldviewKey: data.worldviewKey || "1830_fantasy",
   };
 
   await matchesRef.doc(matchId).set(newMatch);

@@ -58,24 +58,71 @@ class ScenarioModel {
           ? commanderDefinitionJa!
           : commanderDefinition;
 
-  factory ScenarioModel.fromJson(Map<String, dynamic> json) {
+  factory ScenarioModel.fromJson(Map<String, dynamic> json, {String? idFallback}) {
+    final scenarioId = (json['scenarioId'] as String?)?.isNotEmpty == true
+        ? json['scenarioId'] as String
+        : (idFallback ?? '');
+    final worldviewKey = (json['worldviewKey'] as String?) ??
+        (json['worldview'] as String?) ??
+        '';
+
+    final rawEnemyStats = json['enemyStats'] ?? json['enemy_stats'];
+    final enemyStats = rawEnemyStats is Map
+        ? Map<dynamic, dynamic>.from(rawEnemyStats)
+            .map((k, v) => MapEntry(k.toString(), (v as num).toInt()))
+        : <String, int>{};
+
+    final difficultyRaw = json['difficulty'];
+    final int difficulty;
+    if (difficultyRaw is num) {
+      difficulty = difficultyRaw.toInt();
+    } else if (difficultyRaw is String) {
+      difficulty = _difficultyFromLabel(difficultyRaw);
+    } else {
+      difficulty = 1;
+    }
+
     return ScenarioModel(
-      scenarioId: json['scenarioId'] as String? ?? '',
-      worldviewKey: json['worldviewKey'] as String? ?? '1830_fantasy',
+      scenarioId: scenarioId,
+      worldviewKey: worldviewKey.isNotEmpty ? worldviewKey : '1830_fantasy',
       title: json['title'] as String? ?? 'Unknown Scenario',
-      titleJa: json['titleJa'] as String?,
-      difficulty: json['difficulty'] as int? ?? 1,
-      enemyName: json['enemyName'] as String? ?? 'Unknown Enemy',
-      enemyNameJa: json['enemyNameJa'] as String?,
-      enemyStats: (json['enemyStats'] as Map<dynamic, dynamic>?)
-              ?.map((k, v) => MapEntry(k.toString(), (v as num).toInt())) ??
-          {},
-      commanderDefinition: json['commanderDefinition'] as String? ?? '',
-      commanderDefinitionJa: json['commanderDefinitionJa'] as String?,
-      isUnlocked: json['isUnlocked'] as bool? ?? false,
-      isFree: json['isFree'] as bool? ?? false,
-      battleType: _parseBattleType(json['battleType'] as String?),
+      titleJa: json['titleJa'] as String? ?? json['title_ja'] as String?,
+      difficulty: difficulty,
+      enemyName: (json['enemyName'] ?? json['enemy_name'] ?? 'Unknown Enemy')
+          as String,
+      enemyNameJa: json['enemyNameJa'] as String? ??
+          json['enemy_name_ja'] as String?,
+      enemyStats: enemyStats,
+      commanderDefinition: (json['commanderDefinition'] ??
+              json['commander_definition'] ??
+              '') as String,
+      commanderDefinitionJa: json['commanderDefinitionJa'] as String? ??
+          json['commander_definition_ja'] as String?,
+      isUnlocked: json['isUnlocked'] as bool? ??
+          json['is_unlocked'] as bool? ??
+          false,
+      isFree: json['isFree'] as bool? ?? json['is_free'] as bool? ?? false,
+      battleType: _parseBattleType(
+        (json['battleType'] ?? json['battle_type']) as String?,
+      ),
     );
+  }
+
+  static int _difficultyFromLabel(String raw) {
+    switch (raw.toLowerCase()) {
+      case 'easy':
+        return 1;
+      case 'normal':
+      case 'medium':
+        return 2;
+      case 'hard':
+        return 3;
+      case 'very hard':
+      case 'extreme':
+        return 5;
+      default:
+        return int.tryParse(raw) ?? 1;
+    }
   }
 
   static BattleType _parseBattleType(String? raw) {

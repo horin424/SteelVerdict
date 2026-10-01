@@ -128,6 +128,7 @@ exports.findOrCreatePvpMatch = (0, https_1.onCall)(async (request) => {
         status: "waiting",
         createdAt: now,
         expiresAt,
+        worldviewKey: data.worldviewKey || "1830_fantasy",
     };
     await matchesRef.doc(matchId).set(newMatch);
     return {

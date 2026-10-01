@@ -42,17 +42,23 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
       case 'loss':
       case 'defeat':
         return AppColors.warRedBright;
+      case 'survival':
+        return AppColors.goldAccent;
       default:
         return AppColors.drawGray;
     }
   }
 
-  String _outcomeLabel(String outcome, AppLocalizations l10n) {
+  String _outcomeLabel(String outcome, AppLocalizations l10n, int? survivalDays) {
     switch (outcome.toLowerCase()) {
       case 'win':
+      case 'victory':
         return l10n.battleVictoryFull;
       case 'loss':
+      case 'defeat':
         return l10n.battleDefeatFull;
+      case 'survival':
+        return l10n.battleSurvivedDays(survivalDays ?? 0);
       default:
         return l10n.battleDrawFull;
     }
@@ -61,9 +67,13 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
   IconData _outcomeIcon(String outcome) {
     switch (outcome.toLowerCase()) {
       case 'win':
+      case 'victory':
         return Icons.emoji_events;
       case 'loss':
+      case 'defeat':
         return Icons.flag_outlined;
+      case 'survival':
+        return Icons.hourglass_bottom;
       default:
         return Icons.balance;
     }
@@ -72,9 +82,10 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final outcome = widget.resultData?['outcome'] as String? ?? 'draw';
+    final outcome = widget.resultData?['outcome'] as String? ?? '';
     final reportText = widget.resultData?['reportText'] as String? ?? l10n.battleNoReport;
     final shortSummary = widget.resultData?['shortSummary'] as String? ?? '';
+    final survivalDays = (widget.resultData?['survivalDays'] as num?)?.toInt();
 
     final outcomeColor = _outcomeColor(outcome);
 
@@ -92,7 +103,6 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Outcome banner
             Container(
               padding: const EdgeInsets.symmetric(vertical: 24),
               decoration: BoxDecoration(
@@ -109,11 +119,12 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    _outcomeLabel(outcome, l10n),
+                    _outcomeLabel(outcome, l10n, survivalDays),
                     style: AppTextStyles.displaySmall.copyWith(
                       color: outcomeColor,
-                      letterSpacing: 4,
+                      letterSpacing: outcome == 'survival' ? 1 : 4,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   if (shortSummary.isNotEmpty) ...[
                     const SizedBox(height: 8),
@@ -131,13 +142,11 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Report
             Text(l10n.battleReport, style: AppTextStyles.headlineSmall),
             const SizedBox(height: 8),
             BattleReportDisplay(reportText: reportText),
             const SizedBox(height: 24),
 
-            // Action buttons
             Row(
               children: [
                 Expanded(

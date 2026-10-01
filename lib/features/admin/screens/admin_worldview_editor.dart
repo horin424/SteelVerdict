@@ -24,6 +24,7 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
   final _judgmentController = TextEditingController();
   final _descController = TextEditingController();
   final _descJaController = TextEditingController();
+  String _resultType = 'battle';
 
   @override
   void dispose() {
@@ -45,6 +46,7 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
     _judgmentController.text = wv.commonJudgment;
     _descController.text = wv.worldviewDescription;
     _descJaController.text = wv.worldviewDescriptionJa ?? '';
+    _resultType = wv.resultType == 'survival' ? 'survival' : 'battle';
   }
 
   Future<void> _save() async {
@@ -62,8 +64,12 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
             'title': _titleController.text,
             'titleJa': _titleJaController.text,
             'commonJudgment': _judgmentController.text,
+            'common_judgment': _judgmentController.text,
             'worldviewDescription': _descController.text,
+            'worldview_description': _descController.text,
             'worldviewDescriptionJa': _descJaController.text,
+            'resultType': _resultType,
+            'result_type': _resultType,
             // Preserve existing stats and statDescriptions
             'stats': ref.read(gameConfigProvider).worldviews[_selectedKey]?.stats ?? [],
             'statDescriptions': ref.read(gameConfigProvider).worldviews[_selectedKey]?.statDescriptions ?? {},
@@ -119,9 +125,14 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
               'title': result,
               'titleJa': '',
               'commonJudgment': '',
+              'common_judgment': '',
               'worldviewDescription': '',
+              'worldview_description': '',
               'worldviewDescriptionJa': '',
-              'stats': ['strength', 'intellect', 'skill', 'magic', 'art', 'life'],
+              'resultType': 'battle',
+              'result_type': 'battle',
+              // Match 1830_fantasy naming so new worlds work with existing UI.
+              'stats': ['strength', 'wisdom', 'technology', 'magic', 'artistry', 'life'],
               'statDescriptions': {},
             },
           },
@@ -183,7 +194,10 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
           ),
         ],
       ),
-      body: Row(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1100),
+          child: Row(
         children: [
           // Left: worldview list
           SizedBox(
@@ -250,7 +264,11 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                     children: [
                       _AdminField(label: l10n.adminTitle, controller: _titleController),
                       _AdminField(label: l10n.adminTitleJa, controller: _titleJaController),
-                      _AdminField(label: l10n.adminCommonJudgment, controller: _judgmentController, maxLines: 8),
+                      _AdminField(
+                        label: l10n.adminCommonJudgment,
+                        controller: _judgmentController,
+                        maxLines: 24,
+                      ),
                       // This prompt is sent to the AI. submitBattle appends a
                       // Japanese-output instruction for JA players, so Japanese
                       // written here reaches English players untranslated - the
@@ -274,8 +292,36 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                           ],
                         ),
                       ),
-                      _AdminField(label: l10n.adminDescription, controller: _descController, maxLines: 5),
-                      _AdminField(label: l10n.adminDescriptionJa, controller: _descJaController, maxLines: 5),
+                      _AdminField(label: l10n.adminDescription, controller: _descController, maxLines: 16),
+                      _AdminField(label: l10n.adminDescriptionJa, controller: _descJaController, maxLines: 16),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Result type', style: AppTextStyles.labelLarge),
+                            const SizedBox(height: 6),
+                            DropdownButtonFormField<String>(
+                              value: _resultType,
+                              dropdownColor: AppColors.navyMid,
+                              style: AppTextStyles.bodySmall,
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: AppColors.textMuted),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: AppColors.goldAccent),
+                                ),
+                              ),
+                              items: const [
+                                DropdownMenuItem(value: 'battle', child: Text('battle (VICTORY/DEFEAT/DRAW)')),
+                                DropdownMenuItem(value: 'survival', child: Text('survival (days survived)')),
+                              ],
+                              onChanged: (v) => setState(() => _resultType = v ?? 'battle'),
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: _isSaving ? null : _save,
@@ -292,6 +338,8 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                   ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }

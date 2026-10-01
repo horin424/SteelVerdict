@@ -12,18 +12,21 @@ interface ValidatePurchaseRequest {
   isSubscription: boolean;
 }
 
-// Map product IDs to subscription tiers — must match iap_purchase_service.dart
+/** Must match lib/services/purchase/iap_purchase_service.dart ProductIds. */
 const SUBSCRIPTION_TIERS: Record<string, string> = {
-  "strategy_sub_500":  "sub500",
-  "strategy_sub_1000": "sub1000",
-  "strategy_sub_3000": "sub3000",
+  "strategy_game_sub_500_monthly": "sub500",
+  "strategy_game_sub_1000_monthly": "sub1000",
+  "strategy_game_sub_3000_monthly": "sub3000",
 };
 
-// Ticket pack amounts — must match iap_purchase_service.dart
+/** Must match lib/services/purchase/iap_purchase_service.dart ProductIds. */
 const TICKET_PACKS: Record<string, number> = {
-  "strategy_tickets_10":  10,
-  "strategy_tickets_30":  30,
+  "strategy_game_tickets_10": 10,
+  "strategy_game_tickets_30": 30,
 };
+
+/** Must match android/app/build.gradle.kts applicationId. */
+const ANDROID_PACKAGE_NAME = "app.steelverdict.game";
 
 /**
  * validatePurchase — receipt validation + entitlement update.
@@ -87,9 +90,20 @@ export const validatePurchase = onCall(
       const tier = SUBSCRIPTION_TIERS[data.productId];
       await userRef.update({
         subscriptionTier: tier,
+        // Boss battles are a Warlord (sub3000) perk.
+        isBossEnabled: tier === "sub3000",
         subscriptionUpdatedAt: Date.now(),
       });
       return { granted: "subscription", tier };
+    }
+
+    // Scenario pack — unlock flag only (content gating is client + future server checks).
+    if (data.productId === "strategy_game_scenario_pack_1") {
+      await userRef.update({
+        scenarioPack1Unlocked: true,
+        scenarioPack1UnlockedAt: Date.now(),
+      });
+      return { granted: "scenario_pack", productId: data.productId };
     }
 
     if (data.productId in TICKET_PACKS) {
@@ -124,7 +138,7 @@ async function validateAndroid(
   // Get access token via JWT
   const accessToken = await getGoogleAccessToken(serviceAccount);
 
-  const packageName = "com.example.strategy_game"; // Update with your actual package name
+  const packageName = ANDROID_PACKAGE_NAME;
   const type = isSubscription ? "subscriptions" : "products";
   const url = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/${type}/${productId}/tokens/${purchaseToken}`;
 

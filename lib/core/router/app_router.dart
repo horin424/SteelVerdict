@@ -45,13 +45,16 @@ GoRouter createRouter(Ref ref) {
       final authState = ref.read(authStateChangesProvider);
       final location = state.uri.toString();
 
-      // While Firebase auth is still resolving, send everything through
-      // the splash screen. This also fixes Android activity-restoration
-      // from landing directly on a route like /war-history on fresh launch.
+      // While Firebase auth is still resolving, keep the user on splash —
+      // except allow Auth (splash may time out and send them there).
+      // This also fixes Android activity-restoration from landing directly
+      // on a route like /war-history on fresh launch.
       if (authState.isLoading) {
-        return location.startsWith(RouteNames.splash)
-            ? null
-            : RouteNames.splash;
+        if (location.startsWith(RouteNames.splash) ||
+            location.startsWith(RouteNames.auth)) {
+          return null;
+        }
+        return RouteNames.splash;
       }
 
       final isAuthenticated = authState.valueOrNull != null;

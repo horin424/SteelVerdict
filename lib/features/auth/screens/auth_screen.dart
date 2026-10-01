@@ -151,50 +151,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                 const SizedBox(height: 40),
 
                 if (!_showEmailForm) ...[
-                  // Social login buttons
-                  _SocialButton(
-                    label: l10n.authGoogleSignIn,
-                    icon: Icons.g_mobiledata,
-                    iconColor: const Color(0xFFEA4335),
-                    onTap: isLoading
-                        ? null
-                        : () {
-                            // Google sign-in not yet implemented
-                            ErrorSnackbar.showError(
-                              context,
-                              l10n.authComingSoon,
-                            );
-                          },
-                  ),
-                  const SizedBox(height: 12),
-                  _SocialButton(
-                    label: l10n.authAppleSignIn,
-                    icon: Icons.apple,
-                    iconColor: AppColors.textWhite,
-                    onTap: isLoading
-                        ? null
-                        : () {
-                            ErrorSnackbar.showError(
-                              context,
-                              l10n.authComingSoon,
-                            );
-                          },
-                  ),
-                  const SizedBox(height: 20),
-
-                  // OR divider
-                  Row(
-                    children: [
-                      const Expanded(child: Divider(color: AppColors.divider)),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(l10n.authOr, style: AppTextStyles.labelSmall),
-                      ),
-                      const Expanded(child: Divider(color: AppColors.divider)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
                   // Sign Up with Email (primary CTA)
                   ElevatedButton(
                     onPressed: isLoading
@@ -220,25 +176,43 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                     ),
                   ),
                   const SizedBox(height: 12),
-
-                  // Log In link
-                  TextButton(
+                  // Sign In with Email
+                  OutlinedButton(
                     onPressed: isLoading
                         ? null
                         : () => setState(() {
                               _showEmailForm = true;
                               _isRegisterMode = false;
                             }),
-                    child: Text(
-                      l10n.authLogIn,
-                      style: AppTextStyles.labelLarge.copyWith(
-                        color: AppColors.goldAccent,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textWhite,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: AppColors.divider),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    child: Text(
+                      l10n.authSignIn,
+                      style: AppTextStyles.labelLarge.copyWith(fontSize: 15),
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 20),
 
-                  // Continue as Guest
+                  // OR divider
+                  Row(
+                    children: [
+                      const Expanded(child: Divider(color: AppColors.divider)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(l10n.authOr, style: AppTextStyles.labelSmall),
+                      ),
+                      const Expanded(child: Divider(color: AppColors.divider)),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Guest / anonymous
                   isLoading
                       ? const Center(
                           child: SizedBox(
@@ -262,7 +236,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                           ),
                         ),
 
-                  // Guest data warning
                   const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.all(12),

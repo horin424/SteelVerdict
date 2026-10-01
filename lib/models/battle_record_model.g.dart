@@ -23,14 +23,16 @@ class BattleRecordModelAdapter extends TypeAdapter<BattleRecordModel> {
       outcome: fields[6] as String,
       createdAt: fields[7] as DateTime,
       isFavorite: fields[8] as bool,
-      scenarioTitle: fields[9] as String,
+      scenarioTitle: fields[9] as String? ?? '',
+      worldviewKey: fields[10] as String? ?? '',
+      survivalDays: fields[11] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, BattleRecordModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class BattleRecordModelAdapter extends TypeAdapter<BattleRecordModel> {
       ..writeByte(8)
       ..write(obj.isFavorite)
       ..writeByte(9)
-      ..write(obj.scenarioTitle);
+      ..write(obj.scenarioTitle)
+      ..writeByte(10)
+      ..write(obj.worldviewKey)
+      ..writeByte(11)
+      ..write(obj.survivalDays);
   }
 
   @override

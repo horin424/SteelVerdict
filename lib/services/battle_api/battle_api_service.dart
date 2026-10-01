@@ -52,9 +52,12 @@ class BattleRequest {
 /// Response from the battle API.
 class BattleResponse {
   final String reportText;
-  final String outcome; // 'win', 'loss', 'draw'
+  /// Normalized: win | loss | draw | survival
+  final String outcome;
   final String shortSummary;
   final int ticketsConsumed;
+  final String? worldviewKey;
+  final int? survivalDays;
   final Map<String, dynamic>? extraData;
 
   const BattleResponse({
@@ -62,15 +65,19 @@ class BattleResponse {
     required this.outcome,
     required this.shortSummary,
     required this.ticketsConsumed,
+    this.worldviewKey,
+    this.survivalDays,
     this.extraData,
   });
 
   factory BattleResponse.fromJson(Map<String, dynamic> json) {
     return BattleResponse(
       reportText: json['reportText'] as String? ?? '',
-      outcome: json['outcome'] as String? ?? 'draw',
+      outcome: json['outcome'] as String? ?? '',
       shortSummary: json['shortSummary'] as String? ?? '',
       ticketsConsumed: json['ticketsConsumed'] as int? ?? 1,
+      worldviewKey: json['worldviewKey'] as String?,
+      survivalDays: (json['survivalDays'] as num?)?.toInt(),
       extraData: json['extraData'] as Map<String, dynamic>?,
     );
   }

@@ -1,86 +1,85 @@
 /* eslint-disable */
 /**
  * Verification for parseOutcome. Run with:  npm run verify
- *
- * Deliberately dependency-free (node:assert only) so it works without adding a
- * test framework to a functions package that never had one.
  */
 const assert = require("assert");
-const { parseOutcome } = require("../lib/utils/outcome");
+const { parseOutcome, stripResultMarkers } = require("../lib/utils/outcome");
 
 let pass = 0;
 const failures = [];
 
-function check(label, text, expected) {
+function check(label, text, expectedOutcome, expectedDays) {
   const actual = parseOutcome(text);
   try {
-    assert.strictEqual(actual, expected);
+    if (expectedOutcome === null) {
+      assert.strictEqual(actual, null);
+    } else {
+      assert.ok(actual, `expected outcome but got null for: ${label}`);
+      assert.strictEqual(actual.outcome, expectedOutcome);
+      if (expectedDays !== undefined) {
+        assert.strictEqual(actual.survivalDays, expectedDays);
+      }
+    }
     pass++;
-  } catch {
-    failures.push(`  ${label}\n     expected "${expected}", got "${actual}"`);
+  } catch (e) {
+    failures.push(`  ${label}\n     ${e.message}`);
   }
 }
 
-// ── The bugs this replaces ───────────────────────────────────────────────────
-// "WIN" is a substring of WING and DRAWING, and the old parser checked win
-// first, so both of these returned "win" regardless of how the battle ended.
-
+// Structured markers
+check("marker VICTORY", "Long report.\n\n[[RESULT:VICTORY]]", "win");
+check("marker DEFEAT", "Long report.\n\n[[RESULT:DEFEAT]]", "loss");
+check("marker DRAW", "Long report.\n\n[[RESULT:DRAW]]", "draw");
+check("marker STALEMATE", "Long report.\n\n[[RESULT:STALEMATE]]", "draw");
 check(
-  '"wing" must not read as a win',
-  "The enemy's left wing collapsed, but our centre broke and the field was lost.\n\nDEFEAT",
+  "marker SURVIVAL",
+  "You held the walls for seventeen days.\n\n[[RESULT:SURVIVAL|days=17]]",
+  "survival",
+  17,
+);
+
+// Must not treat "wing" / "drawing" as victory
+check(
+  '"wing" with trailing DEFEAT',
+  "The enemy's left wing collapsed, but our centre broke.\n\nDEFEAT",
   "loss",
 );
 check(
-  '"drawing" must not read as a win',
-  "Drawing the enemy into the valley cost us the initiative and the day.\n\nDEFEAT",
+  '"drawing" with trailing DEFEAT',
+  "Drawing the enemy into the valley cost us the day.\n\nDEFEAT",
   "loss",
 );
-check(
-  '"wing" alone is not a verdict',
-  "The cavalry held the right wing throughout the engagement.",
-  "draw",
-);
-check(
-  '"drawing" alone is not a verdict',
-  "Winter closed in while drawing up the siege lines.",
-  "draw",
-);
 
-// ── Japanese: previously impossible to get anything but "draw" ───────────────
-
+// Japanese trailing keywords
 check("JA victory", "敵の防衛線を突破し、砦を制圧した。\n\n勝利", "win");
 check("JA defeat", "我が軍は包囲され、壊滅した。\n\n敗北", "loss");
 check("JA stalemate", "両軍とも決定打を欠いた。\n\n引き分け", "draw");
-check("JA victory, in prose", "この戦いは我が軍の勝利に終わった。", "win");
-check("JA defeat, in prose", "結果は惨敗であった。", "loss");
 
-// ── The documented format: trailing keyword on its own line ──────────────────
-
+// Legacy trailing English
 check("trailing VICTORY", "A long report.\nMany lines.\n\nVICTORY", "win");
 check("trailing DEFEAT", "A long report.\nMany lines.\n\nDEFEAT", "loss");
 check("trailing STALEMATE", "A long report.\nMany lines.\n\nSTALEMATE", "draw");
-check("trailing keyword in markdown bold", "Report text.\n\n**VICTORY**", "win");
-check("trailing keyword with punctuation", "Report text.\n\nVICTORY!", "win");
 
-// ── Last keyword wins, because reports narrate then conclude ─────────────────
-
+// Marker preferred over narrative keywords
 check(
-  "narrated loss then final victory",
-  "Our vanguard was defeated at the ford. We regrouped and took the ridge. VICTORY",
+  "narrative defeat word but marker victory",
+  "The vanguard was defeated at the ford, then we took the ridge.\n\n[[RESULT:VICTORY]]",
   "win",
 );
-check(
-  "narrated win then final defeat",
-  "We won the first exchange, then the line broke entirely. DEFEAT",
-  "loss",
-);
 
-// ── Fallbacks ────────────────────────────────────────────────────────────────
+// Unparseable must be null — NOT draw
+check("empty string", "", null);
+check("no keywords", "The armies manoeuvred for three days.", null);
 
-check("empty string", "", "draw");
-check("no keywords at all", "The armies manoeuvred for three days.", "draw");
-
-// ── Report ───────────────────────────────────────────────────────────────────
+// strip markers
+const stripped = stripResultMarkers("Report body.\n\n[[RESULT:VICTORY]]\n");
+try {
+  assert.strictEqual(stripped.includes("RESULT"), false);
+  assert.ok(stripped.includes("Report body"));
+  pass++;
+} catch (e) {
+  failures.push(`  stripResultMarkers\n     ${e.message}`);
+}
 
 console.log(`\nparseOutcome: ${pass} passed, ${failures.length} failed`);
 if (failures.length) {

@@ -439,6 +439,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get battleDrawFull => '引き分け';
 
   @override
+  String get readMore => 'もっと見る';
+
+  @override
+  String get showLess => '閉じる';
+
+  @override
+  String battleSurvivedDays(int days) {
+    return '$days日間生存';
+  }
+
+  @override
   String get battleSaveToHistory => '戦史に保存';
 
   @override
@@ -674,6 +685,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsAllDataCleared => '全データを削除しました。';
+
+  @override
+  String get settingsDeleteAccount => 'アカウント削除';
+
+  @override
+  String get settingsDeleteAccountConfirm =>
+      'アカウント、クラウド上のデータ、チケットを完全に削除します。この操作は取り消せません。';
+
+  @override
+  String get settingsDeleteAccountFailed =>
+      'アカウントを削除できませんでした。もう一度お試しください。';
 
   @override
   String get settingsRace => '種族';

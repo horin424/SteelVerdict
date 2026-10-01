@@ -56,10 +56,28 @@ class _WarHistoryDetailScreenState
         return l10n.battleVictoryFull;
       case BattleOutcome.loss:
         return l10n.battleDefeatFull;
+      case BattleOutcome.survival:
+        return l10n.battleSurvivedDays(_record?.survivalDays ?? 0);
       case BattleOutcome.draw:
         return l10n.battleDrawFull;
     }
   }
+
+  Color _bannerFg(BattleOutcome outcome) {
+    switch (outcome) {
+      case BattleOutcome.win:
+        return AppColors.victoryGreen;
+      case BattleOutcome.loss:
+        return AppColors.warRedBright;
+      case BattleOutcome.survival:
+        return AppColors.goldAccent;
+      case BattleOutcome.draw:
+        return AppColors.drawGray;
+    }
+  }
+
+  Color _bannerBg(BattleOutcome outcome) =>
+      _bannerFg(outcome).withValues(alpha: 0.1);
 
   String _gameModeLabel(GameMode mode, AppLocalizations l10n) {
     switch (mode) {
@@ -198,19 +216,9 @@ class _WarHistoryDetailScreenState
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: record.outcomeEnum == BattleOutcome.win
-                    ? AppColors.victoryGreen.withValues(alpha: 0.1)
-                    : record.outcomeEnum == BattleOutcome.loss
-                    ? AppColors.warRed.withValues(alpha: 0.1)
-                    : AppColors.drawGray.withValues(alpha: 0.1),
+                color: _bannerBg(record.outcomeEnum),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: record.outcomeEnum == BattleOutcome.win
-                      ? AppColors.victoryGreen
-                      : record.outcomeEnum == BattleOutcome.loss
-                      ? AppColors.warRed
-                      : AppColors.drawGray,
-                ),
+                border: Border.all(color: _bannerFg(record.outcomeEnum)),
               ),
               child: Column(
                 children: [
@@ -220,12 +228,9 @@ class _WarHistoryDetailScreenState
                       AppLocalizations.of(context)!,
                     ),
                     style: AppTextStyles.headlineLarge.copyWith(
-                      color: record.outcomeEnum == BattleOutcome.win
-                          ? AppColors.victoryGreen
-                          : record.outcomeEnum == BattleOutcome.loss
-                          ? AppColors.warRedBright
-                          : AppColors.drawGray,
+                      color: _bannerFg(record.outcomeEnum),
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   Text(
                     '${_gameModeLabel(record.gameModeEnum, AppLocalizations.of(context)!)} • ${scenarioDisplayTitle(

@@ -57,24 +57,30 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    int asInt(dynamic v, [int fallback = 0]) {
+      if (v is int) return v;
+      if (v is num) return v.toInt();
+      return fallback;
+    }
+
     return UserModel(
       uid: json['uid'] as String? ?? '',
       displayName: json['displayName'] as String? ?? 'Anonymous Commander',
-      ticketCount: json['ticketCount'] as int? ?? 0,
+      ticketCount: asInt(json['ticketCount']),
       subscriptionTier: SubscriptionTier.fromString(
         json['subscriptionTier'] as String? ?? 'free',
       ),
       lastLoginAt: json['lastLoginAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(json['lastLoginAt'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(asInt(json['lastLoginAt']))
           : DateTime.now(),
       createdAt: json['createdAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(asInt(json['createdAt']))
           : DateTime.now(),
       isBossEnabled: json['isBossEnabled'] as bool? ?? false,
-      totalWins: json['totalWins'] as int? ?? 0,
-      totalLosses: json['totalLosses'] as int? ?? 0,
+      totalWins: asInt(json['totalWins']),
+      totalLosses: asInt(json['totalLosses']),
       lastDailyRewardAt: json['lastDailyRewardAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(json['lastDailyRewardAt'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(asInt(json['lastDailyRewardAt']))
           : null,
     );
   }
