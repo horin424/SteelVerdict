@@ -3,12 +3,13 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp",
+    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
     "lint": "eslint --ext .ts .",
     "verify:outcome": "node scripts/verify-outcome.js",
-    "verify:pvp": "node scripts/verify-pvp-trigger.js"
+    "verify:pvp": "node scripts/verify-pvp-trigger.js",
+    "verify:judge": "node scripts/verify-pvp-judge.js"
   },
   "engines": {
     "node": "20"

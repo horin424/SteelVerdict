@@ -1,5 +1,5 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { CLAUDE_API_KEY, CLAUDE_HAIKU } from "../utils/config";
+import { CLAUDE_API_KEY, CLAUDE_HAIKU, CHRONICLE_MAX_TOKENS } from "../utils/config";
 import { callClaude } from "../utils/ai";
 import { deductTickets, addTickets, getUser } from "../utils/firestore";
 import { assemblePrompt } from "../utils/prompt";
@@ -100,7 +100,7 @@ Write the full chronicle now (approximately 3000 characters):`;
         systemPrompt,
         userMessage,
         CLAUDE_HAIKU,
-        4096,
+        CHRONICLE_MAX_TOKENS,
       );
     } catch (err) {
       console.error("generateWarHistory AI error:", err);

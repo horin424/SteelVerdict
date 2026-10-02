@@ -21,6 +21,20 @@ class WorldSettingSelectionScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final locale = ref.watch(localeProvider).languageCode;
     final gameConfig = ref.watch(gameConfigProvider);
+    final configLoaded = ref.watch(gameConfigLoadedProvider);
+
+    // Until the config arrives, gameConfigProvider serves a fallback holding one
+    // worldview. Drawing that looks like the game only has a single world.
+    if (!configLoaded) {
+      return Scaffold(
+        backgroundColor: AppColors.deepNavy,
+        appBar: AppBar(
+          backgroundColor: AppColors.deepNavy,
+          title: Text(l10n.worldSettingChoose, style: AppTextStyles.headlineSmall),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     final worldviews = gameConfig.worldviews.isNotEmpty
         ? gameConfig.worldviews
@@ -76,8 +90,9 @@ class WorldSettingSelectionScreen extends ConsumerWidget {
                   worldview: entry.value,
                   locale: locale,
                   onTap: () {
-                    ref.read(selectedWorldviewKeyProvider.notifier).state =
-                        entry.key;
+                    ref
+                        .read(selectedWorldviewKeyProvider.notifier)
+                        .select(entry.key);
                     // A race belongs to a worldview. Without this check, picking
                     // a world you have no race for walks all the way to the
                     // battle screen, which then renders with no stats and fails

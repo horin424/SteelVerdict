@@ -137,6 +137,12 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
             'enemyNameJa': _enemyNameJaController.text,
             'commanderDefinition': _commanderDefController.text,
             'commanderDefinitionJa': _commanderDefJaController.text,
+            // Also written in snake_case: prompt.ts reads
+            //   scenario.commander_definition ?? scenario.commanderDefinition
+            // so on a seeded scenario the snake value won and edits made here
+            // never reached the AI. Same reason as the worldview editor.
+            'commander_definition': _commanderDefController.text,
+            'commander_definition_ja': _commanderDefJaController.text,
             'difficulty': int.tryParse(_difficultyController.text) ?? 1,
             'battleType': _battleType,
             'isFree': _isFree,
@@ -195,6 +201,8 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
               'enemyNameJa': '',
               'commanderDefinition': '',
               'commanderDefinitionJa': '',
+              'commander_definition': '',
+              'commander_definition_ja': '',
               'difficulty': 1,
               'battleType': 'standard',
               'isFree': false,

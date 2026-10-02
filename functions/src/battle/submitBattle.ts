@@ -1,6 +1,12 @@
 import * as admin from "firebase-admin";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { GEMINI_API_KEY, CLAUDE_API_KEY, TICKET_COSTS, GEMINI_FLASH_LITE, GEMINI_FLASH } from "../utils/config";
+import {
+  GEMINI_API_KEY,
+  CLAUDE_API_KEY,
+  TICKET_COSTS,
+  GEMINI_FLASH_LITE,
+  GEMINI_FLASH,
+} from "../utils/config";
 import { callGemini, callClaude } from "../utils/ai";
 import { assemblePrompt, formatBattleUserMessage, fetchRemoteConfigData } from "../utils/prompt";
 import { deductTickets, addTickets } from "../utils/firestore";
@@ -114,9 +120,22 @@ export const submitBattle = onCall(
 
     const worldviewKey = data.worldviewKey ?? "1830_fantasy";
     const basePrompt = await assemblePrompt(worldviewKey, data.scenarioId, gameMode);
+    // Pin the output language at both ends.
+    //
+    // Only the Japanese branch existed. English players got no language
+    // instruction at all, and the assembled prompt is largely worldview text
+    // written by the client - which is Japanese even in the English fields.
+    // With nothing telling it otherwise the model follows the language of its
+    // own system prompt, so an English player got English on one battle and
+    // Japanese on the next. Observed on device: an English normal battle came
+    // back in English, and the epic chronicle right after it came back in
+    // Japanese.
+    //
+    // This does not make the prompt English. It stops the language of the
+    // report from depending on it.
     const systemPrompt = data.locale === "ja"
       ? `${basePrompt}\n\n必ず日本語で回答してください。結果マーカー [[RESULT:...]] はそのまま英語形式で出力してください。`
-      : basePrompt;
+      : `${basePrompt}\n\nAlways write your entire response in English.`;
     const userMessage = formatBattleUserMessage(
       data.playerStrategy,
       data.raceStats,
@@ -233,8 +252,18 @@ function extractShortSummary(text: string, gameMode: string): string {
   if (gameMode === "tabletop") {
     return text.trim().substring(0, 60);
   }
+  // First sentence, trimmed to 120 characters on a word boundary.
+  //
+  // This used to cut at exactly 120 characters, which lands mid-word: the
+  // result banner read "...but high Life (8) and Streng". Back up to the last
+  // space so the summary ends on a whole word. A string with no space in the
+  // first 120 characters is a script that does not use them (Japanese), where
+  // cutting at the character boundary is already correct.
   const firstSentence = text.split(/[.!？。]/)[0].trim();
-  return firstSentence.substring(0, 120);
+  if (firstSentence.length <= 120) return firstSentence;
+  const clipped = firstSentence.substring(0, 120);
+  const lastSpace = clipped.lastIndexOf(" ");
+  return (lastSpace > 60 ? clipped.substring(0, lastSpace) : clipped) + "…";
 }
 
 async function updateLastLogin(uid: string) {
