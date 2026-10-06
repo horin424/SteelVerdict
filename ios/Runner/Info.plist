@@ -71,6 +71,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Standard HTTPS only: exempt from export compliance documentation. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<!-- AdMob — must match Android APPLICATION_ID / Firebase AdMob app -->
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-1628452493399507~6377897276</string>
