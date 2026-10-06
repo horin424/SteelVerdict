@@ -149,8 +149,13 @@ class GameConfigModel {
 
     // Parse ticket costs (support both camelCase and snake_case)
     final ticketCostsRaw = json['ticketCosts'] ?? json['ticket_costs'];
+    // A non-numeric value used to throw here, and the whole config fell back
+    // to the built-in defaults (one world). Skip just that value instead.
     final ticketCosts = ticketCostsRaw is Map
-        ? ticketCostsRaw.map((k, v) => MapEntry(k.toString(), (v as num).toInt()))
+        ? <String, int>{
+            for (final e in ticketCostsRaw.entries)
+              if (e.value is num) e.key.toString(): (e.value as num).toInt(),
+          }
         : {
             'normal': 1,
             'tabletop': 2,
