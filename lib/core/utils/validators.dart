@@ -67,7 +67,10 @@ class Validators {
     if (value == null || value.trim().isEmpty) {
       return l10n?.validEmailRequired ?? 'Email is required.';
     }
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    // Deliberately loose: anything@anything.tld. The old pattern refused
+    // valid addresses (a + alias, endings longer than 4 letters such as
+    // .travel); Firebase Auth validates the address itself.
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,}$');
     if (!emailRegex.hasMatch(value.trim())) {
       return l10n?.validEmailInvalid ?? 'Enter a valid email address.';
     }
