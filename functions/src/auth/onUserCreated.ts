@@ -6,7 +6,8 @@ import { createUserDoc } from "../utils/firestore";
  * Creates the corresponding Firestore user document with starter tickets.
  */
 export const onUserCreated = auth.user().onCreate(async (user) => {
-  const displayName = user.displayName || user.email?.split("@")[0] || "Anonymous Commander";
+  // Guests get no name: the app shows its translated default (匿名司令官).
+  const displayName = user.displayName || user.email?.split("@")[0] || "";
   console.log(`Creating user doc for uid=${user.uid}`);
   await createUserDoc(user.uid, displayName);
 });

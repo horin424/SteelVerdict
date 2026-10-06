@@ -763,7 +763,7 @@ class _ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  user?.displayName ??
+                  user?.nameOrNull ??
                       AppLocalizations.of(context)!.anonymousCommander,
                   style: AppTextStyles.headlineSmall.copyWith(
                     color: AppColors.textWhite,

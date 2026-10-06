@@ -39,26 +39,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final authState = ref.watch(authStateChangesProvider);
     final user = authState.valueOrNull;
 
-    final ticketCount = userAsync.maybeWhen(
-      data: (u) => u?.ticketCount ?? 0,
-      orElse: () => 0,
-    );
+    // Until the user document arrives, show placeholders: "0 tickets" and the
+    // anonymous name made a signed-in player look like a lost account.
+    final userData = userAsync.valueOrNull;
+    final ticketCount = userData?.ticketCount;
     final isDailyAvailable = dailyRewardAsync.maybeWhen(
       data: (v) => v,
       orElse: () => false,
     );
-    final displayName = userAsync.maybeWhen(
-      data: (u) => u?.displayName ?? l10n.anonymousCommander,
-      orElse: () => l10n.anonymousCommander,
-    );
-    final losses = userAsync.maybeWhen(
-      data: (u) => u?.totalLosses ?? 0,
-      orElse: () => 0,
-    );
-    final wins = userAsync.maybeWhen(
-      data: (u) => u?.totalWins ?? 0,
-      orElse: () => 0,
-    );
+    final displayName = userAsync.hasValue
+        ? userData?.nameOrNull ?? l10n.anonymousCommander
+        : '…';
+    final losses = userData?.totalLosses;
+    final wins = userData?.totalWins;
     final isAnonymous = user?.isAnonymous ?? false;
     final hasRace = ref.watch(hasRaceProvider);
     final worldviews = ref.watch(availableWorldviewsProvider);
@@ -620,9 +613,10 @@ class _WorldSettingBanner extends ConsumerWidget {
 }
 
 class _StatsCard extends StatelessWidget {
-  final int losses;
-  final int wins;
-  final int tickets;
+  // null while the user document is loading: shown as a dash.
+  final int? losses;
+  final int? wins;
+  final int? tickets;
 
   const _StatsCard({
     required this.losses,
@@ -694,7 +688,7 @@ class _StatsCard extends StatelessWidget {
                     children: [
                       _StatItem(
                         label: l10n.homeLosses,
-                        value: losses.toString(),
+                        value: losses?.toString() ?? '–',
                         color: AppColors.defeatRed,
                       ),
                       Container(
@@ -704,7 +698,7 @@ class _StatsCard extends StatelessWidget {
                       ),
                       _StatItem(
                         label: l10n.homeWins,
-                        value: wins.toString(),
+                        value: wins?.toString() ?? '–',
                         color: AppColors.victoryGreen,
                       ),
                       Container(
@@ -714,7 +708,7 @@ class _StatsCard extends StatelessWidget {
                       ),
                       _StatItem(
                         label: l10n.tickets,
-                        value: tickets.toString(),
+                        value: tickets?.toString() ?? '–',
                         color: AppColors.goldAccent,
                       ),
                     ],

@@ -56,6 +56,16 @@ class UserModel {
     this.lastDailyRewardAt,
   });
 
+  /// What older server code stored as every guest's name, in English.
+  static const legacyGuestName = 'Anonymous Commander';
+
+  /// The player's own name, or null for a guest (nothing stored, or the old
+  /// English placeholder), so screens show the translated anonymousCommander.
+  String? get nameOrNull {
+    final name = displayName.trim();
+    return name.isEmpty || name == legacyGuestName ? null : name;
+  }
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     int asInt(dynamic v, [int fallback = 0]) {
       if (v is int) return v;
@@ -65,7 +75,7 @@ class UserModel {
 
     return UserModel(
       uid: json['uid'] as String? ?? '',
-      displayName: json['displayName'] as String? ?? 'Anonymous Commander',
+      displayName: json['displayName'] as String? ?? '',
       ticketCount: asInt(json['ticketCount']),
       subscriptionTier: SubscriptionTier.fromString(
         json['subscriptionTier'] as String? ?? 'free',
@@ -130,7 +140,7 @@ class UserModel {
   factory UserModel.empty(String uid) {
     return UserModel(
       uid: uid,
-      displayName: 'Anonymous Commander',
+      displayName: '',
       ticketCount: 3,
       subscriptionTier: SubscriptionTier.free,
       lastLoginAt: DateTime.now(),

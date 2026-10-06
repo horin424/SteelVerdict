@@ -19,7 +19,7 @@ export async function createUserDoc(uid: string, displayName: string) {
   const now = Date.now();
   const user: FirestoreUser = {
     uid,
-    displayName: displayName || "Anonymous Commander",
+    displayName: displayName || "",
     ticketCount: 3, // Starting tickets
     subscriptionTier: "free",
     lastLoginAt: now,
