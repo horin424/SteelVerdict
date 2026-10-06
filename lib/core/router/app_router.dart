@@ -305,7 +305,8 @@ class _ShellScaffold extends StatelessWidget {
                 _NavItem(
                   icon: Icons.flag_outlined,
                   activeIcon: Icons.flag,
-                  label: AppLocalizations.of(context)!.navMissions,
+                  // Was "Missions"; this tab is the PvP lobby.
+                  label: AppLocalizations.of(context)!.modePvp,
                   isSelected: index == 2,
                   onTap: () => context.go(RouteNames.pvpLobby),
                 ),

@@ -365,8 +365,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: 10),
                 _QuickActionButton(
-                  label: l10n.homeLeaderboard,
-                  icon: Icons.leaderboard_outlined,
+                  // Was "Leaderboard", but it opens the PvP lobby (there is
+                  // no leaderboard).
+                  label: l10n.pvpLobbyTitle,
+                  icon: Icons.people_outlined,
                   gradient: const LinearGradient(
                     colors: [Color(0xFF7C3AED), Color(0xFF9D68F5)],
                   ),
