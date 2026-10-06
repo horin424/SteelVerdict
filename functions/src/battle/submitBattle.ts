@@ -205,8 +205,10 @@ export const submitBattle = onCall(
 
     const shortSummary = extractShortSummary(displayReport, gameMode);
 
-    updateLastLogin(uid);
-    void updateWinLoss(uid, parsed.outcome);
+    // Awaited: Cloud Functions may freeze work still running after the
+    // response is sent, which is how wins went uncounted. Both helpers catch
+    // their own errors, so a failed write never fails the battle.
+    await Promise.all([updateLastLogin(uid), updateWinLoss(uid, parsed.outcome)]);
 
     return {
       reportText: displayReport,
