@@ -20,9 +20,21 @@ class BattleTypeSelectionScreen extends ConsumerWidget {
       orElse: () => 0,
     );
 
-    return Scaffold(
+    // Reached with context.go (after creating a race, or "Play again" on the
+    // result screen), this screen is alone on the stack: there was no back
+    // arrow, and Android's Back closed the app. Both now lead home.
+    final canPop = context.canPop();
+    void goHome() => context.go(RouteNames.home);
+
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) goHome();
+      },
+      child: Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
+        leading: canPop ? null : BackButton(onPressed: goHome),
         title: Text(l10n.battleTypeTitle, style: AppTextStyles.headlineMedium),
         actions: [
           Padding(
@@ -97,6 +109,7 @@ class BattleTypeSelectionScreen extends ConsumerWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }
