@@ -10,7 +10,8 @@
     "verify:outcome": "node scripts/verify-outcome.js",
     "verify:pvp": "node scripts/verify-pvp-trigger.js",
     "verify:judge": "node scripts/verify-pvp-judge.js",
-    "verify:modes": "node scripts/verify-mode-lock.js"
+    "verify:modes": "node scripts/verify-mode-lock.js",
+    "verify:rules": "node scripts/verify-users-rules.js"
   },
   "engines": {
     "node": "20"

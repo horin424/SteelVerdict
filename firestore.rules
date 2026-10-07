@@ -3,21 +3,25 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ── Users ──────────────────────────────────────────────────────────────
-    // Users can only read/write their own document.
-    // ticketCount and subscriptionTier can only be written by Cloud Functions
-    // (server-side), never directly by the client.
+    // Users can only read their own document. Cloud Functions write it, except
+    // for the two fields the client may change below.
     match /users/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
 
-      // Client may only update non-sensitive fields (displayName, lastLoginAt)
+      // The client may change only displayName (up to 30 characters) and
+      // lastLoginAt (a number, as the server writes it). This is an allow-list
+      // (B10): tickets, subscription, rewards, stats, unlocks and any field
+      // added later are server-only by default. It used to list the blocked
+      // fields instead, which left every new field writable by the client.
       allow update: if request.auth != null
         && request.auth.uid == uid
-        && !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(["ticketCount", "subscriptionTier", "isBossEnabled",
-                      "lastDailyRewardAt", "subscriptionUpdatedAt",
-                      "lastXShareRewardAt", "adTicketClaimsDate",
-                      "adTicketClaimsCount", "totalWins", "totalLosses",
-                      "scenarioPack1Unlocked"]);
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(["displayName", "lastLoginAt"])
+        && (!("displayName" in request.resource.data.diff(resource.data).affectedKeys())
+            || (request.resource.data.displayName is string
+                && request.resource.data.displayName.size() <= 30))
+        && (!("lastLoginAt" in request.resource.data.diff(resource.data).affectedKeys())
+            || request.resource.data.lastLoginAt is int);
 
       // Creation is done by Cloud Function (onUserCreated trigger)
       allow create: if false;
