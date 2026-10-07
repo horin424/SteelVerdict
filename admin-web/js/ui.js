@@ -37,7 +37,10 @@ export function toast(message, kind = "success") {
   toastTimer = setTimeout(() => el.classList.add("hidden"), kind === "error" ? 12000 : 3500);
 }
 
-function openDialog(build) {
+/// Shows a modal built by `build(done, dialog)` and resolves with what is passed
+/// to `done`. Escape resolves null, except while `dialog.dataset.busy` is set
+/// (a request in flight, whose outcome the dialog still has to report).
+export function openDialog(build) {
   return new Promise((resolve) => {
     const dialog = h("dialog", { class: "dialog" });
     const done = (value) => {
@@ -45,9 +48,10 @@ function openDialog(build) {
       dialog.remove();
       resolve(value);
     };
-    dialog.append(...build(done));
+    dialog.append(...build(done, dialog).filter(Boolean));
     dialog.addEventListener("cancel", (e) => {
       e.preventDefault();
+      if (dialog.dataset.busy) return;
       done(null);
     });
     document.body.append(dialog);

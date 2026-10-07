@@ -5,7 +5,6 @@
 // live, so counts and lists follow changes made from the app or another
 // browser while the page is open.
 import {
-  LIVE_PROJECT_ID,
   FieldPath,
   deleteField,
   forgetConfig,
@@ -22,6 +21,8 @@ import {
 import { parseConfig } from "./model.js";
 import { getLang, setLang, t } from "./i18n.js";
 import { errorText, h } from "./ui.js";
+import { icon } from "./icons.js";
+import { changePassword, sendReset, signInError } from "./account.js";
 import { confirmDiscard } from "./editorkit.js";
 import { mountWorldviews } from "./editors/worldviews.js";
 import { mountScenarios } from "./editors/scenarios.js";
@@ -60,20 +61,23 @@ const editorDirty = () => Boolean(state.editor && state.editor.isDirty());
 
 function renderTopbar() {
   document.title = `Steel Verdict · ${t("pageTitle")}`;
-  const env = state.fb
-    ? state.fb.projectId === LIVE_PROJECT_ID
-      ? h("span", { class: "env live" }, `${t("envLive")} · ${state.fb.projectId}`)
-      : h("span", { class: "env test" }, `${t("envTest")} · ${state.fb.projectId}`)
-    : null;
+  const tool = (iconName, label, onClick, attrs = {}) =>
+    h("button", { class: "ghost small tool", type: "button", onClick, ...attrs }, icon(iconName), h("span", {}, label));
   // replaceChildren would print a null as the text "null".
   document.getElementById("topbar").replaceChildren(
     ...[
-      h("a", { class: "brand", href: "#/" }, "Steel Verdict", h("span", {}, t("pageTitle"))),
-      env,
+      h(
+        "a",
+        { class: "brand", href: "#/" },
+        icon("shield", "brand-mark"),
+        h("span", { class: "brand-name", lang: "en" }, "Steel Verdict"),
+        h("span", { class: "brand-sub" }, t("pageTitle")),
+      ),
       h("span", { class: "spacer" }),
       state.user ? h("span", { class: "user" }, state.user.email || state.user.uid) : null,
-      h("button", { class: "ghost small", type: "button", lang: getLang() === "ja" ? "en" : "ja", onClick: toggleLang }, t("language")),
-      state.user ? h("button", { class: "ghost small", type: "button", onClick: doSignOut }, t("signOut")) : null,
+      state.user && state.user.email ? tool("key", t("accountPassword"), () => changePassword(state.fb.auth)) : null,
+      tool("translate", t("language"), toggleLang, { lang: getLang() === "ja" ? "en" : "ja" }),
+      state.user ? tool("logout", t("signOut"), doSignOut) : null,
     ].filter(Boolean),
   );
 }
@@ -83,9 +87,14 @@ async function toggleLang() {
   if (editorDirty() && !(await confirmDiscard())) return;
   setLang(getLang() === "ja" ? "en" : "ja");
   renderTopbar();
-  if (state.user && state.parsed) renderRoute();
-  else if (state.fb && !state.user) renderSignIn();
-  else if (!state.fb) renderSetup();
+  if (!state.fb) renderSetup();
+  else if (!state.user) renderSignIn();
+  else {
+    // Through refresh(), so loading, error and not-an-admin screens are
+    // redrawn as themselves, not replaced by the panel.
+    state.editor = null;
+    refresh();
+  }
 }
 
 async function doSignOut() {
@@ -98,6 +107,23 @@ async function doSignOut() {
 
 function renderMessage(text, isError = false) {
   app.replaceChildren(h("div", { class: `card narrow${isError ? " error" : ""}` }, h("p", {}, text)));
+}
+
+/// Frame of the screens before sign-in, after the app's own sign-in screen:
+/// the emblem, the game's name, then the form.
+function authShell(content) {
+  return h(
+    "div",
+    { class: "auth" },
+    h(
+      "div",
+      { class: "auth-head" },
+      h("span", { class: "emblem" }, icon("shield")),
+      h("p", { class: "auth-name", lang: "en" }, "Steel Verdict"),
+      h("p", { class: "auth-sub" }, t("pageTitle")),
+    ),
+    content,
+  );
 }
 
 function renderSetup() {
@@ -119,35 +145,69 @@ function renderSetup() {
     }
   };
   app.replaceChildren(
-    h(
-      "div",
-      { class: "card narrow" },
-      h("h1", {}, t("pageTitle")),
-      h("p", { class: "muted" }, t("setupHelp")),
-      h("label", { class: "field" }, h("span", { class: "field-label" }, t("setupLabel")), area),
-      error,
-      h("button", { type: "button", onClick: go }, t("setupSave")),
+    authShell(
+      h(
+        "div",
+        { class: "card auth-card" },
+        h("p", { class: "muted" }, t("setupHelp")),
+        h("label", { class: "field" }, h("span", { class: "field-label" }, t("setupLabel")), area),
+        error,
+        h("button", { class: "wide", type: "button", onClick: go }, t("setupSave")),
+      ),
     ),
   );
 }
 
 function renderSignIn() {
-  const email = h("input", { type: "email", autocomplete: "username", required: true });
-  const password = h("input", { type: "password", autocomplete: "current-password", required: true });
+  const email = h("input", { type: "email", autocomplete: "username", spellcheck: "false" });
+  const password = h("input", { type: "password", autocomplete: "current-password" });
   const error = h("p", { class: "field-error", role: "alert" });
-  const submit = h("button", { type: "submit" }, t("signIn"));
+  const status = h("p", { class: "form-status", role: "status" });
+  const submit = h("button", { class: "wide", type: "submit" }, t("signIn"));
+  const clear = () => {
+    error.textContent = "";
+    status.textContent = "";
+  };
+  const forgot = h(
+    "button",
+    {
+      class: "link",
+      type: "button",
+      onClick: async () => {
+        clear();
+        const address = email.value.trim();
+        if (!address) {
+          error.textContent = t("resetNeedEmail");
+          email.focus();
+          return;
+        }
+        forgot.disabled = true;
+        const result = await sendReset(state.fb.auth, address);
+        forgot.disabled = false;
+        if (result.ok) status.textContent = result.ok;
+        else error.textContent = result.error;
+      },
+    },
+    t("forgotPassword"),
+  );
   const form = h(
     "form",
     {
-      class: "card narrow",
+      class: "card auth-card",
+      novalidate: true,
       onSubmit: async (e) => {
         e.preventDefault();
-        error.textContent = "";
+        clear();
+        if (!email.value.trim() || !password.value) {
+          error.textContent = t("signInEmpty");
+          (email.value.trim() ? password : email).focus();
+          return;
+        }
         submit.disabled = true;
         try {
           await signInWithEmailAndPassword(state.fb.auth, email.value.trim(), password.value);
         } catch (err) {
-          error.textContent = t("signInFailed", { error: errorText(err) });
+          error.textContent = signInError(err);
         } finally {
           submit.disabled = false;
         }
@@ -156,24 +216,30 @@ function renderSignIn() {
     h("h1", {}, t("signInTitle")),
     h("label", { class: "field" }, h("span", { class: "field-label" }, t("email")), email),
     h("label", { class: "field" }, h("span", { class: "field-label" }, t("password")), password),
-    submit,
     error,
-    state.configSource === "saved"
-      ? h(
-          "button",
-          {
-            class: "link",
-            type: "button",
-            onClick: () => {
-              forgetConfig();
-              location.reload();
+    status,
+    submit,
+    h(
+      "div",
+      { class: "auth-links" },
+      forgot,
+      state.configSource === "saved"
+        ? h(
+            "button",
+            {
+              class: "link",
+              type: "button",
+              onClick: () => {
+                forgetConfig();
+                location.reload();
+              },
             },
-          },
-          t("setupForget"),
-        )
-      : null,
+            t("setupForget"),
+          )
+        : null,
+    ),
   );
-  app.replaceChildren(form);
+  app.replaceChildren(authShell(form));
   email.focus();
 }
 
@@ -210,13 +276,21 @@ function problemsBanner() {
 
 function renderHub() {
   const p = state.parsed;
-  // Same counts as the app's panel.
+  // Same counts, icons and icon colours as the app's panel
+  // (admin_panel_screen.dart).
   const cards = [
-    ["worldviews", "adminWorldviews", "adminWorldviewsDesc", Object.keys(p.worldviews).length],
-    ["scenarios", "adminScenarios", "adminScenariosDesc", Object.keys(p.scenarios).length],
-    ["mode-addons", "adminModeAddons", "adminModeAddonsDesc", Object.keys(p.modeAddons).length],
-    ["costs", "adminCosts", "adminCostsDesc", Object.keys(p.ticketCosts).length + Object.keys(p.modelConfig).length],
-    ["system", "adminSystemConfig", "adminSystemConfigDesc", p.devUids.length],
+    ["worldviews", "public", "blue", "adminWorldviews", "adminWorldviewsDesc", Object.keys(p.worldviews).length],
+    ["scenarios", "militaryTech", "orange", "adminScenarios", "adminScenariosDesc", Object.keys(p.scenarios).length],
+    ["mode-addons", "tune", "purple", "adminModeAddons", "adminModeAddonsDesc", Object.keys(p.modeAddons).length],
+    [
+      "costs",
+      "confirmationNumber",
+      "gold",
+      "adminCosts",
+      "adminCostsDesc",
+      Object.keys(p.ticketCosts).length + Object.keys(p.modelConfig).length,
+    ],
+    ["system", "settings", "steel", "adminSystemConfig", "adminSystemConfigDesc", p.devUids.length],
   ];
   return h(
     "div",
@@ -226,12 +300,14 @@ function renderHub() {
     h(
       "div",
       { class: "hub" },
-      cards.map(([route, title, desc, count]) =>
+      cards.map(([route, iconName, tone, title, desc, count]) =>
         h(
           "a",
           { class: "hub-card", href: `#/${route}` },
+          h("span", { class: `hub-icon tone-${tone}` }, icon(iconName)),
           h("span", { class: "hub-text" }, h("strong", {}, t(title)), h("span", {}, t(desc))),
           h("span", { class: "count" }, String(count)),
+          icon("chevronRight", "chevron"),
         ),
       ),
     ),
@@ -267,7 +343,12 @@ function renderRoute() {
   app.replaceChildren(
     ...[
       readOnly,
-      h("div", { class: "crumbs" }, h("a", { href: "#/" }, `← ${t("back")}`), h("h1", { class: "page-title" }, t(route.title))),
+      h(
+        "div",
+        { class: "crumbs" },
+        h("a", { class: "back", href: "#/" }, icon("chevronLeft"), t("back")),
+        h("h1", { class: "page-title" }, t(route.title)),
+      ),
       body,
     ].filter(Boolean),
   );
@@ -319,10 +400,15 @@ function listen() {
   state.configLoaded = false;
   state.configError = null;
   state.adminUids = null;
+  // Offline, Firestore answers "no document" from its empty local cache. That
+  // would read as a deleted config or a missing admin right, so both listeners
+  // wait for the server's answer instead.
+  const fromEmptyCache = (snap) => !snap.exists() && snap.metadata.fromCache;
   state.unsubs.push(
     onSnapshot(
       state.fb.configRef,
       (snap) => {
+        if (fromEmptyCache(snap)) return;
         state.configLoaded = true;
         state.raw = snap.exists() ? snap.data() : null;
         state.parsed = state.raw ? parseConfig(state.raw) : null;
@@ -336,6 +422,7 @@ function listen() {
     onSnapshot(
       state.fb.adminUidsRef,
       (snap) => {
+        if (fromEmptyCache(snap)) return;
         const uids = snap.exists() ? snap.data().uids : null;
         state.adminUids = Array.isArray(uids) ? uids.map(String) : [];
         refresh();

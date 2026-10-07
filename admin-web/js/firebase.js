@@ -5,12 +5,18 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 import {
   getAuth,
+  connectAuthEmulator,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  sendPasswordResetEmail,
 } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 import {
   getFirestore,
+  connectFirestoreEmulator,
   doc,
   onSnapshot,
   setDoc,
@@ -23,6 +29,10 @@ export {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  sendPasswordResetEmail,
   doc,
   onSnapshot,
   setDoc,
@@ -31,11 +41,18 @@ export {
   FieldPath,
 };
 
-export const LIVE_PROJECT_ID = "steelverdict-81c34";
-
 // Same key as the first version of this page, so a config pasted there still
 // works after the update.
 const CONFIG_KEY = "sv_admin_firebase_config";
+
+// Local testing against the Firebase emulators: open the page on localhost with
+// ?emulators, after `firebase emulators:start --only auth,firestore --project
+// demo-steelverdict` and seeding an admin user and system_config/game_config.
+// A demo- project ID keeps the emulators from reaching any real project.
+const USE_EMULATORS =
+  ["localhost", "127.0.0.1"].includes(location.hostname) &&
+  new URLSearchParams(location.search).has("emulators");
+const EMULATOR_CONFIG = { apiKey: "demo-key", authDomain: "localhost", projectId: "demo-steelverdict" };
 
 /// Finds the Firebase web config.
 ///
@@ -44,6 +61,7 @@ const CONFIG_KEY = "sv_admin_firebase_config";
 /// the client has nothing to paste. Elsewhere (local development) it falls back
 /// to a config saved from the setup form.
 export async function resolveConfig() {
+  if (USE_EMULATORS) return { config: EMULATOR_CONFIG, source: "emulators" };
   try {
     const res = await fetch("/__/firebase/init.json", { cache: "no-store" });
     if (res.ok) return { config: await res.json(), source: "hosting" };
@@ -77,9 +95,14 @@ export function forgetConfig() {
 
 export function initFirebase(config) {
   const app = initializeApp(config);
+  const auth = getAuth(app);
   const db = getFirestore(app);
+  if (USE_EMULATORS) {
+    connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+    connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  }
   return {
-    auth: getAuth(app),
+    auth,
     db,
     projectId: config.projectId,
     configRef: doc(db, "system_config", "game_config"),
