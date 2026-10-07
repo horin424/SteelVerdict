@@ -50,6 +50,10 @@ String localizedError(String raw, AppLocalizations l10n) {
       return l10n.contentFilterBlocked;
     case 'battle_failed_retry':
       return l10n.battleFailedRetry;
+    case 'mode_locked_epic':
+      return l10n.gameModeEpicRequires;
+    case 'mode_locked_boss':
+      return l10n.gameModeBossRequires;
     case 'battle_sign_in_required':
       return l10n.battleSignInRequired;
 

@@ -9,7 +9,7 @@ import {
 } from "../utils/config";
 import { callGemini, callClaude } from "../utils/ai";
 import { assemblePrompt, formatBattleUserMessage, fetchRemoteConfigData } from "../utils/prompt";
-import { deductTickets, addTickets } from "../utils/firestore";
+import { deductTickets, addTickets, getUser } from "../utils/firestore";
 import { parseOutcome, stripResultMarkers } from "../utils/outcome";
 
 interface BattleRequest {
@@ -95,6 +95,21 @@ export const submitBattle = onCall(
     }
 
     const gameMode = data.gameMode;
+
+    // Epic and Boss are perks. The app hides them from players without the
+    // perk, but only this check enforces it, and a subscription that ends must
+    // take Epic away (B31). Same rules as the app (game_mode_providers.dart):
+    // Epic needs any paid tier (Commander, ¥500, or higher); Boss needs
+    // isBossEnabled. Checked before any ticket is charged.
+    if (gameMode === "epic" || gameMode === "boss") {
+      const user = await getUser(uid);
+      const allowed = gameMode === "epic"
+        ? (user.subscriptionTier ?? "free") !== "free"
+        : user.isBossEnabled === true;
+      if (!allowed) {
+        throw new HttpsError("permission-denied", "MODE_LOCKED");
+      }
+    }
     // Flash-Lite only for short practice/tabletop. history_puzzle needs a real report.
     const useLiteModel = gameMode === "practice" || gameMode === "tabletop";
     const isFreeMode = useLiteModel || gameMode === "history_puzzle";

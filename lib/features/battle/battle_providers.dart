@@ -213,6 +213,10 @@ class BattleController extends StateNotifier<BattleControllerState> {
         errorMessage = msg;
       } else if (msg.contains('Authentication')) {
         errorMessage = 'battle_sign_in_required';
+      } else if (msg.contains('MODE_LOCKED')) {
+        // The server refused Epic or Boss: the perk has ended since the mode
+        // screen was drawn. Show the same text as the lock on that screen.
+        errorMessage = gameMode == 'boss' ? 'mode_locked_boss' : 'mode_locked_epic';
       } else {
         errorMessage = 'battle_failed_retry';
       }
