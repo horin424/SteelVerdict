@@ -1401,12 +1401,21 @@ abstract class AppLocalizations {
   String get settingsAllDataCleared;
 
   /// Delete account button label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
   String get settingsDeleteAccount;
 
   /// Delete account confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account, cloud data, and tickets. This cannot be undone.'**
   String get settingsDeleteAccountConfirm;
 
   /// Delete account failure message
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete account. Please try again.'**
   String get settingsDeleteAccountFailed;
 
   /// Race section label in settings
@@ -3058,6 +3067,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'¥{amount}/mo'**
   String shopPricePerMonth(String amount);
+
+  /// A ticket pack was granted
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tickets added'**
+  String shopTicketsAdded(int count);
+
+  /// A subscription was granted; plan is Commander, General or Warlord
+  ///
+  /// In en, this message translates to:
+  /// **'{plan} plan is now active'**
+  String shopPlanActive(String plan);
+
+  /// A scenario pack was granted
+  ///
+  /// In en, this message translates to:
+  /// **'{pack} unlocked'**
+  String shopPackUnlocked(String pack);
+
+  /// The store says the payment isn't complete yet (Ask to Buy, convenience-store payment)
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the payment to complete. It will be added once it does.'**
+  String get shopPaymentPending;
+
+  /// The server couldn't be reached; the purchase is kept and sent again at the next start
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm the purchase. We\'ll check again the next time you open the app.'**
+  String get shopPurchaseCheckLater;
+
+  /// The server refused a purchase made by another account
+  ///
+  /// In en, this message translates to:
+  /// **'This purchase belongs to another account.'**
+  String get shopPurchaseOtherAccount;
+
+  /// The server refused an expired subscription
+  ///
+  /// In en, this message translates to:
+  /// **'This subscription has ended.'**
+  String get shopPurchaseEnded;
+
+  /// The server refused a refunded purchase
+  ///
+  /// In en, this message translates to:
+  /// **'This purchase was refunded.'**
+  String get shopPurchaseRefunded;
+
+  /// The server refused a purchase the store doesn't confirm
+  ///
+  /// In en, this message translates to:
+  /// **'This purchase isn\'t valid.'**
+  String get shopPurchaseNotValid;
+
+  /// Restore found nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No purchases to restore.'**
+  String get shopNothingToRestore;
 }
 
 class _AppLocalizationsDelegate

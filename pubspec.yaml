@@ -39,6 +39,8 @@ dependencies:
 
   # In-app purchases
   in_app_purchase: ^3.3.0
+  # Android plan changes and consuming ticket packs after the server confirms.
+  in_app_purchase_android: ^0.5.0
 
   # Image export & sharing
   widgets_to_image: ^0.0.3

@@ -552,5 +552,15 @@
   "errNoRaceFound": "種族が見つかりません。先に種族を作成してください。",
   "parchmentYearOfBattles": "{year}年 — 激戦の記録",
   "errNotEnoughTicketsNeed": "チケットが足りません。{count}枚必要です。",
-  "shopPricePerMonth": "¥{amount}/月"
+  "shopPricePerMonth": "¥{amount}/月",
+  "shopTicketsAdded": "チケット{count}枚を追加しました",
+  "shopPlanActive": "{plan}プランが有効になりました",
+  "shopPackUnlocked": "{pack}を入手しました",
+  "shopPaymentPending": "お支払いの完了待ちです。完了すると反映されます",
+  "shopPurchaseCheckLater": "購入を確認できませんでした。次回起動時に再確認します",
+  "shopPurchaseOtherAccount": "この購入は別のアカウントのものです",
+  "shopPurchaseEnded": "このサブスクリプションは終了しています",
+  "shopPurchaseRefunded": "この購入は返金されています",
+  "shopPurchaseNotValid": "この購入は有効ではありません",
+  "shopNothingToRestore": "復元できる購入はありません"
 }

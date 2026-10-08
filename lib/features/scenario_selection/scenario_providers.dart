@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/scenario_model.dart';
 import '../../services/game_config/game_config_providers.dart';
+import '../../services/purchase/iap_purchase_service.dart';
+import '../../services/purchase/purchase_service.dart';
 import '../splash/splash_providers.dart';
 import '../home/home_providers.dart';
 import '../shop/shop_providers.dart';
@@ -96,18 +98,21 @@ class ScenarioUnlockController extends StateNotifier<ScenarioUnlockState> {
     }
   }
 
-  Future<bool> unlockWithPurchase(String scenarioId) async {
+  /// Buys the scenario pack and completes with what happened. The scenario is
+  /// unlocked only once the server has granted the pack: it used to be
+  /// unlocked as soon as the store's sheet opened, even if the user then
+  /// cancelled.
+  Future<PurchaseOutcome> unlockWithPurchase(String scenarioId) async {
     state = state.copyWith(isUnlocking: true, error: null);
+    final purchaseController = _ref.read(purchaseControllerProvider.notifier);
+    final outcome = await purchaseController.purchase(ProductIds.scenarioPack1);
     try {
-      final purchaseController = _ref.read(purchaseControllerProvider.notifier);
-      await purchaseController.purchase('strategy_game_scenario_pack_1');
-      await _persistUnlock(scenarioId);
+      if (outcome.isGranted) await _persistUnlock(scenarioId);
       state = state.copyWith(isUnlocking: false);
-      return true;
     } catch (e) {
-      state = state.copyWith(isUnlocking: false, error: 'err_purchase_failed');
-      return false;
+      state = state.copyWith(isUnlocking: false, error: 'err_unlock_failed');
     }
+    return outcome;
   }
 }
 

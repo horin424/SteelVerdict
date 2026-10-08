@@ -5,6 +5,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../models/scenario_model.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../scenario_providers.dart';
+import '../../shop/purchase_messages.dart';
 import '../../../core/utils/error_messages.dart';
 
 class UnlockDialog extends ConsumerWidget {
@@ -96,8 +97,10 @@ class UnlockDialog extends ConsumerWidget {
             badgeColor: AppColors.goldAccent,
             isLoading: unlockState.isUnlocking,
             onTap: () async {
-              final success = await controller.unlockWithPurchase(scenario.scenarioId);
-              if (success && context.mounted) {
+              final outcome = await controller.unlockWithPurchase(scenario.scenarioId);
+              if (!context.mounted) return;
+              showPurchaseOutcome(context, outcome);
+              if (outcome.isGranted) {
                 Navigator.pop(context);
                 onUnlocked();
               }

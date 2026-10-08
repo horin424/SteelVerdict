@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../core/widgets/error_snackbar.dart';
 import '../../../features/auth/auth_providers.dart';
 import '../../../models/user_model.dart';
+import '../purchase_messages.dart';
 import '../shop_providers.dart';
 import '../widgets/subscription_plan_card.dart';
 import '../widgets/one_time_purchase_tile.dart';
@@ -13,39 +13,29 @@ import '../widgets/one_time_purchase_tile.dart';
 class ShopScreen extends ConsumerWidget {
   const ShopScreen({super.key});
 
+  /// Buys and then tells the user what the store and the server said. Nothing
+  /// is shown before that: "purchase started" used to appear even when the
+  /// user closed the store's sheet (B30).
+  Future<void> _buy(BuildContext context, WidgetRef ref, String productId) async {
+    final outcome = await ref.read(purchaseControllerProvider.notifier).purchase(productId);
+    if (context.mounted) showPurchaseOutcome(context, outcome);
+  }
+
+  Future<void> _restore(BuildContext context, WidgetRef ref) async {
+    final outcomes = await ref.read(purchaseControllerProvider.notifier).restorePurchases();
+    if (context.mounted) showRestoreSummary(context, outcomes);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final purchaseState = ref.watch(purchaseControllerProvider);
-    final purchaseController = ref.read(purchaseControllerProvider.notifier);
     final userAsync = ref.watch(currentUserModelProvider);
 
     final currentTier = userAsync.maybeWhen(
       data: (u) => u?.subscriptionTier ?? SubscriptionTier.free,
       orElse: () => SubscriptionTier.free,
     );
-
-    // Show success/error messages
-    ref.listen(purchaseControllerProvider, (prev, next) {
-      if (next.successMessage != null && next.successMessage != prev?.successMessage) {
-        final msg = next.successMessage == 'purchase_initiated'
-            ? l10n.shopPurchaseInitiated
-            : l10n.shopPurchasesRestored;
-        ErrorSnackbar.showSuccess(context, msg);
-      }
-      if (next.error != null && next.error != prev?.error) {
-        final raw = next.error!;
-        final String msg;
-        if (raw.startsWith('purchase_failed:')) {
-          msg = '${l10n.shopPurchaseFailed}: ${raw.substring(16)}';
-        } else if (raw.startsWith('restore_failed:')) {
-          msg = '${l10n.shopRestoreFailed}: ${raw.substring(15)}';
-        } else {
-          msg = raw;
-        }
-        ErrorSnackbar.showError(context, msg);
-      }
-    });
 
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
@@ -55,7 +45,7 @@ class ShopScreen extends ConsumerWidget {
           TextButton(
             onPressed: purchaseState.isPurchasing
                 ? null
-                : () => purchaseController.restorePurchases(),
+                : () => _restore(context, ref),
             child: Text(
               l10n.shopRestoreShort,
               style: AppTextStyles.labelSmall.copyWith(color: AppColors.goldAccent),
@@ -88,7 +78,7 @@ class ShopScreen extends ConsumerWidget {
                 plan: plan,
                 isCurrentPlan: currentTier.name == _productToTier(plan.productId),
                 isLoading: purchaseState.isPurchasing,
-                onSubscribe: () => purchaseController.purchase(plan.productId),
+                onSubscribe: () => _buy(context, ref, plan.productId),
               ),
             )),
 
@@ -113,7 +103,7 @@ class ShopScreen extends ConsumerWidget {
               price: '¥240',
               icon: Icons.confirmation_number,
               isLoading: purchaseState.isPurchasing,
-              onPurchase: () => purchaseController.purchase('strategy_game_tickets_10'),
+              onPurchase: () => _buy(context, ref, 'strategy_game_tickets_10'),
             ),
             OneTimePurchaseTile(
               productId: 'strategy_game_tickets_30',
@@ -122,7 +112,7 @@ class ShopScreen extends ConsumerWidget {
               price: '¥600',
               icon: Icons.confirmation_number_outlined,
               isLoading: purchaseState.isPurchasing,
-              onPurchase: () => purchaseController.purchase('strategy_game_tickets_30'),
+              onPurchase: () => _buy(context, ref, 'strategy_game_tickets_30'),
             ),
 
             const SizedBox(height: 24),
@@ -146,7 +136,7 @@ class ShopScreen extends ConsumerWidget {
               price: '¥480',
               icon: Icons.map_outlined,
               isLoading: purchaseState.isPurchasing,
-              onPurchase: () => purchaseController.purchase('strategy_game_scenario_pack_1'),
+              onPurchase: () => _buy(context, ref, 'strategy_game_scenario_pack_1'),
             ),
 
             const SizedBox(height: 32),

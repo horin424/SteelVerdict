@@ -694,8 +694,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'アカウント、クラウド上のデータ、チケットを完全に削除します。この操作は取り消せません。';
 
   @override
-  String get settingsDeleteAccountFailed =>
-      'アカウントを削除できませんでした。もう一度お試しください。';
+  String get settingsDeleteAccountFailed => 'アカウントを削除できませんでした。もう一度お試しください。';
 
   @override
   String get settingsRace => '種族';
@@ -1544,4 +1543,40 @@ class AppLocalizationsJa extends AppLocalizations {
   String shopPricePerMonth(String amount) {
     return '¥$amount/月';
   }
+
+  @override
+  String shopTicketsAdded(int count) {
+    return 'チケット$count枚を追加しました';
+  }
+
+  @override
+  String shopPlanActive(String plan) {
+    return '$planプランが有効になりました';
+  }
+
+  @override
+  String shopPackUnlocked(String pack) {
+    return '$packを入手しました';
+  }
+
+  @override
+  String get shopPaymentPending => 'お支払いの完了待ちです。完了すると反映されます';
+
+  @override
+  String get shopPurchaseCheckLater => '購入を確認できませんでした。次回起動時に再確認します';
+
+  @override
+  String get shopPurchaseOtherAccount => 'この購入は別のアカウントのものです';
+
+  @override
+  String get shopPurchaseEnded => 'このサブスクリプションは終了しています';
+
+  @override
+  String get shopPurchaseRefunded => 'この購入は返金されています';
+
+  @override
+  String get shopPurchaseNotValid => 'この購入は有効ではありません';
+
+  @override
+  String get shopNothingToRestore => '復元できる購入はありません';
 }

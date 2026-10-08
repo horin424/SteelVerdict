@@ -1581,4 +1581,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String shopPricePerMonth(String amount) {
     return '¥$amount/mo';
   }
+
+  @override
+  String shopTicketsAdded(int count) {
+    return '$count tickets added';
+  }
+
+  @override
+  String shopPlanActive(String plan) {
+    return '$plan plan is now active';
+  }
+
+  @override
+  String shopPackUnlocked(String pack) {
+    return '$pack unlocked';
+  }
+
+  @override
+  String get shopPaymentPending =>
+      'Waiting for the payment to complete. It will be added once it does.';
+
+  @override
+  String get shopPurchaseCheckLater =>
+      'We couldn\'t confirm the purchase. We\'ll check again the next time you open the app.';
+
+  @override
+  String get shopPurchaseOtherAccount =>
+      'This purchase belongs to another account.';
+
+  @override
+  String get shopPurchaseEnded => 'This subscription has ended.';
+
+  @override
+  String get shopPurchaseRefunded => 'This purchase was refunded.';
+
+  @override
+  String get shopPurchaseNotValid => 'This purchase isn\'t valid.';
+
+  @override
+  String get shopNothingToRestore => 'No purchases to restore.';
 }

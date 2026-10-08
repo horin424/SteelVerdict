@@ -5,6 +5,7 @@ import 'core/l10n/app_localizations.dart';
 import 'core/router/router_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/settings/settings_providers.dart';
+import 'features/shop/shop_providers.dart';
 
 /// The one ScaffoldMessenger for the whole app.
 ///
@@ -27,6 +28,8 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
+    // Purchases are handled from sign-in on, not only while the shop is open.
+    ref.watch(purchaseBootstrapProvider);
 
     return MaterialApp.router(
       scaffoldMessengerKey: appScaffoldMessengerKey,
