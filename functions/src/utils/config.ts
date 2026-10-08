@@ -1,13 +1,20 @@
-import { defineSecret } from "firebase-functions/params";
+import { defineSecret, defineString } from "firebase-functions/params";
 
 // Store API keys as Firebase Secrets (never in code)
 // Set via: firebase functions:secrets:set GEMINI_API_KEY
 export const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 export const CLAUDE_API_KEY = defineSecret("CLAUDE_API_KEY");
 
-// Google Play / Apple shared secret for receipt validation
+// Google Play: service account for checking purchases
 export const GOOGLE_PLAY_SERVICE_ACCOUNT = defineSecret("GOOGLE_PLAY_SERVICE_ACCOUNT");
-export const APPLE_SHARED_SECRET = defineSecret("APPLE_SHARED_SECRET");
+
+// App Store: values every signed transaction is checked against. Not secret;
+// set them in functions/.env. APPLE_APP_ID is the App Apple ID (App Store
+// Connect -> App Information); Apple requires it for Production purchases, so
+// until it is set only Sandbox (TestFlight, App Review) purchases pass.
+// (The old APPLE_SHARED_SECRET was for verifyReceipt, which is no longer used.)
+export const APPLE_BUNDLE_ID = defineString("APPLE_BUNDLE_ID");
+export const APPLE_APP_ID = defineString("APPLE_APP_ID", { default: "" });
 
 // Ticket costs per model (can be overridden via Remote Config on client)
 export const TICKET_COSTS = {

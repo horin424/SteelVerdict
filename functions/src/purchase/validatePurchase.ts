@@ -1,234 +1,81 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
-import * as https from "https";
-import { JWT } from "google-auth-library";
-import { GOOGLE_PLAY_SERVICE_ACCOUNT, APPLE_SHARED_SECRET } from "../utils/config";
+import { GOOGLE_PLAY_SERVICE_ACCOUNT } from "../utils/config";
+import { productFor } from "./products";
+import { purchaseAccountId } from "./accountId";
+import { StoreRefusal, VerifiedPurchase, verifyApple, verifyGooglePlay } from "./stores";
+import { AccountMatch, ClaimResult, claimPurchase, refused } from "./ledger";
 
 interface ValidatePurchaseRequest {
   platform: "android" | "ios";
   productId: string;
-  purchaseToken?: string;  // Android
-  receiptData?: string;    // iOS (base64)
-  isSubscription: boolean;
+  /** Android: the Play purchase token. */
+  purchaseToken?: string;
+  /** iOS: the StoreKit 2 signed transaction (JWS). */
+  receiptData?: string;
 }
 
-/** Must match lib/services/purchase/iap_purchase_service.dart ProductIds. */
-const SUBSCRIPTION_TIERS: Record<string, string> = {
-  "strategy_game_sub_500_monthly": "sub500",
-  "strategy_game_sub_1000_monthly": "sub1000",
-  "strategy_game_sub_3000_monthly": "sub3000",
-};
-
-/** Must match lib/services/purchase/iap_purchase_service.dart ProductIds. */
-const TICKET_PACKS: Record<string, number> = {
-  "strategy_game_tickets_10": 10,
-  "strategy_game_tickets_30": 30,
-};
-
-/** Must match android/app/build.gradle.kts applicationId. */
-const ANDROID_PACKAGE_NAME = "app.steelverdict.game";
-
 /**
- * validatePurchase — receipt validation + entitlement update.
+ * validatePurchase: the app hands over a store purchase; the server checks it
+ * with the store, records it in the purchase ledger, and grants it once.
  *
- * Android: verifies purchase token with Google Play Developer API.
- * iOS: verifies receipt with Apple's App Store validation endpoint.
+ * 1. Ask the store: Apple's signed transaction, or the Google Play API. The
+ *    request only says which purchase to look up (A3).
+ * 2. The store's product must be the requested one and in the product table
+ *    (A5b).
+ * 3. The store's account ID must be the caller's (purchaseAccountId); the
+ *    ledger also lets a guest who reinstalled restore a subscription or the
+ *    scenario pack (ledger.ts).
+ * 4. Ledger row and grant in one transaction (A5a). Subscriptions then
+ *    recompute the tier from the ledger.
  *
- * On success:
- *   - Subscription → update subscriptionTier in Firestore
- *   - Ticket pack  → add tickets to user balance
+ * Answers { status: granted | already_granted | refused | pending, reason?,
+ * granted?, tier?, amount? }. When the store can't be reached the call fails
+ * with "unavailable": the app keeps the purchase open and tries again.
  *
- * Setup required:
- *   - Android: `firebase functions:secrets:set GOOGLE_PLAY_SERVICE_ACCOUNT`
- *     Value: JSON string of your Google Play service account credentials.
- *   - iOS: `firebase functions:secrets:set APPLE_SHARED_SECRET`
- *     Value: your App Store Connect shared secret.
+ * Setup: the GOOGLE_PLAY_SERVICE_ACCOUNT secret (Play); APPLE_BUNDLE_ID and
+ * APPLE_APP_ID (plain params) and Apple's root certificates in functions/certs
+ * (App Store).
  */
 export const validatePurchase = onCall(
-  { secrets: [GOOGLE_PLAY_SERVICE_ACCOUNT, APPLE_SHARED_SECRET] },
-  async (request) => {
+  { secrets: [GOOGLE_PLAY_SERVICE_ACCOUNT] },
+  async (request): Promise<ClaimResult> => {
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Authentication required.");
     }
     const uid = request.auth.uid;
-    const data = request.data as ValidatePurchaseRequest;
-
-    if (!data.platform || !data.productId) {
+    const data = (request.data ?? {}) as ValidatePurchaseRequest;
+    if ((data.platform !== "android" && data.platform !== "ios") || typeof data.productId !== "string") {
       throw new HttpsError("invalid-argument", "platform and productId are required.");
     }
+    const product = productFor(data.productId);
+    if (!product) return refused("unknown_product");
 
-    // Validate with platform
-    let isValid = false;
+    let verified: VerifiedPurchase;
     try {
-      if (data.platform === "android") {
-        isValid = await validateAndroid(
-          data.productId,
-          data.purchaseToken ?? "",
-          data.isSubscription,
-          GOOGLE_PLAY_SERVICE_ACCOUNT.value(),
-        );
-      } else {
-        isValid = await validateApple(
-          data.receiptData ?? "",
-          APPLE_SHARED_SECRET.value(),
-        );
-      }
+      verified = data.platform === "android"
+        ? await verifyGooglePlay(
+          data.productId, product, String(data.purchaseToken ?? ""), GOOGLE_PLAY_SERVICE_ACCOUNT.value())
+        : await verifyApple(String(data.receiptData ?? ""), product);
     } catch (err) {
-      console.error("Receipt validation error:", err);
-      throw new HttpsError("internal", "Receipt validation failed.");
+      if (err instanceof StoreRefusal) {
+        console.warn(`validatePurchase: ${uid} ${data.productId}: refused by the store (${err.reason})`);
+        return refused(err.reason);
+      }
+      console.error("validatePurchase: store check failed:", err);
+      throw new HttpsError("unavailable", "Could not check the purchase with the store. Please try again.");
     }
 
-    if (!isValid) {
-      throw new HttpsError("permission-denied", "Invalid receipt.");
-    }
+    // The store's answer, not the request, decides what the purchase is (A5b).
+    if (verified.productId !== data.productId) return refused("product_mismatch");
+    if (verified.state === "pending") return { status: "pending" };
 
-    // Grant entitlement
-    const db = admin.firestore();
-    const userRef = db.collection("users").doc(uid);
-
-    if (data.productId in SUBSCRIPTION_TIERS) {
-      const tier = SUBSCRIPTION_TIERS[data.productId];
-      await userRef.update({
-        subscriptionTier: tier,
-        // Boss battles are a Warlord (sub3000) perk.
-        isBossEnabled: tier === "sub3000",
-        subscriptionUpdatedAt: Date.now(),
-      });
-      return { granted: "subscription", tier };
-    }
-
-    // Scenario pack — unlock flag only (content gating is client + future server checks).
-    if (data.productId === "strategy_game_scenario_pack_1") {
-      await userRef.update({
-        scenarioPack1Unlocked: true,
-        scenarioPack1UnlockedAt: Date.now(),
-      });
-      return { granted: "scenario_pack", productId: data.productId };
-    }
-
-    if (data.productId in TICKET_PACKS) {
-      const amount = TICKET_PACKS[data.productId];
-      await admin.firestore().runTransaction(async (tx) => {
-        const snap = await tx.get(userRef);
-        if (!snap.exists) throw new HttpsError("not-found", "User not found.");
-        const current = (snap.data()?.ticketCount as number) ?? 0;
-        tx.update(userRef, { ticketCount: current + amount });
-      });
-      return { granted: "tickets", amount };
-    }
-
-    throw new HttpsError("invalid-argument", `Unknown productId: ${data.productId}`);
+    const accountMatch: AccountMatch = verified.accountId === undefined
+      ? "unknown"
+      : verified.accountId === purchaseAccountId(uid) ? "mine" : "other";
+    const result = await claimPurchase(uid, verified, product, accountMatch);
+    console.log(
+      `validatePurchase: ${uid} ${data.productId} ${verified.platform}${verified.test ? " (test)" : ""}` +
+      ` -> ${result.status}${result.reason ? ` (${result.reason})` : ""}`);
+    return result;
   },
 );
-
-// ─── Android validation ───────────────────────────────────────────────────────
-
-async function validateAndroid(
-  productId: string,
-  purchaseToken: string,
-  isSubscription: boolean,
-  serviceAccountJson: string,
-): Promise<boolean> {
-  if (!purchaseToken) return false;
-
-  // For production: use googleapis library with service account
-  // This is a simplified implementation — see README for full setup
-  const serviceAccount = JSON.parse(serviceAccountJson) as { client_email: string; private_key: string };
-
-  // Get access token via JWT
-  const accessToken = await getGoogleAccessToken(serviceAccount);
-
-  const packageName = ANDROID_PACKAGE_NAME;
-  const type = isSubscription ? "subscriptions" : "products";
-  const url = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/${type}/${productId}/tokens/${purchaseToken}`;
-
-  const responseBody = await httpsGet(url, { Authorization: `Bearer ${accessToken}` });
-  const parsed = JSON.parse(responseBody) as Record<string, unknown>;
-
-  if (isSubscription) {
-    // Check paymentState: 1 = paid, 2 = free trial
-    const paymentState = parsed["paymentState"] as number;
-    return paymentState === 1 || paymentState === 2;
-  } else {
-    // Check purchaseState: 0 = purchased
-    return (parsed["purchaseState"] as number) === 0;
-  }
-}
-
-// ─── Apple validation ─────────────────────────────────────────────────────────
-
-async function validateApple(
-  receiptData: string,
-  sharedSecret: string,
-): Promise<boolean> {
-  if (!receiptData) return false;
-
-  const payload = JSON.stringify({
-    "receipt-data": receiptData,
-    "password": sharedSecret,
-    "exclude-old-transactions": true,
-  });
-
-  // Try production first, then sandbox
-  for (const url of [
-    "https://buy.itunes.apple.com/verifyReceipt",
-    "https://sandbox.itunes.apple.com/verifyReceipt",
-  ]) {
-    const response = await httpsPost(url, payload);
-    const parsed = JSON.parse(response) as { status: number };
-    if (parsed.status === 0) return true;
-    if (parsed.status === 21007) continue; // Sandbox receipt on production — retry
-    break;
-  }
-
-  return false;
-}
-
-// ─── HTTP helpers ─────────────────────────────────────────────────────────────
-
-function httpsGet(url: string, headers: Record<string, string>): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const req = https.get(url, { headers }, (res) => {
-      let data = "";
-      res.on("data", (chunk) => { data += chunk; });
-      res.on("end", () => resolve(data));
-    });
-    req.on("error", reject);
-  });
-}
-
-function httpsPost(url: string, body: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const urlObj = new URL(url);
-    const options = {
-      hostname: urlObj.hostname,
-      path: urlObj.pathname,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(body),
-      },
-    };
-    const req = https.request(options, (res) => {
-      let data = "";
-      res.on("data", (chunk) => { data += chunk; });
-      res.on("end", () => resolve(data));
-    });
-    req.on("error", reject);
-    req.write(body);
-    req.end();
-  });
-}
-
-async function getGoogleAccessToken(serviceAccount: { client_email: string; private_key: string }): Promise<string> {
-  const jwtClient = new JWT({
-    email: serviceAccount.client_email,
-    key: serviceAccount.private_key,
-    scopes: ["https://www.googleapis.com/auth/androidpublisher"],
-  });
-  const tokens = await jwtClient.authorize();
-  if (!tokens.access_token) {
-    throw new Error("Failed to obtain Google access token.");
-  }
-  return tokens.access_token;
-}

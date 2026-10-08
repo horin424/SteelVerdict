@@ -3,7 +3,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge && npm run verify:modes",
+    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge && npm run verify:modes && npm run verify:apple",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
     "lint": "eslint --ext .ts .",
@@ -11,7 +11,9 @@
     "verify:pvp": "node scripts/verify-pvp-trigger.js",
     "verify:judge": "node scripts/verify-pvp-judge.js",
     "verify:modes": "node scripts/verify-mode-lock.js",
-    "verify:rules": "node scripts/verify-users-rules.js"
+    "verify:apple": "node scripts/verify-apple.js",
+    "verify:rules": "node scripts/verify-users-rules.js",
+    "verify:purchases": "node scripts/verify-purchases.js"
   },
   "engines": {
     "node": "20"
@@ -19,6 +21,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.36.0",
+    "@apple/app-store-server-library": "^3.1.0",
     "@google/generative-ai": "^0.21.0",
     "firebase-admin": "^13.7.0",
     "firebase-functions": "^7.2.2",
