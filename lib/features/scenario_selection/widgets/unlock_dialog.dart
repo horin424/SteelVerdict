@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models/scenario_model.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../scenario_providers.dart';
 import '../../shop/purchase_messages.dart';
+import '../../shop/shop_providers.dart';
+import '../../../services/purchase/iap_purchase_service.dart';
 import '../../../core/utils/error_messages.dart';
 
 class UnlockDialog extends ConsumerWidget {
@@ -42,6 +45,11 @@ class UnlockDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final unlockState = ref.watch(scenarioUnlockControllerProvider);
     final controller = ref.read(scenarioUnlockControllerProvider.notifier);
+    // What the option sells is the scenario pack, at the store's price.
+    final packPrice = (ref.watch(productsProvider).valueOrNull ?? const <ProductDetails>[])
+        .where((p) => p.id == ProductIds.scenarioPack1)
+        .map((p) => p.price)
+        .firstOrNull;
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -93,10 +101,10 @@ class UnlockDialog extends ConsumerWidget {
             icon: Icons.shopping_cart_outlined,
             title: l10n.unlockPurchase,
             subtitle: l10n.unlockPurchaseDesc,
-            badge: '¥120',
-            badgeColor: AppColors.goldAccent,
+            badge: packPrice ?? '—',
+            badgeColor: packPrice == null ? AppColors.textMuted : AppColors.goldAccent,
             isLoading: unlockState.isUnlocking,
-            onTap: () async {
+            onTap: packPrice == null ? null : () async {
               final outcome = await controller.unlockWithPurchase(scenario.scenarioId);
               if (!context.mounted) return;
               showPurchaseOutcome(context, outcome);
@@ -133,7 +141,9 @@ class _UnlockOption extends StatelessWidget {
   final String badge;
   final Color badgeColor;
   final bool isLoading;
-  final VoidCallback onTap;
+
+  /// Null disables the option.
+  final VoidCallback? onTap;
 
   const _UnlockOption({
     required this.icon,

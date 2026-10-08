@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/legal_links.dart';
+import '../../../core/widgets/link_text_button.dart';
 import '../../../features/auth/auth_providers.dart';
 import '../../../models/user_model.dart';
 import '../purchase_messages.dart';
@@ -36,6 +39,13 @@ class ShopScreen extends ConsumerWidget {
       data: (u) => u?.subscriptionTier ?? SubscriptionTier.free,
       orElse: () => SubscriptionTier.free,
     );
+
+    // Prices come from the store, in the user's currency. A product the store
+    // didn't return has no price and can't be bought.
+    final prices = {
+      for (final product in ref.watch(productsProvider).valueOrNull ?? const <ProductDetails>[])
+        product.id: product.price,
+    };
 
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
@@ -76,6 +86,7 @@ class ShopScreen extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: SubscriptionPlanCard(
                 plan: plan,
+                price: prices[plan.productId],
                 isCurrentPlan: currentTier.name == _productToTier(plan.productId),
                 isLoading: purchaseState.isPurchasing,
                 onSubscribe: () => _buy(context, ref, plan.productId),
@@ -100,7 +111,7 @@ class ShopScreen extends ConsumerWidget {
               productId: 'strategy_game_tickets_10',
               title: l10n.shopSmallPack,
               subtitle: l10n.shopSmallPackDesc,
-              price: '¥240',
+              price: prices['strategy_game_tickets_10'],
               icon: Icons.confirmation_number,
               isLoading: purchaseState.isPurchasing,
               onPurchase: () => _buy(context, ref, 'strategy_game_tickets_10'),
@@ -109,7 +120,7 @@ class ShopScreen extends ConsumerWidget {
               productId: 'strategy_game_tickets_30',
               title: l10n.shopLargePack,
               subtitle: l10n.shopLargePackDesc,
-              price: '¥600',
+              price: prices['strategy_game_tickets_30'],
               icon: Icons.confirmation_number_outlined,
               isLoading: purchaseState.isPurchasing,
               onPurchase: () => _buy(context, ref, 'strategy_game_tickets_30'),
@@ -133,7 +144,7 @@ class ShopScreen extends ConsumerWidget {
               productId: 'strategy_game_scenario_pack_1',
               title: l10n.shopAncientBattles,
               subtitle: l10n.shopAncientBattlesDesc,
-              price: '¥480',
+              price: prices['strategy_game_scenario_pack_1'],
               icon: Icons.map_outlined,
               isLoading: purchaseState.isPurchasing,
               onPurchase: () => _buy(context, ref, 'strategy_game_scenario_pack_1'),
@@ -147,7 +158,21 @@ class ShopScreen extends ConsumerWidget {
               style: AppTextStyles.labelSmall.copyWith(color: AppColors.textMuted),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 8),
+            // Apple 3.1.2: Terms of Use and Privacy Policy next to subscriptions,
+            // and where to cancel them.
+            Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                LinkTextButton(label: l10n.shopTermsOfUse, url: LegalLinks.termsOfUse),
+                LinkTextButton(label: l10n.settingsPrivacyPolicy, url: LegalLinks.privacyPolicy),
+                LinkTextButton(
+                  label: l10n.shopManageSubscriptions,
+                  url: LegalLinks.manageSubscriptions,
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),

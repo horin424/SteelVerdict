@@ -6,7 +6,10 @@ class OneTimePurchaseTile extends StatelessWidget {
   final String productId;
   final String title;
   final String subtitle;
-  final String price;
+
+  /// The store's price; null when the store didn't return this product, which
+  /// then can't be bought.
+  final String? price;
   final IconData icon;
   final bool isLoading;
   final VoidCallback onPurchase;
@@ -24,6 +27,7 @@ class OneTimePurchaseTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final available = price != null;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
@@ -34,7 +38,7 @@ class OneTimePurchaseTile extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: isLoading ? null : onPurchase,
+          onTap: isLoading || !available ? null : onPurchase,
           borderRadius: BorderRadius.circular(10),
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -70,11 +74,11 @@ class OneTimePurchaseTile extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.goldAccent,
+                      color: available ? AppColors.goldAccent : AppColors.textMuted,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      price,
+                      price ?? '—',
                       style: AppTextStyles.labelMedium.copyWith(
                         color: AppColors.inkBrown,
                         fontWeight: FontWeight.bold,

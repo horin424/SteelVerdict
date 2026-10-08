@@ -1482,5 +1482,15 @@
   "shopPurchaseNotValid": "This purchase isn't valid.",
   "@shopPurchaseNotValid": {"description": "The server refused a purchase the store doesn't confirm"},
   "shopNothingToRestore": "No purchases to restore.",
-  "@shopNothingToRestore": {"description": "Restore found nothing"}
+  "@shopNothingToRestore": {"description": "Restore found nothing"},
+  "shopPerMonth": "{price}/mo",
+  "@shopPerMonth": {"description": "Subscription price from the store, with the period", "placeholders": {"price": {"type": "String"}}},
+  "shopTermsOfUse": "Terms of Use",
+  "@shopTermsOfUse": {"description": "Link to the Terms of Use page"},
+  "shopManageSubscriptions": "Manage subscriptions",
+  "@shopManageSubscriptions": {"description": "Link to the store's subscription page, where subscriptions are cancelled"},
+  "settingsDeleteSubscriptionNote": "Deleting your account does not cancel a subscription. The store keeps billing until you cancel it there.",
+  "@settingsDeleteSubscriptionNote": {"description": "Account deletion dialog: store subscriptions keep billing"},
+  "linkOpenFailed": "Couldn't open the link.",
+  "@linkOpenFailed": {"description": "A link could not be opened"}
 }

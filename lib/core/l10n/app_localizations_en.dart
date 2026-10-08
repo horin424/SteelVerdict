@@ -1620,4 +1620,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopNothingToRestore => 'No purchases to restore.';
+
+  @override
+  String shopPerMonth(String price) {
+    return '$price/mo';
+  }
+
+  @override
+  String get shopTermsOfUse => 'Terms of Use';
+
+  @override
+  String get shopManageSubscriptions => 'Manage subscriptions';
+
+  @override
+  String get settingsDeleteSubscriptionNote =>
+      'Deleting your account does not cancel a subscription. The store keeps billing until you cancel it there.';
+
+  @override
+  String get linkOpenFailed => 'Couldn\'t open the link.';
 }

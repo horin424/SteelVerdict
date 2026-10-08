@@ -6,6 +6,10 @@ import '../shop_providers.dart';
 
 class SubscriptionPlanCard extends StatelessWidget {
   final SubscriptionPlan plan;
+
+  /// The store's price, formatted for the user's country (e.g. "¥1,000").
+  /// Null when the store didn't return this plan: it then can't be bought.
+  final String? price;
   final bool isCurrentPlan;
   final bool isLoading;
   final VoidCallback onSubscribe;
@@ -13,24 +17,17 @@ class SubscriptionPlanCard extends StatelessWidget {
   const SubscriptionPlanCard({
     super.key,
     required this.plan,
+    required this.price,
     required this.isCurrentPlan,
     required this.isLoading,
     required this.onSubscribe,
   });
 
-  /// The stored price is "¥500/mo"; only the period suffix needs translating,
-  /// so split on the slash rather than duplicating three amounts as keys.
-  String _localizedPrice(String raw, AppLocalizations l10n) {
-    final amount = raw.replaceAll('¥', '').split('/').first;
-    return l10n.shopPricePerMonth(amount);
-  }
-
   String _localizedTitle(String productId, AppLocalizations l10n) {
     switch (productId) {
       case 'strategy_game_sub_500_monthly': return l10n.subscriptionCommander;
       case 'strategy_game_sub_1000_monthly': return l10n.subscriptionGeneral;
-      case 'strategy_game_sub_3000_monthly': return l10n.subscriptionWarlord;
-      default: return plan.title;
+      default: return l10n.subscriptionWarlord;
     }
   }
 
@@ -51,7 +48,7 @@ class SubscriptionPlanCard extends StatelessWidget {
           l10n.shopFeatureSave50Strategies,
           l10n.shopFeatureAllCommanderFeatures,
         ];
-      case 'strategy_game_sub_3000_monthly':
+      default:
         return [
           l10n.shopFeature50Tickets,
           l10n.shopFeatureAllModes,
@@ -59,7 +56,6 @@ class SubscriptionPlanCard extends StatelessWidget {
           l10n.shopFeatureUnlimitedAll,
           l10n.shopFeatureAllGeneralFeatures,
         ];
-      default: return plan.features;
     }
   }
 
@@ -117,7 +113,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    _localizedPrice(plan.price, l10n),
+                    price == null ? '—' : l10n.shopPerMonth(price!),
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.goldAccent,
                     ),
@@ -153,7 +149,7 @@ class SubscriptionPlanCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: isCurrentPlan || isLoading ? null : onSubscribe,
+              onPressed: isCurrentPlan || isLoading || price == null ? null : onSubscribe,
               style: ElevatedButton.styleFrom(
                 backgroundColor: plan.isPopular ? AppColors.goldAccent : AppColors.navyLight,
                 foregroundColor: plan.isPopular ? AppColors.inkBrown : AppColors.parchmentBeige,

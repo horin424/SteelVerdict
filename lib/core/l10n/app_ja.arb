@@ -562,5 +562,10 @@
   "shopPurchaseEnded": "このサブスクリプションは終了しています",
   "shopPurchaseRefunded": "この購入は返金されています",
   "shopPurchaseNotValid": "この購入は有効ではありません",
-  "shopNothingToRestore": "復元できる購入はありません"
+  "shopNothingToRestore": "復元できる購入はありません",
+  "shopPerMonth": "{price}/月",
+  "shopTermsOfUse": "利用規約",
+  "shopManageSubscriptions": "サブスクリプションの管理",
+  "settingsDeleteSubscriptionNote": "アカウントを削除しても、サブスクリプションは解約されません。ストアで解約するまで請求が続きます。",
+  "linkOpenFailed": "リンクを開けませんでした"
 }

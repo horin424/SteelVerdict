@@ -1579,4 +1579,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shopNothingToRestore => '復元できる購入はありません';
+
+  @override
+  String shopPerMonth(String price) {
+    return '$price/月';
+  }
+
+  @override
+  String get shopTermsOfUse => '利用規約';
+
+  @override
+  String get shopManageSubscriptions => 'サブスクリプションの管理';
+
+  @override
+  String get settingsDeleteSubscriptionNote =>
+      'アカウントを削除しても、サブスクリプションは解約されません。ストアで解約するまで請求が続きます。';
+
+  @override
+  String get linkOpenFailed => 'リンクを開けませんでした';
 }

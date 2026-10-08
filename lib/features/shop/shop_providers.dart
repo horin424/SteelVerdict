@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../app.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/l10n/app_localizations.dart';
 import '../../core/widgets/error_snackbar.dart';
 import '../../services/purchase/purchase_service.dart';
@@ -118,59 +119,32 @@ final purchaseControllerProvider =
   return PurchaseController(ref);
 });
 
-// Subscription plan data
+/// A subscription plan as the shop shows it. The price comes from the store
+/// (productsProvider), and the name and perks from l10n (SubscriptionPlanCard).
 class SubscriptionPlan {
   final String productId;
-  final String title;
-  final String price;
   final int dailyTickets;
-  final List<String> features;
   final bool isPopular;
 
   const SubscriptionPlan({
     required this.productId,
-    required this.title,
-    required this.price,
     required this.dailyTickets,
-    required this.features,
     this.isPopular = false,
   });
 }
 
 const List<SubscriptionPlan> kSubscriptionPlans = [
   SubscriptionPlan(
-    productId: 'strategy_game_sub_500_monthly',
-    title: 'Commander',
-    price: '¥500/mo',
-    dailyTickets: 10,
-    features: [
-      '10 daily tickets',
-      'Epic mode unlocked',
-      'All basic scenarios',
-    ],
+    productId: ProductIds.sub500Monthly,
+    dailyTickets: AppConstants.dailyTicketsSub500,
   ),
   SubscriptionPlan(
-    productId: 'strategy_game_sub_1000_monthly',
-    title: 'General',
-    price: '¥1,000/mo',
-    dailyTickets: 15,
-    features: [
-      '15 daily tickets',
-      'Epic mode unlocked',
-      'All Commander features',
-    ],
+    productId: ProductIds.sub1000Monthly,
+    dailyTickets: AppConstants.dailyTicketsSub1000,
     isPopular: true,
   ),
   SubscriptionPlan(
-    productId: 'strategy_game_sub_3000_monthly',
-    title: 'Warlord',
-    price: '¥3,000/mo',
-    dailyTickets: 50,
-    features: [
-      '50 daily tickets',
-      'Boss battles enabled',
-      'Unlimited war history',
-      'All General features',
-    ],
+    productId: ProductIds.sub3000Monthly,
+    dailyTickets: AppConstants.dailyTicketsSub3000,
   ),
 ];

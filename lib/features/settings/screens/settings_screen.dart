@@ -7,7 +7,9 @@ import '../../../core/utils/stat_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/constants/route_names.dart';
+import '../../../core/utils/legal_links.dart';
 import '../../../core/widgets/error_snackbar.dart';
+import '../../../core/widgets/link_text_button.dart';
 import '../../../features/auth/auth_providers.dart';
 import '../../../features/splash/splash_providers.dart';
 import '../../../features/world_setting/world_setting_providers.dart';
@@ -149,7 +151,22 @@ class SettingsScreen extends ConsumerWidget {
                                             l10n.settingsDeleteAccountConfirm,
                                             style: AppTextStyles.bodySmall,
                                           ),
-                                          const SizedBox(height: 16),
+                                          const SizedBox(height: 12),
+                                          // Store subscriptions are billed by the
+                                          // store and outlive the account.
+                                          Text(
+                                            l10n.settingsDeleteSubscriptionNote,
+                                            style: AppTextStyles.bodySmall
+                                                .copyWith(
+                                                  color: AppColors.goldAccent,
+                                                ),
+                                          ),
+                                          LinkTextButton(
+                                            label:
+                                                l10n.shopManageSubscriptions,
+                                            url: LegalLinks.manageSubscriptions,
+                                          ),
+                                          const SizedBox(height: 8),
                                           TextField(
                                             controller: controller,
                                             autofocus: true,

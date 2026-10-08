@@ -3127,6 +3127,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No purchases to restore.'**
   String get shopNothingToRestore;
+
+  /// Subscription price from the store, with the period
+  ///
+  /// In en, this message translates to:
+  /// **'{price}/mo'**
+  String shopPerMonth(String price);
+
+  /// Link to the Terms of Use page
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get shopTermsOfUse;
+
+  /// Link to the store's subscription page, where subscriptions are cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Manage subscriptions'**
+  String get shopManageSubscriptions;
+
+  /// Account deletion dialog: store subscriptions keep billing
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting your account does not cancel a subscription. The store keeps billing until you cancel it there.'**
+  String get settingsDeleteSubscriptionNote;
+
+  /// A link could not be opened
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the link.'**
+  String get linkOpenFailed;
 }
 
 class _AppLocalizationsDelegate
