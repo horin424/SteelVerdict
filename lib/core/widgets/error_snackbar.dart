@@ -40,6 +40,11 @@ class ErrorSnackbar {
           side: const BorderSide(color: AppColors.warRedBright, width: 1),
         ),
         duration: const Duration(seconds: 4),
+        // Flutter keeps a snack bar with an action on screen until it is
+        // tapped (persist defaults to true then), so the 4 seconds never
+        // applied: the error stayed up on every screen after the one that
+        // raised it (B19).
+        persist: false,
         action: SnackBarAction(
           label: AppLocalizations.of(context)!.dismiss,
           textColor: AppColors.goldAccent,

@@ -16,10 +16,20 @@ class PointsRemainingIndicator extends StatelessWidget {
   int get remaining => total - used;
   double get fraction => total > 0 ? (used / total).clamp(0.0, 1.0) : 0;
 
+  // Every point used is the goal, shown in green like the 「全ポイント配分済み！」
+  // line under it. It used to turn the box, the bar and the number red
+  // at 30/30, as if something were wrong (B19). Red is for over the limit.
   Color get barColor {
-    if (fraction >= 1.0) return AppColors.warRed;
+    if (remaining < 0) return AppColors.warRed;
+    if (remaining == 0) return AppColors.victoryGreen;
     if (fraction >= 0.7) return AppColors.goldAccent;
     return AppColors.victoryGreen;
+  }
+
+  Color get borderColor {
+    if (remaining < 0) return AppColors.warRed;
+    if (remaining == 0) return AppColors.victoryGreen;
+    return AppColors.borderColor;
   }
 
   @override
@@ -30,9 +40,7 @@ class PointsRemainingIndicator extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.navyMid,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: remaining == 0 ? AppColors.warRed : AppColors.borderColor,
-        ),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
