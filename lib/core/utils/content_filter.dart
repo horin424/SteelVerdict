@@ -11,11 +11,16 @@ class ContentFilter {
   /// "kill" and "murder" were also removed outright — "kill the enemy commander"
   /// is the subject matter of the game, not abuse. If those should be blocked,
   /// that is a content-policy call, not a technical one.
+  ///
+  /// The server checks the same lists (functions/src/utils/contentFilter.ts).
+  /// Keep the two in step: the server used to refuse words this list allowed,
+  /// so a battle failed only after it was sent.
   static const List<String> _wordBlacklist = [
     'fuck',
     'shit',
     'bitch',
     'bastard',
+    'asshole',
     'dick',
     'cock',
     'pussy',
@@ -23,6 +28,9 @@ class ContentFilter {
     'nigga',
     'faggot',
     'retard',
+    'kike',
+    'spic',
+    'chink',
     'slut',
     'whore',
     'cunt',
@@ -42,11 +50,14 @@ class ContentFilter {
     'くそ(?!ま)', // くそ, but not くそまじめ
     'クソ',
     'ばか(?!り|らしい)', // ばか, but not ばかり / ばからしい
-    'バカ(?!リ)',
-    'アホ',
-    'あほ',
+    'バカ(?!リ|ンス)', // バカ, but not バカンス
+    'アホ(?!ウドリ)', // アホ, but not アホウドリ (albatross)
+    'あほ(?!うどり)',
     'きちく',
     'ちくしょう',
+    '死ね(?![ばなるま])', // 死ね, but not 死ねば / 死ねない / 死ねる / 死ねます
+    'うざい',
+    'ファック',
   ];
 
   static final List<RegExp> _patterns = [

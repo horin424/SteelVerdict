@@ -29,6 +29,11 @@ void main() {
       '敵を殺すつもりで突撃する。',   // 殺す is military vocabulary here
       '攻撃するばかりで守りが薄い。', // ばかり contains ばか
       'ばからしいほど単純な作戦だ。', // ばからしい contains ばか
+      'バカンスの季節に奇襲する。', // バカンス contains バカ
+      'アホウドリの群れを目印に進む。', // アホウドリ contains アホ
+      'くそまじめな将軍が守る砦。', // くそまじめ contains くそ
+      'ここで死ねば本望だ。', // 死ねば contains 死ね
+      '彼らは死ねない兵士だ。', // 死ねない contains 死ね
     ];
 
     for (final text in allowed) {
@@ -43,9 +48,14 @@ void main() {
       'fuck this game',
       'you are a bitch',
       'what a retard',
+      'you asshole',
       'ばか野郎',
       'このアホが',
       'ちくしょう',
+      'バカめ',
+      '死ね',
+      'うざいな',
+      'ファックだ',
     ];
 
     for (final text in blocked) {

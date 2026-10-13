@@ -1,18 +1,37 @@
-// Words refused in strategies and race names. The app has its own list
-// (lib/core/utils/content_filter.dart).
+// Words refused in strategies and race names. The same list as the app
+// (lib/core/utils/content_filter.dart). Keep the two in step, so the server
+// never refuses text the app has already accepted.
 
-const BLACKLIST_EN = [
-  "fuck", "shit", "bitch", "nigger", "nigga", "faggot", "retard",
-  "kike", "spic", "chink", "whore", "cunt", "bastard", "asshole",
+/** Matched as whole words, so "assault", "cockpit" and "Wessex" pass. */
+export const WORDS = [
+  "fuck", "shit", "bitch", "bastard", "asshole", "dick", "cock", "pussy",
+  "nigger", "nigga", "faggot", "retard", "kike", "spic", "chink",
+  "slut", "whore", "cunt", "penis", "vagina", "sex", "porn", "nude", "naked", "rape",
 ];
 
-const BLACKLIST_JA = ["バカ", "死ね", "クソ", "うざい", "ファック"];
+/**
+ * Japanese has no word boundaries, so each term carries its own guard against
+ * the ordinary words it sits inside.
+ */
+export const JA_PATTERNS = [
+  "くそ(?!ま)", // not くそまじめ
+  "クソ",
+  "ばか(?!り|らしい)", // not ばかり, ばからしい
+  "バカ(?!リ|ンス)", // not バカンス
+  "アホ(?!ウドリ)", // not アホウドリ (albatross)
+  "あほ(?!うどり)",
+  "きちく",
+  "ちくしょう",
+  "死ね(?![ばなるま])", // not 死ねば, 死ねない, 死ねる, 死ねます
+  "うざい",
+  "ファック",
+];
 
-const EN_PATTERNS = BLACKLIST_EN.map(
-  (w) => new RegExp(`\\b${w}\\b`, "iu"),
-);
+const PATTERNS = [
+  ...WORDS.map((w) => new RegExp(`\\b${w}\\b`, "iu")),
+  ...JA_PATTERNS.map((p) => new RegExp(p, "iu")),
+];
 
 export function containsInappropriateContent(text: string): boolean {
-  if (EN_PATTERNS.some((re) => re.test(text))) return true;
-  return BLACKLIST_JA.some((word) => text.includes(word));
+  return PATTERNS.some((re) => re.test(text));
 }
