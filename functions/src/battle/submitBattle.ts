@@ -9,7 +9,7 @@ import {
 } from "../utils/config";
 import { callGemini, callClaude } from "../utils/ai";
 import { assemblePrompt, formatBattleUserMessage, fetchRemoteConfigData } from "../utils/prompt";
-import { deductTickets, addTickets, getUser } from "../utils/firestore";
+import { deductTickets, addTickets, getUser, ensureUserDoc } from "../utils/firestore";
 import { parseOutcome, stripResultMarkers } from "../utils/outcome";
 import { containsInappropriateContent } from "../utils/contentFilter";
 import { checkRaceStats } from "../utils/race";
@@ -92,6 +92,7 @@ export const submitBattle = onCall(
       checkRaceStats(data.raceStats);
     }
 
+    await ensureUserDoc(uid);
     const gameMode = data.gameMode;
 
     // Epic and Boss are perks. The app hides them from players without the

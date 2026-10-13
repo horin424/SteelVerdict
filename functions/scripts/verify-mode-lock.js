@@ -24,6 +24,7 @@ const fsModule = require("../lib/utils/firestore");
 let player = null;
 let charged = [];
 let refunded = [];
+fsModule.ensureUserDoc = async () => {};
 fsModule.getUser = async () => {
   if (!player) throw new Error("no user stubbed");
   return player;

@@ -4,6 +4,7 @@ import { productFor } from "./products";
 import { purchaseAccountId } from "./accountId";
 import { StoreRefusal, VerifiedPurchase, verifyApple, verifyGooglePlay } from "./stores";
 import { AccountMatch, ClaimResult, claimPurchase, refused } from "./ledger";
+import { ensureUserDoc } from "../utils/firestore";
 
 interface ValidatePurchaseRequest {
   platform: "android" | "ios";
@@ -49,6 +50,9 @@ export const validatePurchase = onCall(
     }
     const product = productFor(data.productId);
     if (!product) return refused("unknown_product");
+    // The grant updates the player's document; without one a paid purchase
+    // could never be granted.
+    await ensureUserDoc(uid);
 
     let verified: VerifiedPurchase;
     try {

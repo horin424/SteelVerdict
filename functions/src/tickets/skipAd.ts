@@ -1,5 +1,5 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { deductTickets } from "../utils/firestore";
+import { deductTickets, ensureUserDoc } from "../utils/firestore";
 
 /**
  * skipAd — deducts 1 ticket so the user can skip an interstitial ad.
@@ -10,6 +10,7 @@ export const skipAd = onCall(async (request) => {
     throw new HttpsError("unauthenticated", "Authentication required.");
   }
   const uid = request.auth.uid;
+  await ensureUserDoc(uid);
 
   try {
     const newCount = await deductTickets(uid, 1);

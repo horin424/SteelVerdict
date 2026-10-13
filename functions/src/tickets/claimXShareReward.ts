@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import { ensureUserDoc } from "../utils/firestore";
 
 /**
  * claimXShareReward — grant 1 ticket for sharing to X once per day.
@@ -10,6 +11,7 @@ export const claimXShareReward = onCall(async (request) => {
     throw new HttpsError("unauthenticated", "Authentication required.");
   }
   const uid = request.auth.uid;
+  await ensureUserDoc(uid);
   const ref = admin.firestore().collection("users").doc(uid);
 
   const nowUtc = new Date();

@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { deductTickets, addTickets } from "../utils/firestore";
+import { deductTickets, addTickets, ensureUserDoc } from "../utils/firestore";
 import { fetchRemoteConfigData } from "../utils/prompt";
 import { TICKET_COSTS } from "../utils/config";
 
@@ -40,6 +40,7 @@ export const submitPvpStrategy = onCall(async (request) => {
     );
   }
 
+  await ensureUserDoc(uid);
   const db = admin.firestore();
   const matchRef = db.collection("pvp_matches").doc(data.matchId);
   const snap = await matchRef.get();

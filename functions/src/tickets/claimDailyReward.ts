@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { getUser } from "../utils/firestore";
+import { getUser, ensureUserDoc } from "../utils/firestore";
 
 // Daily ticket amounts per subscription tier — must match app_constants.dart
 // AppConstants.dailyTicketsFree=1, sub500=10, sub1000=15, sub3000=50
@@ -22,6 +22,7 @@ export const claimDailyReward = onCall(async (request) => {
     throw new HttpsError("unauthenticated", "Authentication required.");
   }
   const uid = request.auth.uid;
+  await ensureUserDoc(uid);
   const user = await getUser(uid);
 
   const nowUtc = new Date();
@@ -77,6 +78,7 @@ export const earnAdTickets = onCall(async (request) => {
     throw new HttpsError("unauthenticated", "Authentication required.");
   }
   const uid = request.auth.uid;
+  await ensureUserDoc(uid);
   const ref = admin.firestore().collection("users").doc(uid);
   const todayUtc = toUtcDateString(new Date());
 

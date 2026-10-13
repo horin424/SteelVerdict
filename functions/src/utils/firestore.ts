@@ -15,9 +15,14 @@ export async function getUser(uid: string) {
   return doc.data() as FirestoreUser;
 }
 
-export async function createUserDoc(uid: string, displayName: string) {
+/** A new player's name: guests get none, and the app shows its own default (匿名司令官). */
+export function startingName(user: { displayName?: string; email?: string }): string {
+  return user.displayName || user.email?.split("@")[0] || "";
+}
+
+function startingUser(uid: string, displayName: string): FirestoreUser {
   const now = Date.now();
-  const user: FirestoreUser = {
+  return {
     uid,
     displayName: displayName || "",
     ticketCount: 3, // Starting tickets
@@ -27,8 +32,38 @@ export async function createUserDoc(uid: string, displayName: string) {
     isBossEnabled: false,
     lastDailyRewardAt: 0,
   };
+}
+
+export async function createUserDoc(uid: string, displayName: string) {
+  const user = startingUser(uid, displayName);
   await db().collection(USERS).doc(uid).set(user);
   return user;
+}
+
+/**
+ * Creates the player's document with the starting values if it is missing.
+ *
+ * onUserCreated creates it at sign-up. When that trigger failed, every call
+ * for the account failed with "User not found", for good. The callables that
+ * use the document call this first. A deleted account is not brought back.
+ */
+export async function ensureUserDoc(uid: string): Promise<void> {
+  const ref = db().collection(USERS).doc(uid);
+  if ((await ref.get()).exists) return;
+
+  let authUser: admin.auth.UserRecord;
+  try {
+    authUser = await admin.auth().getUser(uid);
+  } catch {
+    throw new HttpsError("not-found", "User not found.");
+  }
+  try {
+    await ref.create(startingUser(uid, startingName(authUser)));
+    console.warn(`ensureUserDoc: created the missing user document for ${uid}`);
+  } catch (err) {
+    // 6 = ALREADY_EXISTS: a parallel call created it first, which is fine.
+    if ((err as { code?: number }).code !== 6) throw err;
+  }
 }
 
 /**

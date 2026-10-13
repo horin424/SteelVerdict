@@ -1,7 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { CLAUDE_API_KEY, CLAUDE_HAIKU, CHRONICLE_MAX_TOKENS } from "../utils/config";
 import { callClaude } from "../utils/ai";
-import { deductTickets, addTickets, getUser } from "../utils/firestore";
+import { deductTickets, addTickets, getUser, ensureUserDoc } from "../utils/firestore";
 import { assemblePrompt } from "../utils/prompt";
 
 interface GenerateWarHistoryRequest {
@@ -38,6 +38,7 @@ export const generateWarHistory = onCall(
       throw new HttpsError("invalid-argument", "playerStrategy and raceName are required.");
     }
 
+    await ensureUserDoc(uid);
     const user = await getUser(uid);
     const isUnlimited = user.subscriptionTier === "sub3000";
     const cost = isUnlimited ? 0 : WAR_HISTORY_TICKET_COST;
