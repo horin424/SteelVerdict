@@ -149,15 +149,40 @@ async function judge(response, m) {
   check("draw -> winner is the literal draw", r.write?.patch.winner, "draw");
 
   // --- the model going off-script ---------------------------------------
-  r = await judge("The battle was long and neither side gave ground.");
-  check("no verdict line -> draw, not a crash", r.write?.patch.winner, "draw");
-  check("no REPORT line -> falls back to the text", r.write?.patch.shortReport,
-    "The battle was long and neither side gave ground.");
-  check("still resolves the match", r.write?.patch.status, "resolved");
+  // Both players paid for a verdict. An answer without one is a failed
+  // judgment (the sweep refunds them), never a silent draw (B2).
+  async function judgeFails(response) {
+    try {
+      await judge(response);
+      return { threw: false, writes: writes.length };
+    } catch (e) {
+      return { threw: true, writes: writes.length };
+    }
+  }
+  let f = await judgeFails("The battle was long and neither side gave ground.");
+  check("no verdict line -> the judge fails", f.threw, true);
+  check("no verdict line -> nothing written, no false draw", f.writes, 0);
 
-  r = await judge("");
-  check("empty response -> draw", r.write?.patch.winner, "draw");
-  check("empty response -> still resolved, not stuck", r.write?.patch.status, "resolved");
+  f = await judgeFails("");
+  check("empty response -> the judge fails", f.threw, true);
+  check("empty response -> nothing written", f.writes, 0);
+
+  r = await judge("WINNER: PLAYER B\nThe flank decided it.");
+  check("no REPORT line -> falls back to the text", r.write?.patch.shortReport,
+    "WINNER: PLAYER B\nThe flank decided it.".substring(0, 60));
+
+  // --- the verdict in bold (B2) ------------------------------------------
+  r = await judge("**WINNER:** PLAYER A\n**REPORT:** Alice holds the ridge.");
+  check("bold label -> still player A", r.write?.patch.winner, A);
+  check("bold label -> report has no asterisks", r.write?.patch.shortReport,
+    "Alice holds the ridge.");
+  r = await judge("**WINNER: PLAYER B**\nREPORT: Bob flanks.");
+  check("whole line in bold -> player B", r.write?.patch.winner, B);
+  r = await judge("WINNER：PLAYER A\nREPORT：full-width colons.");
+  check("full-width colon -> player A", r.write?.patch.winner, A);
+  check("full-width colon -> report found", r.write?.patch.shortReport, "full-width colons.");
+  r = await judge("**勝者：引き分け**\nREPORT: 互角。");
+  check("Japanese draw in bold -> draw", r.write?.patch.winner, "draw");
 
   // A report longer than the 60-char cap
   const long = "WINNER: PLAYER A\nREPORT: " + "x".repeat(200);
@@ -186,8 +211,8 @@ async function judge(response, m) {
   check("lowercase verdict parses", parsePvpResponse("winner: player b\nreport: x", A, B).winner, B);
   check("verdict inside prose still parses",
     parsePvpResponse("After much fighting, WINNER: PLAYER B\nREPORT: x", A, B).winner, B);
-  check("unknown player token -> draw",
-    parsePvpResponse("WINNER: PLAYER C\nREPORT: x", A, B).winner, "draw");
+  check("unknown player token -> no verdict",
+    parsePvpResponse("WINNER: PLAYER C\nREPORT: x", A, B), null);
 
   restoreFirestore();
 

@@ -19,8 +19,10 @@ const ft = require("firebase-functions-test")();
 // so replacing it on the module exports is enough.
 const jpmModule = require("../lib/battle/judgePvpMatch");
 let judged = [];
+let judgingFails = false;
 jpmModule.judgePvpMatch = async (matchId, match) => {
   judged.push({ matchId, match });
+  if (judgingFails) throw new Error("no verdict in the model's answer");
 };
 
 const { judgeCompletedPvpMatch } = require("../lib/battle/judgeCompletedPvpMatch");
@@ -108,12 +110,13 @@ function check(name, actual, expected) {
   // --- winner parsing ---
   console.log("\n(2b) PvP winner parsing\n");
   const { parsePvpResponse } = jpmModule;
-  const p = (t) => parsePvpResponse(t, A, B).winner;
+  const p = (t) => parsePvpResponse(t, A, B)?.winner ?? null;
   check("WINNER: PLAYER A", p("WINNER: PLAYER A\nREPORT: Alice holds the ridge."), A);
   check("WINNER: PLAYER B", p("WINNER: PLAYER B\nREPORT: Bob flanks."), B);
   check("WINNER: DRAW", p("WINNER: DRAW\nREPORT: Stalemate."), "draw");
   check("lowercase still parses", p("winner: player b\nreport: bob wins"), B);
-  check("no verdict line -> draw", p("The battle was inconclusive."), "draw");
+  check("bold verdict still parses", p("**WINNER:** PLAYER B\nREPORT: Bob flanks."), B);
+  check("no verdict line -> no verdict, not a draw", p("The battle was inconclusive."), null);
   check("report is extracted",
     parsePvpResponse("WINNER: DRAW\nREPORT: Both lines held.", A, B).shortReport,
     "Both lines held.");
@@ -127,8 +130,13 @@ function check(name, actual, expected) {
   const admin = require("firebase-admin");
   const NOW = 1_700_000_000_000;
 
-  function fakeDb(docs) {
+  // `now` is what a transaction reads; it defaults to what the query returned.
+  // `users` are the user documents a refund reads (absent = deleted account).
+  function fakeDb(docs, { now, users } = {}) {
     const writes = [];
+    const txWrites = [];
+    const current = Object.fromEntries(docs.map((d) => [d.id, d.data]));
+    Object.assign(current, now || {});
     const chain = {
       where: () => chain,
       get: async () => ({
@@ -136,23 +144,35 @@ function check(name, actual, expected) {
         docs: docs.map((d) => ({ id: d.id, ref: { id: d.id }, data: () => d.data })),
       }),
     };
+    const ref = (col, id) => ({ col, id, get: async () => ({ exists: false }) });
     return {
       writes,
-      collection: () => chain,
+      txWrites,
+      collection: (col) => ({ ...chain, doc: (id) => ref(col, id) }),
       batch: () => ({
-        update: (ref, patch) => writes.push({ id: ref.id, patch }),
+        update: (r, patch) => writes.push({ id: r.id, patch }),
         commit: async () => {},
+      }),
+      runTransaction: async (fn) => fn({
+        get: async (r) => {
+          const data = r.col === "pvp_matches" ? current[r.id] : (users || {})[r.id];
+          return { exists: data !== undefined, data: () => data, ref: r };
+        },
+        update: (r, patch) => txWrites.push({ col: r.col, id: r.id, patch }),
       }),
     };
   }
 
-  async function sweep(docs) {
-    const db = fakeDb(docs);
+  async function sweep(docs, opts) {
+    const db = fakeDb(docs, opts);
     // admin.firestore is a getter-only property, so plain assignment silently
     // no-ops and the real SDK gets called instead.
     const original = Object.getOwnPropertyDescriptor(admin, "firestore");
+    const firestore = Object.assign(() => db, {
+      FieldValue: { increment: (n) => ({ increment: n }) },
+    });
     Object.defineProperty(admin, "firestore", {
-      value: () => db,
+      value: firestore,
       configurable: true,
       writable: true,
     });
@@ -167,7 +187,7 @@ function check(name, actual, expected) {
       if (original) Object.defineProperty(admin, "firestore", original);
       else delete admin.firestore;
     }
-    return { writes: db.writes, judged };
+    return { writes: db.writes, txWrites: db.txWrites, judged };
   }
 
   const expired = { expiresAt: NOW - 1000, playerAUid: A, playerBUid: B };
@@ -202,6 +222,48 @@ function check(name, actual, expected) {
   ]);
   check("mixed batch -> both playable matches judged", r.judged.length, 2);
   check("mixed batch -> the waiting one still timed out", r.writes.length, 1);
+  check("judging works -> no refunds", r.txWrites.length, 0);
+
+  // ------------------------------------------------------------------
+  // (2e) judging fails at the deadline too (B2): the match times out and
+  // both players get back what they paid, instead of a retry every hour.
+  // ------------------------------------------------------------------
+  console.log("\n(2e) a match that can't be judged is refunded\n");
+  judgingFails = true;
+  const bothPaid = {
+    ...expired, status: "active", playerAStrategy: "Hold.", playerBStrategy: "Flank.",
+    playerATicketsPaid: 1, playerBTicketsPaid: 0,
+  };
+  const people = { [A]: { ticketCount: 4 }, [B]: { ticketCount: 9 } };
+  const find = (writes, col, id) => writes.find((w) => w.col === col && w.id === id);
+
+  r = await sweep([{ id: "x1", data: bothPaid }], { users: people });
+  let m = find(r.txWrites, "pvp_matches", "x1");
+  check("judging fails -> match times out", m?.patch.status, "timeout");
+  check("judging fails -> honest report", m?.patch.shortReport,
+    "The match could not be judged. Tickets refunded.");
+  check("A paid 1 -> A gets 1 back", find(r.txWrites, "users", A)?.patch.ticketCount.increment, 1);
+  check("B paid nothing (developer) -> no refund for B", find(r.txWrites, "users", B), undefined);
+  check("no false draw written", r.writes.length, 0);
+
+  const legacy = { ...expired, status: "active", playerAStrategy: "Hold.", playerBStrategy: "Flank." };
+  r = await sweep([{ id: "x2", data: legacy }], { users: people });
+  check("match from before the amount was kept -> A refunded the PvP price",
+    find(r.txWrites, "users", A)?.patch.ticketCount.increment, 1);
+  check("match from before the amount was kept -> B refunded the PvP price",
+    find(r.txWrites, "users", B)?.patch.ticketCount.increment, 1);
+
+  r = await sweep([{ id: "x3", data: bothPaid }],
+    { users: people, now: { x3: { ...bothPaid, status: "resolved" } } });
+  check("settled meanwhile -> left alone, nobody refunded twice", r.txWrites.length, 0);
+
+  r = await sweep([{ id: "x4", data: { ...bothPaid, playerBTicketsPaid: 1 } }],
+    { users: { [B]: { ticketCount: 2 } } });
+  check("A's account deleted -> match still times out",
+    find(r.txWrites, "pvp_matches", "x4")?.patch.status, "timeout");
+  check("A's account deleted -> B still refunded", find(r.txWrites, "users", B)?.patch.ticketCount.increment, 1);
+  check("A's account deleted -> no write to a missing user", find(r.txWrites, "users", A), undefined);
+  judgingFails = false;
 
   ft.cleanup();
   console.log(`\n${pass} passed, ${fail} failed\n`);

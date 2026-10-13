@@ -53,10 +53,13 @@ export const submitPvpStrategy = onCall(async (request) => {
   }
 
   let strategyField: "playerAStrategy" | "playerBStrategy";
+  let paidField: "playerATicketsPaid" | "playerBTicketsPaid";
   if (match.playerAUid === uid) {
     strategyField = "playerAStrategy";
+    paidField = "playerATicketsPaid";
   } else if (match.playerBUid === uid) {
     strategyField = "playerBStrategy";
+    paidField = "playerBTicketsPaid";
   } else {
     throw new HttpsError("permission-denied", "Not a participant of this match.");
   }
@@ -75,8 +78,11 @@ export const submitPvpStrategy = onCall(async (request) => {
     await deductTickets(uid, cost);
   }
 
+  const paid = cost > 0 && !isDevUser ? cost : 0;
   try {
-    await matchRef.update({ [strategyField]: strategy });
+    // What this player paid is kept with the strategy, so a match that can't
+    // be judged refunds exactly that (checkDeserters).
+    await matchRef.update({ [strategyField]: strategy, [paidField]: paid });
   } catch (err) {
     if (cost > 0 && !isDevUser) {
       try {

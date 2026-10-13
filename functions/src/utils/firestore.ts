@@ -104,6 +104,9 @@ export interface FirestorePvpMatch {
   playerBStats: Record<string, number>;
   playerAStrategy: string;
   playerBStrategy: string;
+  /** Tickets each player paid to submit; absent on matches from before it was kept. */
+  playerATicketsPaid?: number;
+  playerBTicketsPaid?: number;
   shortReport: string;
   winner: string;
   status: string;
