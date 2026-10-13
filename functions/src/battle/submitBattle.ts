@@ -248,9 +248,21 @@ async function refundTickets(uid: string, cost: number, isDevUser: boolean) {
   }
 }
 
-function extractShortSummary(text: string, gameMode: string): string {
+export function extractShortSummary(report: string, gameMode: string): string {
+  // The report is markdown, but the result card shows the summary as plain
+  // text: it read "# BATTLE REPORT ## ..." with literal ** (B22). So heading
+  // lines and rules are skipped, list marks and emphasis marks removed, and
+  // line breaks joined.
+  const text = report
+    .split("\n")
+    .filter((line) => !/^\s*(#{1,6}\s|([-*_])\2{2,}\s*$)/.test(line))
+    .map((line) => line.replace(/^\s*[-*]\s+/, ""))
+    .join(" ")
+    .replace(/\*+|`/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
   if (gameMode === "tabletop") {
-    return text.trim().substring(0, 60);
+    return text.substring(0, 60);
   }
   // First sentence, trimmed to 120 characters on a word boundary.
   //
