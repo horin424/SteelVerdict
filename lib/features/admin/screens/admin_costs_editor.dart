@@ -9,6 +9,37 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/error_snackbar.dart';
 import '../../../services/game_config/game_config_providers.dart';
 
+/// The model keys the server reads, and the model it uses when a key is not
+/// set (functions/src/utils/config.ts and ai.ts). They are always listed: the
+/// editor used to list only the keys already stored, so a model that had been
+/// removed could never be set again (B25).
+const serverModelDefaults = {
+  'gemini_flash_lite': 'gemini-2.5-flash-lite',
+  'gemini_flash': 'gemini-2.5-flash',
+  'claude': 'claude-haiku-4-5-20251001',
+};
+
+/// The model keys to list: the server's, then any other key already stored.
+List<String> modelKeysToList(Map<String, String> stored) =>
+    {...serverModelDefaults.keys, ...stored.keys}.toList();
+
+/// What a save writes. A typed model is set; an emptied one is removed, so the
+/// server falls back to its default. Leaving it out of the merged write kept
+/// the old model in place.
+({Map<String, String> set, Set<String> remove}) modelChanges(Map<String, String> typed) {
+  final set = <String, String>{};
+  final remove = <String>{};
+  typed.forEach((key, value) {
+    final model = value.trim();
+    if (model.isEmpty) {
+      remove.add(key);
+    } else {
+      set[key] = model;
+    }
+  });
+  return (set: set, remove: remove);
+}
+
 class AdminCostsEditor extends ConsumerStatefulWidget {
   const AdminCostsEditor({super.key});
 
@@ -39,8 +70,8 @@ class _AdminCostsEditorState extends ConsumerState<AdminCostsEditor> {
     for (final entry in costs.entries) {
       _costControllers[entry.key] = TextEditingController(text: entry.value.toString());
     }
-    for (final entry in models.entries) {
-      _modelControllers[entry.key] = TextEditingController(text: entry.value);
+    for (final key in modelKeysToList(models)) {
+      _modelControllers[key] = TextEditingController(text: models[key] ?? '');
     }
   }
 
@@ -52,12 +83,13 @@ class _AdminCostsEditorState extends ConsumerState<AdminCostsEditor> {
       for (final entry in _costControllers.entries) {
         ticketCosts[entry.key] = int.tryParse(entry.value.text) ?? 0;
       }
-      final modelConfig = <String, String>{};
-      for (final entry in _modelControllers.entries) {
-        if (entry.value.text.isNotEmpty) {
-          modelConfig[entry.key] = entry.value.text;
-        }
-      }
+      final changes = modelChanges({
+        for (final entry in _modelControllers.entries) entry.key: entry.value.text,
+      });
+      final modelConfig = <String, Object>{
+        ...changes.set,
+        for (final key in changes.remove) key: FieldValue.delete(),
+      };
       await FirebaseFirestore.instance
           .collection(AppConstants.firestoreSystemConfig)
           .doc(AppConstants.firestoreGameConfig)
@@ -118,6 +150,7 @@ class _AdminCostsEditorState extends ConsumerState<AdminCostsEditor> {
                 ..._modelControllers.entries.map((entry) => _ModelRow(
                   label: localizedModeName(entry.key, l10n),
                   controller: entry.value,
+                  hint: serverModelDefaults[entry.key],
                 )),
               ],
             ),
@@ -203,7 +236,10 @@ class _ModelRow extends StatelessWidget {
   final String label;
   final TextEditingController controller;
 
-  const _ModelRow({required this.label, required this.controller});
+  /// Shown when empty: the model the server uses when none is set.
+  final String? hint;
+
+  const _ModelRow({required this.label, required this.controller, this.hint});
 
   @override
   Widget build(BuildContext context) {
@@ -224,6 +260,8 @@ class _ModelRow extends StatelessWidget {
               controller: controller,
               style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary, fontSize: 12),
               decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 12),
                 filled: true,
                 fillColor: AppColors.cardSurface,
                 border: OutlineInputBorder(
