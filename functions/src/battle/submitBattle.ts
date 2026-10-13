@@ -11,6 +11,8 @@ import { callGemini, callClaude } from "../utils/ai";
 import { assemblePrompt, formatBattleUserMessage, fetchRemoteConfigData } from "../utils/prompt";
 import { deductTickets, addTickets, getUser } from "../utils/firestore";
 import { parseOutcome, stripResultMarkers } from "../utils/outcome";
+import { containsInappropriateContent } from "../utils/contentFilter";
+import { checkRaceStats } from "../utils/race";
 
 interface BattleRequest {
   playerStrategy: string;
@@ -85,13 +87,9 @@ export const submitBattle = onCall(
       throw new HttpsError("invalid-argument", "CONTENT_FILTER_BLOCKED");
     }
 
-    // Soft-validate race stats (30-point budget, 0–10 per stat).
+    // Race stats: 30-point budget, 0–10 per stat (the same check as PvP).
     if (data.raceStats) {
-      const values = Object.values(data.raceStats);
-      const sum = values.reduce((a, b) => a + (Number(b) || 0), 0);
-      if (sum > 30 || values.some((v) => Number(v) < 0 || Number(v) > 10)) {
-        throw new HttpsError("invalid-argument", "Invalid raceStats.");
-      }
+      checkRaceStats(data.raceStats);
     }
 
     const gameMode = data.gameMode;
@@ -247,22 +245,6 @@ async function refundTickets(uid: string, cost: number, isDevUser: boolean) {
       console.error("Ticket refund failed:", refundErr);
     }
   }
-}
-
-const BLACKLIST_EN = [
-  "fuck", "shit", "bitch", "nigger", "nigga", "faggot", "retard",
-  "kike", "spic", "chink", "whore", "cunt", "bastard", "asshole",
-];
-
-const BLACKLIST_JA = ["バカ", "死ね", "クソ", "うざい", "ファック"];
-
-const EN_PATTERNS = BLACKLIST_EN.map(
-  (w) => new RegExp(`\\b${w}\\b`, "iu"),
-);
-
-function containsInappropriateContent(text: string): boolean {
-  if (EN_PATTERNS.some((re) => re.test(text))) return true;
-  return BLACKLIST_JA.some((word) => text.includes(word));
 }
 
 function extractShortSummary(text: string, gameMode: string): string {

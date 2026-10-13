@@ -1,6 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { v4 as uuidv4 } from "uuid";
+import { checkRaceName, checkRaceStats } from "../utils/race";
 
 interface FindMatchRequest {
   raceName: string;
@@ -27,6 +28,11 @@ export const findOrCreatePvpMatch = onCall(async (request) => {
   if (!data.raceName || !data.raceStats) {
     throw new HttpsError("invalid-argument", "raceName and raceStats are required.");
   }
+  // The opponent sees this race and fights it, so it gets the same checks as
+  // solo play: 30 points at most, 0–10 per stat, a name the app would accept.
+  // Nothing was checked before (B3).
+  checkRaceStats(data.raceStats);
+  const raceName = checkRaceName(data.raceName);
 
   const db = admin.firestore();
   const matchesRef = db.collection("pvp_matches");
@@ -65,36 +71,50 @@ export const findOrCreatePvpMatch = onCall(async (request) => {
     if (!bestMatch) bestMatch = candidates[0];
   }
 
-  if (bestMatch) {
-    // Join this match
-    const matchData = bestMatch.data();
-    const expiresAt = now + 24 * 60 * 60 * 1000;
-    await bestMatch.ref.update({
-      playerBUid: uid,
-      playerBRaceName: data.raceName,
-      playerBStats: data.raceStats,
-      status: "active",
-      expiresAt,
+  // Join in a transaction. Two players could otherwise take the same waiting
+  // match at once: both saw it open, and the second write replaced the first
+  // player B, who then played a match they were no longer in (B3). When the
+  // match has gone by the time we look, try the next one.
+  const ordered = bestMatch
+    ? [bestMatch, ...candidates.filter((c) => c.id !== bestMatch!.id)]
+    : [];
+  const expiresAt = now + 24 * 60 * 60 * 1000;
+  for (const candidate of ordered) {
+    const joined = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(candidate.ref);
+      const d = snap.data();
+      if (!d || d.status !== "waiting" || d.playerBUid !== "" ||
+          d.playerAUid === uid || d.expiresAt <= now) {
+        return null;
+      }
+      tx.update(candidate.ref, {
+        playerBUid: uid,
+        playerBRaceName: raceName,
+        playerBStats: data.raceStats,
+        status: "active",
+        expiresAt,
+      });
+      return d;
     });
-
-    return {
-      matchId: matchData.matchId,
-      isNewMatch: false,
-      opponentUid: matchData.playerAUid,
-      opponentRaceName: matchData.playerARaceName,
-      opponentStats: matchData.playerAStats,
-      expiresAt,
-    };
+    if (joined) {
+      return {
+        matchId: joined.matchId,
+        isNewMatch: false,
+        opponentUid: joined.playerAUid,
+        opponentRaceName: joined.playerARaceName,
+        opponentStats: joined.playerAStats,
+        expiresAt,
+      };
+    }
   }
 
   // No waiting match — create a new one
   const matchId = uuidv4();
-  const expiresAt = now + 24 * 60 * 60 * 1000;
   const newMatch = {
     matchId,
     playerAUid: uid,
     playerBUid: "",
-    playerARaceName: data.raceName,
+    playerARaceName: raceName,
     playerBRaceName: "",
     playerAStats: data.raceStats,
     playerBStats: {},

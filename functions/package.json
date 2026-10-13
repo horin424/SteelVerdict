@@ -3,7 +3,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge && npm run verify:modes && npm run verify:apple",
+    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge && npm run verify:modes && npm run verify:matchmaking && npm run verify:apple",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
     "lint": "eslint --ext .ts .",
@@ -11,6 +11,7 @@
     "verify:pvp": "node scripts/verify-pvp-trigger.js",
     "verify:judge": "node scripts/verify-pvp-judge.js",
     "verify:modes": "node scripts/verify-mode-lock.js",
+    "verify:matchmaking": "node scripts/verify-matchmaking.js",
     "verify:apple": "node scripts/verify-apple.js",
     "verify:rules": "node scripts/verify-users-rules.js",
     "verify:purchases": "node scripts/verify-purchases.js"
