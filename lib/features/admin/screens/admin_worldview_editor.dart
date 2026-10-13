@@ -256,7 +256,9 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
             child: Container(
               color: AppColors.navyMid,
               child: ListView(
-                children: worldviews.keys.map((key) {
+                // Sorted: the config's map comes back in another order after a
+                // save, and the list jumped until the screen was reopened (B20).
+                children: (worldviews.keys.toList()..sort()).map((key) {
                   final isSelected = key == _selectedKey;
                   return ListTile(
                     dense: true,
@@ -350,10 +352,13 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Result type', style: AppTextStyles.labelLarge),
+                            Text(l10n.adminResultType, style: AppTextStyles.labelLarge),
                             const SizedBox(height: 6),
                             DropdownButtonFormField<String>(
                               value: _resultType,
+                              // Fit the field's width: the longer label
+                              // overflowed by 29 px on a phone (B20).
+                              isExpanded: true,
                               dropdownColor: AppColors.navyMid,
                               style: AppTextStyles.bodySmall,
                               decoration: InputDecoration(
@@ -364,9 +369,15 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
                                   borderSide: BorderSide(color: AppColors.goldAccent),
                                 ),
                               ),
-                              items: const [
-                                DropdownMenuItem(value: 'battle', child: Text('battle (VICTORY/DEFEAT/DRAW)')),
-                                DropdownMenuItem(value: 'survival', child: Text('survival (days survived)')),
+                              items: [
+                                DropdownMenuItem(
+                                  value: 'battle',
+                                  child: Text(l10n.adminResultBattle, overflow: TextOverflow.ellipsis),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'survival',
+                                  child: Text(l10n.adminResultSurvival, overflow: TextOverflow.ellipsis),
+                                ),
                               ],
                               onChanged: (v) => setState(() => _resultType = v ?? 'battle'),
                             ),

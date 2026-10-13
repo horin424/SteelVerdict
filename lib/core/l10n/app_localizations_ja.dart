@@ -1453,6 +1453,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminScenarioIdHint => '例: scenario_004';
 
   @override
+  String get adminResultType => '結果の種類';
+
+  @override
+  String get adminResultBattle => '戦闘（勝利・敗北・引き分け）';
+
+  @override
+  String get adminResultSurvival => 'サバイバル（生き延びた日数）';
+
+  @override
   String get adminWorldviewKeyHint => '例: cyberpunk_2099';
 
   @override

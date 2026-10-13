@@ -2894,6 +2894,24 @@ abstract class AppLocalizations {
   /// **'e.g. scenario_004'**
   String get adminScenarioIdHint;
 
+  /// Admin world editor: label of how a battle result is judged
+  ///
+  /// In en, this message translates to:
+  /// **'Result type'**
+  String get adminResultType;
+
+  /// Admin world editor: result type for ordinary battles
+  ///
+  /// In en, this message translates to:
+  /// **'Battle (victory / defeat / draw)'**
+  String get adminResultBattle;
+
+  /// Admin world editor: result type for survival worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Survival (days survived)'**
+  String get adminResultSurvival;
+
   /// Admin input hint for a new worldview key
   ///
   /// In en, this message translates to:

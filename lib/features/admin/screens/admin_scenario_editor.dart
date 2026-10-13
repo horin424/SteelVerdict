@@ -282,7 +282,9 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
             child: Container(
               color: AppColors.navyMid,
               child: ListView(
-                children: scenarios.keys.map((id) {
+                // Sorted, as in the world editor: the map's order changes
+                // after a save (B20).
+                children: (scenarios.keys.toList()..sort()).map((id) {
                   final isSelected = id == _selectedId;
                   final s = scenarios[id]!;
                   return ListTile(

@@ -1488,6 +1488,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminScenarioIdHint => 'e.g. scenario_004';
 
   @override
+  String get adminResultType => 'Result type';
+
+  @override
+  String get adminResultBattle => 'Battle (victory / defeat / draw)';
+
+  @override
+  String get adminResultSurvival => 'Survival (days survived)';
+
+  @override
   String get adminWorldviewKeyHint => 'e.g. cyberpunk_2099';
 
   @override
