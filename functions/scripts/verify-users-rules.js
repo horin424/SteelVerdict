@@ -1,5 +1,10 @@
 /**
- * Checks the users/{uid} rules (B10) against a running Firestore emulator.
+ * Checks the users/{uid} rules (B10) and the pvp_matches rules (B1) against a
+ * running Firestore emulator.
+ *
+ * PvP matches are written only by Cloud Functions. Players used to be allowed
+ * to write their own strategy directly, which skipped submitPvpStrategy's
+ * ticket charge.
  *
  * The client may change only displayName (up to 30 characters) and
  * lastLoginAt (a number). Everything else in a user document - tickets,
@@ -64,13 +69,26 @@ const ALICE = {
   subscriptionTier: "free",
   isBossEnabled: false,
 };
+// Alice and Bob's match, also fresh before every case.
+const MATCH = {
+  playerAUid: "uid-alice",
+  playerBUid: "uid-bob",
+  playerAStrategy: "",
+  playerBStrategy: "",
+  winner: "",
+  status: "active",
+};
 async function reset() {
   await request("DELETE", "users/uid-alice", { as: "owner" });
   await request("PATCH", "users/uid-alice", { as: "owner", fields: ALICE });
+  await request("DELETE", "pvp_matches/m1", { as: "owner" });
+  await request("PATCH", "pvp_matches/m1", { as: "owner", fields: MATCH });
 }
 
 const update = (as, fields) =>
   request("PATCH", "users/uid-alice", { as, fields, mask: Object.keys(fields) });
+const updateMatch = (as, fields) =>
+  request("PATCH", "pvp_matches/m1", { as, fields, mask: Object.keys(fields) });
 
 let fail = 0;
 async function expect(name, expected, run) {
@@ -109,6 +127,19 @@ async function expect(name, expected, run) {
   await expect("create a user document", "denied", () =>
     request("PATCH", "users/uid-carol", { as: "uid-carol", fields: { displayName: "Carol", ticketCount: 999 } }));
   await expect("delete own document", "denied", () => request("DELETE", "users/uid-alice", { as: A }));
+
+  console.log("\n(B1) pvp_matches rules\n");
+  await expect("write own strategy directly (skips the charge)", "denied", () =>
+    updateMatch(A, { playerAStrategy: "Hold the ridge." }));
+  await expect("write the opponent's strategy", "denied", () =>
+    updateMatch(A, { playerBStrategy: "Retreat." }));
+  await expect("set the winner", "denied", () => updateMatch(A, { winner: A }));
+  await expect("create a match", "denied", () =>
+    request("PATCH", "pvp_matches/m2", { as: A, fields: { playerAUid: A, playerBUid: "" } }));
+  await expect("delete own match", "denied", () => request("DELETE", "pvp_matches/m1", { as: A }));
+  await expect("read own match", "allowed", () => request("GET", "pvp_matches/m1", { as: A }));
+  await expect("read another pair's match", "denied", () =>
+    request("GET", "pvp_matches/m1", { as: "uid-carol" }));
 
   console.log(fail ? `\n${fail} check(s) FAILED\n` : "\nall checks passed\n");
   process.exit(fail ? 1 : 0);

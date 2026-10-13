@@ -48,25 +48,11 @@ service cloud.firestore {
             || resource.data.playerBUid == request.auth.uid
             || resource.data.playerBUid == ""); // Public waiting matches (for matchmaking)
 
-      // Players can submit their own strategy only
-      allow update: if request.auth != null
-        && isMatchParticipant(resource.data, request.auth.uid)
-        && onlySubmittingOwnStrategy(resource.data, request.resource.data, request.auth.uid);
-
-      // Match creation is done by Cloud Function (findOrCreatePvpMatch)
-      allow create: if false;
-      allow delete: if false;
+      // Cloud Functions do every write: findOrCreatePvpMatch creates and joins
+      // matches, and submitPvpStrategy charges the ticket and stores the
+      // strategy. Players used to be allowed to write their own strategy
+      // here, which skipped the charge (B1). The app uses the function only.
+      allow write: if false;
     }
-  }
-
-  function isMatchParticipant(matchData, uid) {
-    return matchData.playerAUid == uid || matchData.playerBUid == uid;
-  }
-
-  function onlySubmittingOwnStrategy(before, after, uid) {
-    let changedKeys = after.diff(before).affectedKeys();
-    return before.playerAUid == uid ? changedKeys.hasOnly(["playerAStrategy"])
-         : before.playerBUid == uid ? changedKeys.hasOnly(["playerBStrategy"])
-         : false;
   }
 }
