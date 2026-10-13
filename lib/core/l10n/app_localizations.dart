@@ -2696,6 +2696,12 @@ abstract class AppLocalizations {
   /// **'Failed to save: {error}'**
   String adminSaveError(String error);
 
+  /// Admin: adding a world or scenario whose ID is already taken
+  ///
+  /// In en, this message translates to:
+  /// **'\"{id}\" is already in use. Enter a different ID.'**
+  String adminIdExists(String id);
+
   /// Admin add button
   ///
   /// In en, this message translates to:

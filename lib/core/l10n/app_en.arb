@@ -1321,6 +1321,12 @@
     "placeholders": { "error": { "type": "String" } }
   },
 
+  "adminIdExists": "\"{id}\" is already in use. Enter a different ID.",
+  "@adminIdExists": {
+    "description": "Admin: adding a world or scenario whose ID is already taken",
+    "placeholders": { "id": { "type": "String" } }
+  },
+
   "adminAdd": "Add",
   "@adminAdd": { "description": "Admin add button" },
 

@@ -1386,6 +1386,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String adminIdExists(String id) {
+    return '\"$id\" is already in use. Enter a different ID.';
+  }
+
+  @override
   String get adminAdd => 'Add';
 
   @override

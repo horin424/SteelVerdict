@@ -9,6 +9,7 @@ import '../../../core/widgets/error_snackbar.dart';
 import '../../../core/utils/stat_names.dart';
 import '../../../models/scenario_model.dart';
 import '../../../services/game_config/game_config_providers.dart';
+import '../admin_ids.dart';
 
 const _kDefaultStatKeys = [
   'strength',
@@ -188,6 +189,10 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
     );
     if (result != null && result.isNotEmpty) {
       try {
+        if (await gameConfigHasId('scenarios', result)) {
+          if (mounted) ErrorSnackbar.showError(context, l10n.adminIdExists(result));
+          return;
+        }
         await FirebaseFirestore.instance
             .collection(AppConstants.firestoreSystemConfig)
             .doc(AppConstants.firestoreGameConfig)

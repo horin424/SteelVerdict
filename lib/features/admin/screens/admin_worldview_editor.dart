@@ -8,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/error_snackbar.dart';
 import '../../../models/worldview_model.dart';
 import '../../../services/game_config/game_config_providers.dart';
+import '../admin_ids.dart';
 
 class AdminWorldviewEditor extends ConsumerStatefulWidget {
   const AdminWorldviewEditor({super.key});
@@ -130,6 +131,10 @@ class _AdminWorldviewEditorState extends ConsumerState<AdminWorldviewEditor> {
     );
     if (result != null && result.isNotEmpty) {
       try {
+        if (await gameConfigHasId('worldviews', result)) {
+          if (mounted) ErrorSnackbar.showError(context, l10n.adminIdExists(result));
+          return;
+        }
         await FirebaseFirestore.instance
             .collection(AppConstants.firestoreSystemConfig)
             .doc(AppConstants.firestoreGameConfig)

@@ -1352,6 +1352,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String adminIdExists(String id) {
+    return '「$id」はすでに使われています。別のIDを入力してください。';
+  }
+
+  @override
   String get adminAdd => '追加';
 
   @override

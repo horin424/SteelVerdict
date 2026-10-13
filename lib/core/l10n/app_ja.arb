@@ -491,6 +491,7 @@
   "adminSave": "保存",
   "adminSaveSuccess": "設定を保存しました",
   "adminSaveError": "保存に失敗しました: {error}",
+  "adminIdExists": "「{id}」はすでに使われています。別のIDを入力してください。",
   "adminAdd": "追加",
   "adminDelete": "削除",
   "adminDeleteConfirm": "このアイテムを削除してもよろしいですか？",
