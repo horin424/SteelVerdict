@@ -68,14 +68,22 @@ final ticketCostsProvider = Provider<Map<String, int>>((ref) {
   return config.ticketCosts;
 });
 
-// Effective ticket cost considering model choice
+/// Modes the server always runs on Gemini, whatever model is picked
+/// (submitBattle.ts), so the model picker is locked for them.
+const geminiOnlyModes = {'practice', 'tabletop'};
+
+/// Modes the server charges the Practice price for (free today).
+const practicePricedModes = {'practice', 'tabletop', 'history_puzzle'};
+
+// Effective ticket cost considering model choice. It must match what
+// submitBattle charges: Tabletop with Claude picked showed Claude's 3 tickets,
+// though the server runs it free on Gemini (B22).
 final effectiveTicketCostProvider = Provider<int>((ref) {
   final mode = ref.watch(selectedGameModeProvider);
   final model = ref.watch(selectedModelProvider);
   final costs = ref.watch(ticketCostsProvider);
 
-  // Practice is always free
-  if (mode == 'practice') return 0;
+  if (practicePricedModes.contains(mode)) return costs['practice'] ?? 0;
 
   // Claude has its own cost
   if (model == ModelChoice.claude) {

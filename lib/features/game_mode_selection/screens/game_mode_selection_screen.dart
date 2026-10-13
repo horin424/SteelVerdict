@@ -33,7 +33,7 @@ class GameModeSelectionScreen extends ConsumerWidget {
       orElse: () => const ModeAvailability(),
     );
 
-    final isPractice = selectedMode == 'practice';
+    final geminiOnly = geminiOnlyModes.contains(selectedMode);
 
     final modes = [
       (
@@ -109,7 +109,7 @@ class GameModeSelectionScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 4),
                           _StyledDropdown<ModelChoice>(
-                            value: isPractice
+                            value: geminiOnly
                                 ? ModelChoice.gemini
                                 : selectedModel,
                             items: ModelChoice.values.map((m) {
@@ -136,7 +136,7 @@ class GameModeSelectionScreen extends ConsumerWidget {
                                 ),
                               );
                             }).toList(),
-                            onChanged: isPractice
+                            onChanged: geminiOnly
                                 ? null
                                 : (v) {
                                     if (v != null) {
