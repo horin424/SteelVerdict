@@ -335,18 +335,10 @@
   "shopTicketsPerDay": "{count} チケット/日",
 
   "shopFeature10Tickets": "1日10チケット",
-  "shopFeatureBasicScenarios": "全基本シナリオ解放",
-  "shopFeatureSave20Strategies": "最大20戦略を保存",
-  "shopFeaturePriorityQueue": "優先バトルキュー",
-  "shopFeature20Tickets": "1日20チケット",
   "shopFeatureEpicMode": "エピックモード解放",
-  "shopFeatureUnlimitedHistory": "無制限の戦史",
-  "shopFeatureSave50Strategies": "最大50戦略を保存",
   "shopFeatureAllCommanderFeatures": "司令官の全機能",
   "shopFeature50Tickets": "1日50チケット",
-  "shopFeatureAllModes": "全モード解放",
   "shopFeatureBossBattles": "ボスバトル解放",
-  "shopFeatureUnlimitedAll": "全機能無制限",
   "shopFeatureAllGeneralFeatures": "将軍の全機能",
 
   "splashTitleLine1": "鋼鉄の",
@@ -579,5 +571,6 @@
   "timeJustNow": "たった今",
   "timeMinutesAgo": "{count}分前",
   "timeHoursAgo": "{count}時間前",
-  "timeDaysAgo": "{count}日前"
+  "timeDaysAgo": "{count}日前",
+  "shopFeature15Tickets": "1日15チケット"
 }

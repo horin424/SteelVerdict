@@ -960,25 +960,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopFeature10Tickets => '10 daily tickets';
 
   @override
-  String get shopFeatureBasicScenarios => 'All basic scenarios';
-
-  @override
-  String get shopFeatureSave20Strategies => 'Save up to 20 strategies';
-
-  @override
-  String get shopFeaturePriorityQueue => 'Priority battle queue';
-
-  @override
-  String get shopFeature20Tickets => '20 daily tickets';
-
-  @override
   String get shopFeatureEpicMode => 'Epic mode unlocked';
-
-  @override
-  String get shopFeatureUnlimitedHistory => 'Unlimited war history';
-
-  @override
-  String get shopFeatureSave50Strategies => 'Save up to 50 strategies';
 
   @override
   String get shopFeatureAllCommanderFeatures => 'All Commander features';
@@ -987,13 +969,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopFeature50Tickets => '50 daily tickets';
 
   @override
-  String get shopFeatureAllModes => 'All modes unlocked';
-
-  @override
   String get shopFeatureBossBattles => 'Boss battles enabled';
-
-  @override
-  String get shopFeatureUnlimitedAll => 'Unlimited everything';
 
   @override
   String get shopFeatureAllGeneralFeatures => 'All General features';
@@ -1702,4 +1678,7 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get shopFeature15Tickets => '15 daily tickets';
 }

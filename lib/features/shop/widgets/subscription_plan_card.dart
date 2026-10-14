@@ -31,29 +31,27 @@ class SubscriptionPlanCard extends StatelessWidget {
     }
   }
 
+  /// What each plan really gives: daily tickets (claimDailyReward.ts), Epic
+  /// for any paid plan and Boss for Warlord (submitBattle.ts). The cards used to
+  /// promise 20 tickets for General (players get 15), a priority queue that
+  /// doesn't exist, and saved-strategy, history and scenario limits that no
+  /// plan changes. Yoshimoto agreed on 14 Oct to list only what the game gives.
   List<String> _localizedFeatures(String productId, AppLocalizations l10n) {
     switch (productId) {
       case 'strategy_game_sub_500_monthly':
         return [
           l10n.shopFeature10Tickets,
-          l10n.shopFeatureBasicScenarios,
-          l10n.shopFeatureSave20Strategies,
-          l10n.shopFeaturePriorityQueue,
+          l10n.shopFeatureEpicMode,
         ];
       case 'strategy_game_sub_1000_monthly':
         return [
-          l10n.shopFeature20Tickets,
-          l10n.shopFeatureEpicMode,
-          l10n.shopFeatureUnlimitedHistory,
-          l10n.shopFeatureSave50Strategies,
+          l10n.shopFeature15Tickets,
           l10n.shopFeatureAllCommanderFeatures,
         ];
       default:
         return [
           l10n.shopFeature50Tickets,
-          l10n.shopFeatureAllModes,
           l10n.shopFeatureBossBattles,
-          l10n.shopFeatureUnlimitedAll,
           l10n.shopFeatureAllGeneralFeatures,
         ];
     }

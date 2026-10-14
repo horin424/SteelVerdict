@@ -943,25 +943,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shopFeature10Tickets => '1日10チケット';
 
   @override
-  String get shopFeatureBasicScenarios => '全基本シナリオ解放';
-
-  @override
-  String get shopFeatureSave20Strategies => '最大20戦略を保存';
-
-  @override
-  String get shopFeaturePriorityQueue => '優先バトルキュー';
-
-  @override
-  String get shopFeature20Tickets => '1日20チケット';
-
-  @override
   String get shopFeatureEpicMode => 'エピックモード解放';
-
-  @override
-  String get shopFeatureUnlimitedHistory => '無制限の戦史';
-
-  @override
-  String get shopFeatureSave50Strategies => '最大50戦略を保存';
 
   @override
   String get shopFeatureAllCommanderFeatures => '司令官の全機能';
@@ -970,13 +952,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shopFeature50Tickets => '1日50チケット';
 
   @override
-  String get shopFeatureAllModes => '全モード解放';
-
-  @override
   String get shopFeatureBossBattles => 'ボスバトル解放';
-
-  @override
-  String get shopFeatureUnlimitedAll => '全機能無制限';
 
   @override
   String get shopFeatureAllGeneralFeatures => '将軍の全機能';
@@ -1643,4 +1619,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String timeDaysAgo(int count) {
     return '$count日前';
   }
+
+  @override
+  String get shopFeature15Tickets => '1日15チケット';
 }

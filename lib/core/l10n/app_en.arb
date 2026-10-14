@@ -945,26 +945,14 @@
   "shopFeature10Tickets": "10 daily tickets",
   "@shopFeature10Tickets": { "description": "Commander plan: 10 tickets feature" },
 
-  "shopFeatureBasicScenarios": "All basic scenarios",
-  "@shopFeatureBasicScenarios": { "description": "Commander plan: basic scenarios feature" },
 
-  "shopFeatureSave20Strategies": "Save up to 20 strategies",
-  "@shopFeatureSave20Strategies": { "description": "Commander plan: save 20 strategies feature" },
 
-  "shopFeaturePriorityQueue": "Priority battle queue",
-  "@shopFeaturePriorityQueue": { "description": "Commander plan: priority queue feature" },
 
-  "shopFeature20Tickets": "20 daily tickets",
-  "@shopFeature20Tickets": { "description": "General plan: 20 tickets feature" },
 
   "shopFeatureEpicMode": "Epic mode unlocked",
   "@shopFeatureEpicMode": { "description": "General plan: epic mode feature" },
 
-  "shopFeatureUnlimitedHistory": "Unlimited war history",
-  "@shopFeatureUnlimitedHistory": { "description": "General plan: unlimited history feature" },
 
-  "shopFeatureSave50Strategies": "Save up to 50 strategies",
-  "@shopFeatureSave50Strategies": { "description": "General plan: save 50 strategies feature" },
 
   "shopFeatureAllCommanderFeatures": "All Commander features",
   "@shopFeatureAllCommanderFeatures": { "description": "General plan: all commander features" },
@@ -972,14 +960,10 @@
   "shopFeature50Tickets": "50 daily tickets",
   "@shopFeature50Tickets": { "description": "Warlord plan: 50 tickets feature" },
 
-  "shopFeatureAllModes": "All modes unlocked",
-  "@shopFeatureAllModes": { "description": "Warlord plan: all modes feature" },
 
   "shopFeatureBossBattles": "Boss battles enabled",
   "@shopFeatureBossBattles": { "description": "Warlord plan: boss battles feature" },
 
-  "shopFeatureUnlimitedAll": "Unlimited everything",
-  "@shopFeatureUnlimitedAll": { "description": "Warlord plan: unlimited all feature" },
 
   "shopFeatureAllGeneralFeatures": "All General features",
   "@shopFeatureAllGeneralFeatures": { "description": "Warlord plan: all general features" },
@@ -1520,5 +1504,7 @@
   "timeHoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
   "@timeHoursAgo": {"description": "Relative time in hours", "placeholders": {"count": {"type": "int"}}},
   "timeDaysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
-  "@timeDaysAgo": {"description": "Relative time in days", "placeholders": {"count": {"type": "int"}}}
+  "@timeDaysAgo": {"description": "Relative time in days", "placeholders": {"count": {"type": "int"}}},
+  "shopFeature15Tickets": "15 daily tickets",
+  "@shopFeature15Tickets": {"description": "General plan: 15 tickets a day (claimDailyReward sub1000)"}
 }

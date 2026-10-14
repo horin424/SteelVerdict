@@ -51,4 +51,34 @@ void main() {
     expect(find.text('プライバシーポリシー'), findsOneWidget);
     expect(find.text('サブスクリプションの管理'), findsOneWidget);
   });
+
+  testWidgets('plan perks are what the game gives', (tester) async {
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        productsProvider.overrideWith((ref) async => [
+              product(ProductIds.sub500Monthly, '￥500'),
+              product(ProductIds.sub1000Monthly, '￥1,000'),
+              product(ProductIds.sub3000Monthly, '￥3,000'),
+            ]),
+        currentUserModelProvider.overrideWith((ref) async => null),
+      ],
+      child: const MaterialApp(
+        locale: Locale('ja'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ShopScreen(),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    // Daily tickets as claimDailyReward gives them; Epic for any plan; Boss for Warlord.
+    for (final perk in ['1日10チケット', '1日15チケット', '1日50チケット', 'エピックモード解放', 'ボスバトル解放']) {
+      expect(find.text(perk), findsOneWidget, reason: perk);
+    }
+    // Promised before, but not what the game does.
+    for (final gone in ['1日20チケット', '優先バトルキュー', '最大20戦略を保存', '最大50戦略を保存',
+        '無制限の戦史', '全機能無制限', '全基本シナリオ解放']) {
+      expect(find.text(gone), findsNothing, reason: gone);
+    }
+  });
 }

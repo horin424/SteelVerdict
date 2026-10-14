@@ -1904,47 +1904,11 @@ abstract class AppLocalizations {
   /// **'10 daily tickets'**
   String get shopFeature10Tickets;
 
-  /// Commander plan: basic scenarios feature
-  ///
-  /// In en, this message translates to:
-  /// **'All basic scenarios'**
-  String get shopFeatureBasicScenarios;
-
-  /// Commander plan: save 20 strategies feature
-  ///
-  /// In en, this message translates to:
-  /// **'Save up to 20 strategies'**
-  String get shopFeatureSave20Strategies;
-
-  /// Commander plan: priority queue feature
-  ///
-  /// In en, this message translates to:
-  /// **'Priority battle queue'**
-  String get shopFeaturePriorityQueue;
-
-  /// General plan: 20 tickets feature
-  ///
-  /// In en, this message translates to:
-  /// **'20 daily tickets'**
-  String get shopFeature20Tickets;
-
   /// General plan: epic mode feature
   ///
   /// In en, this message translates to:
   /// **'Epic mode unlocked'**
   String get shopFeatureEpicMode;
-
-  /// General plan: unlimited history feature
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited war history'**
-  String get shopFeatureUnlimitedHistory;
-
-  /// General plan: save 50 strategies feature
-  ///
-  /// In en, this message translates to:
-  /// **'Save up to 50 strategies'**
-  String get shopFeatureSave50Strategies;
 
   /// General plan: all commander features
   ///
@@ -1958,23 +1922,11 @@ abstract class AppLocalizations {
   /// **'50 daily tickets'**
   String get shopFeature50Tickets;
 
-  /// Warlord plan: all modes feature
-  ///
-  /// In en, this message translates to:
-  /// **'All modes unlocked'**
-  String get shopFeatureAllModes;
-
   /// Warlord plan: boss battles feature
   ///
   /// In en, this message translates to:
   /// **'Boss battles enabled'**
   String get shopFeatureBossBattles;
-
-  /// Warlord plan: unlimited all feature
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited everything'**
-  String get shopFeatureUnlimitedAll;
 
   /// Warlord plan: all general features
   ///
@@ -3229,6 +3181,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
   String timeDaysAgo(int count);
+
+  /// General plan: 15 tickets a day (claimDailyReward sub1000)
+  ///
+  /// In en, this message translates to:
+  /// **'15 daily tickets'**
+  String get shopFeature15Tickets;
 }
 
 class _AppLocalizationsDelegate
