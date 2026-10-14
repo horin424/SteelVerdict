@@ -247,15 +247,8 @@ class SettingsScreen extends ConsumerWidget {
                       const SizedBox(height: 10),
                       _SettingsGroup(
                         children: [
-                          _ToggleRow(
-                            icon: Icons.notifications_outlined,
-                            iconColor: AppColors.orange,
-                            title: l10n.settingsNotifications,
-                            value: settingsState.notificationsEnabled,
-                            onChanged: (v) =>
-                                settingsController.setNotifications(v),
-                          ),
-                          _Divider(),
+                          // No Notifications switch: the app sends no push
+                          // notifications, so it did nothing (removed 14 Oct).
                           _ToggleRow(
                             icon: Icons.volume_up_outlined,
                             iconColor: AppColors.blue,

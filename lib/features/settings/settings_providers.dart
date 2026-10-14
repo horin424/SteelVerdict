@@ -40,7 +40,6 @@ final localeProvider = StateProvider<Locale>((ref) {
 // Settings controller state
 class SettingsControllerState {
   final bool isClearingData;
-  final bool notificationsEnabled;
   final bool soundEnabled;
   final double bgmVolume;
   final double sfxVolume;
@@ -48,7 +47,6 @@ class SettingsControllerState {
 
   const SettingsControllerState({
     this.isClearingData = false,
-    this.notificationsEnabled = true,
     this.soundEnabled = true,
     this.bgmVolume = 0.35,
     this.sfxVolume = 0.7,
@@ -57,7 +55,6 @@ class SettingsControllerState {
 
   SettingsControllerState copyWith({
     bool? isClearingData,
-    bool? notificationsEnabled,
     bool? soundEnabled,
     double? bgmVolume,
     double? sfxVolume,
@@ -65,7 +62,6 @@ class SettingsControllerState {
   }) {
     return SettingsControllerState(
       isClearingData: isClearingData ?? this.isClearingData,
-      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       soundEnabled: soundEnabled ?? this.soundEnabled,
       bgmVolume: bgmVolume ?? this.bgmVolume,
       sfxVolume: sfxVolume ?? this.sfxVolume,
@@ -96,10 +92,6 @@ class SettingsController extends StateNotifier<SettingsControllerState> {
     } catch (e) {
       debugPrint('Failed to save locale: $e');
     }
-  }
-
-  void setNotifications(bool value) {
-    state = state.copyWith(notificationsEnabled: value);
   }
 
   Future<void> setSound(bool value) async {

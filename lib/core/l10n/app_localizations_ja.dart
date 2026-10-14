@@ -660,9 +660,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsPreferences => '設定';
 
   @override
-  String get settingsNotifications => '通知';
-
-  @override
   String get settingsSoundMusic => 'サウンド＆ミュージック';
 
   @override

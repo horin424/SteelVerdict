@@ -663,8 +663,6 @@
   "settingsPreferences": "Preferences",
   "@settingsPreferences": { "description": "Preferences section in settings" },
 
-  "settingsNotifications": "Notifications",
-  "@settingsNotifications": { "description": "Notifications setting" },
 
   "settingsSoundMusic": "Sound & Music",
   "@settingsSoundMusic": { "description": "Sound and music setting" },

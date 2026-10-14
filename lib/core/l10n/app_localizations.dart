@@ -1346,12 +1346,6 @@ abstract class AppLocalizations {
   /// **'Preferences'**
   String get settingsPreferences;
 
-  /// Notifications setting
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications'**
-  String get settingsNotifications;
-
   /// Sound and music setting
   ///
   /// In en, this message translates to:
