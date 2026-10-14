@@ -10,15 +10,7 @@ import '../../../core/utils/stat_names.dart';
 import '../../../models/scenario_model.dart';
 import '../../../services/game_config/game_config_providers.dart';
 import '../admin_ids.dart';
-
-const _kDefaultStatKeys = [
-  'strength',
-  'intellect',
-  'skill',
-  'magic',
-  'art',
-  'life',
-];
+import '../scenario_stat_keys.dart';
 
 /// Label for one row in the scenario list.
 ///
@@ -83,11 +75,16 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
     super.dispose();
   }
 
-  void _initEnemyStatControllers(Map<String, int> existingStats) {
+  void _initEnemyStatControllers(Map<String, int> existingStats, String worldKey) {
     for (final c in _enemyStatControllers.values) {
       c.dispose();
     }
-    final statKeys = existingStats.isNotEmpty ? existingStats.keys.toList() : _kDefaultStatKeys;
+    // The world's stats, in its order (as the PC admin shows them).
+    final worlds = ref.read(gameConfigProvider).worldviews;
+    final statKeys = orderedStatKeys(
+      existingStats.isNotEmpty ? existingStats.keys : defaultStatKeys(worlds, worldKey),
+      worlds[worldKey]?.stats ?? const [],
+    );
     _enemyStatControllers = {
       for (final key in statKeys)
         key: TextEditingController(text: (existingStats[key] ?? 0).toString()),
@@ -111,7 +108,7 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
     _commanderDefController.text = s.commanderDefinition;
     _commanderDefJaController.text = s.commanderDefinitionJa ?? '';
     _difficultyController.text = s.difficulty.toString();
-    setState(() => _initEnemyStatControllers(s.enemyStats));
+    setState(() => _initEnemyStatControllers(s.enemyStats, _worldviewKey));
   }
 
   Future<void> _save() async {
@@ -213,7 +210,11 @@ class _AdminScenarioEditorState extends ConsumerState<AdminScenarioEditor> {
               'isFree': false,
               'worldviewKey': AppConstants.defaultWorldviewKey,
               'isUnlocked': true,
-              'enemyStats': {for (final k in _kDefaultStatKeys) k: 0},
+              'enemyStats': {
+                for (final k in defaultStatKeys(
+                    ref.read(gameConfigProvider).worldviews, AppConstants.defaultWorldviewKey))
+                  k: 0,
+              },
             },
           },
         }, SetOptions(merge: true));
