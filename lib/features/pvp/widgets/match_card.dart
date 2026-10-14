@@ -145,7 +145,7 @@ class MatchCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          GameDateUtils.timeAgo(match.createdAt),
+                          GameDateUtils.timeAgo(match.createdAt, l10n),
                           style: AppTextStyles.labelSmall,
                         ),
                         if (match.status == PvpMatchStatus.active ||

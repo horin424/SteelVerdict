@@ -3205,6 +3205,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A new version is available. Please update the app from the App Store or Google Play.'**
   String get startupUpdateMessage;
+
+  /// Relative time: under a minute ago
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get timeJustNow;
+
+  /// Relative time in minutes
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute ago} other{{count} minutes ago}}'**
+  String timeMinutesAgo(int count);
+
+  /// Relative time in hours
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String timeHoursAgo(int count);
+
+  /// Relative time in days
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String timeDaysAgo(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -25,7 +25,8 @@ class _ShareToXButtonState extends State<ShareToXButton> {
   Future<void> _share() async {
     setState(() => _isSharing = true);
     try {
-      final shareText = '${widget.text}\n\n#StrategyWar #WarChronicle';
+      // The game's name; #StrategyWar was its old one.
+      final shareText = '${widget.text}\n\n#SteelVerdict';
 
       if (widget.imageFile != null) {
         await Share.shareXFiles(

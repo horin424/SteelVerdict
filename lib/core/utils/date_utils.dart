@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 
 class GameDateUtils {
   GameDateUtils._();
@@ -25,9 +26,10 @@ class GameDateUtils {
         dateTime.day == now.day;
   }
 
-  /// Formats a battle date to a readable string like "Mar 10, 2026 14:30".
-  static String formatBattleDate(DateTime dateTime) {
-    final formatter = DateFormat('MMM d, yyyy HH:mm');
+  /// Formats a battle date to a readable string like "Mar 10, 2026 14:30",
+  /// or "2026/03/10 14:30" in Japanese.
+  static String formatBattleDate(DateTime dateTime, {String? localeName}) {
+    final formatter = DateFormat(localeName == 'ja' ? 'yyyy/MM/dd HH:mm' : 'MMM d, yyyy HH:mm');
     return formatter.format(dateTime.toLocal());
   }
 
@@ -39,24 +41,21 @@ class GameDateUtils {
     return expiresAt.difference(now);
   }
 
-  /// Returns a human-readable relative time string.
-  static String timeAgo(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
+  /// Returns a human-readable relative time string in the app's language
+  /// (it was English only, also on the Japanese screens).
+  static String timeAgo(DateTime dateTime, AppLocalizations l10n, {DateTime? now}) {
+    final difference = (now ?? DateTime.now()).difference(dateTime);
 
     if (difference.inSeconds < 60) {
-      return 'Just now';
+      return l10n.timeJustNow;
     } else if (difference.inMinutes < 60) {
-      final mins = difference.inMinutes;
-      return '$mins minute${mins == 1 ? '' : 's'} ago';
+      return l10n.timeMinutesAgo(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      final hours = difference.inHours;
-      return '$hours hour${hours == 1 ? '' : 's'} ago';
+      return l10n.timeHoursAgo(difference.inHours);
     } else if (difference.inDays < 7) {
-      final days = difference.inDays;
-      return '$days day${days == 1 ? '' : 's'} ago';
+      return l10n.timeDaysAgo(difference.inDays);
     } else {
-      return formatBattleDate(dateTime);
+      return formatBattleDate(dateTime, localeName: l10n.localeName);
     }
   }
 

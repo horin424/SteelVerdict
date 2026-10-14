@@ -265,7 +265,9 @@ class _WarHistoryDetailScreenState
             if (warHistory != null) ...[
               ParchmentRenderWidget(
                 repaintKey: _parchmentKey,
-                title: warHistory.title,
+                title: warHistory.title.isNotEmpty
+                    ? warHistory.title
+                    : AppLocalizations.of(context)!.warHistoryWarChronicle,
                 narrative: warHistory.longNarrative,
                 outcome: _outcomeFullLabel(
                   record.outcomeEnum,

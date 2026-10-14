@@ -40,7 +40,8 @@ class WarHistoryModel extends HiveObject {
           ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int)
           : DateTime.now(),
       sharedToX: json['sharedToX'] as bool? ?? false,
-      title: json['title'] as String? ?? 'War Chronicle',
+      // Empty when missing: the screen shows its own, translated label.
+      title: json['title'] as String? ?? '',
     );
   }
 

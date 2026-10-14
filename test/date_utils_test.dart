@@ -1,4 +1,6 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:strategy_game/core/l10n/app_localizations.dart';
 import 'package:strategy_game/core/utils/date_utils.dart';
 
 /// The daily reward's day is the date in Japan, as on the server
@@ -39,4 +41,26 @@ void main() {
     });
   });
 
+  group("relative times in the app's language", () {
+    final now = utc('2026-10-14T10:00:00Z');
+    final ja = lookupAppLocalizations(const Locale('ja'));
+    final en = lookupAppLocalizations(const Locale('en'));
+
+    test('Japanese', () {
+      expect(GameDateUtils.timeAgo(now.subtract(const Duration(seconds: 30)), ja, now: now), 'たった今');
+      expect(GameDateUtils.timeAgo(now.subtract(const Duration(minutes: 5)), ja, now: now), '5分前');
+      expect(GameDateUtils.timeAgo(now.subtract(const Duration(hours: 3)), ja, now: now), '3時間前');
+      expect(GameDateUtils.timeAgo(now.subtract(const Duration(days: 2)), ja, now: now), '2日前');
+    });
+    test('English, singular and plural', () {
+      expect(GameDateUtils.timeAgo(now.subtract(const Duration(minutes: 1)), en, now: now), '1 minute ago');
+      expect(GameDateUtils.timeAgo(now.subtract(const Duration(minutes: 5)), en, now: now), '5 minutes ago');
+      expect(GameDateUtils.timeAgo(now.subtract(const Duration(days: 1)), en, now: now), '1 day ago');
+    });
+    test("a week or more shows the date in the language's format", () {
+      final old = DateTime(2026, 3, 10, 14, 30);
+      expect(GameDateUtils.timeAgo(old, ja, now: now), '2026/03/10 14:30');
+      expect(GameDateUtils.timeAgo(old, en, now: now), 'Mar 10, 2026 14:30');
+    });
+  });
 }

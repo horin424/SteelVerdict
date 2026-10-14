@@ -1625,4 +1625,22 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get startupUpdateMessage =>
       '新しいバージョンがあります。App Store または Google Play からアップデートしてください。';
+
+  @override
+  String get timeJustNow => 'たった今';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '$count分前';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '$count時間前';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '$count日前';
+  }
 }

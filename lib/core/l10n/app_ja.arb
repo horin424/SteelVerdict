@@ -575,5 +575,9 @@
   "startupMaintenanceTitle": "メンテナンス中",
   "startupMaintenanceMessage": "ただいまメンテナンス中です。しばらくしてから、もう一度アプリを開いてください。",
   "startupUpdateTitle": "アップデートが必要です",
-  "startupUpdateMessage": "新しいバージョンがあります。App Store または Google Play からアップデートしてください。"
+  "startupUpdateMessage": "新しいバージョンがあります。App Store または Google Play からアップデートしてください。",
+  "timeJustNow": "たった今",
+  "timeMinutesAgo": "{count}分前",
+  "timeHoursAgo": "{count}時間前",
+  "timeDaysAgo": "{count}日前"
 }

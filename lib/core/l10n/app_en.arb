@@ -1512,5 +1512,13 @@
   "startupUpdateTitle": "Update required",
   "@startupUpdateTitle": {"description": "Splash: this version is below Remote Config min_app_version"},
   "startupUpdateMessage": "A new version is available. Please update the app from the App Store or Google Play.",
-  "@startupUpdateMessage": {"description": "Splash: shown instead of starting when an update is required"}
+  "@startupUpdateMessage": {"description": "Splash: shown instead of starting when an update is required"},
+  "timeJustNow": "Just now",
+  "@timeJustNow": {"description": "Relative time: under a minute ago"},
+  "timeMinutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "@timeMinutesAgo": {"description": "Relative time in minutes", "placeholders": {"count": {"type": "int"}}},
+  "timeHoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@timeHoursAgo": {"description": "Relative time in hours", "placeholders": {"count": {"type": "int"}}},
+  "timeDaysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@timeDaysAgo": {"description": "Relative time in days", "placeholders": {"count": {"type": "int"}}}
 }

@@ -103,7 +103,7 @@ class WarHistoryController extends StateNotifier<WarHistoryControllerState> {
         ),
         'playerStrategy': record.playerStrategy,
         'raceStats': record.playerStats,
-        'raceName': race?.raceName ?? 'Unknown',
+        'raceName': race?.raceName ?? (locale == 'ja' ? '不明' : 'Unknown'),
         'opponentName': scenario?.localizedEnemyName(locale) ?? '',
         'outcome': record.outcome,
         'scenarioId': record.scenarioId,

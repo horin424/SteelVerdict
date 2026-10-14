@@ -134,7 +134,7 @@ class HistoryListTile extends ConsumerWidget {
                         const Text('·', style: TextStyle(color: AppColors.textMuted)),
                         const SizedBox(width: 8),
                         Text(
-                          GameDateUtils.timeAgo(record.createdAt),
+                          GameDateUtils.timeAgo(record.createdAt, l10n),
                           style: AppTextStyles.labelSmall,
                         ),
                       ],
