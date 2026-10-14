@@ -48,7 +48,6 @@ class RaceCreationState {
   final Map<String, int> stats;
   final bool isSaving;
   final String? errorMessage;
-  final bool isBossMode;
 
   const RaceCreationState({
     this.raceName = '',
@@ -56,10 +55,12 @@ class RaceCreationState {
     required this.stats,
     this.isSaving = false,
     this.errorMessage,
-    this.isBossMode = false,
   });
 
-  int get maxPoints => isBossMode ? 999 : AppConstants.maxStatPoints;
+  /// The same limits for every player, Warlord too: the server accepts 30
+  /// points and 10 per stat (submitBattle.ts, findOrCreatePvpMatch.ts), so the
+  /// 999 points Warlord could allocate only made their battles fail.
+  int get maxPoints => AppConstants.maxStatPoints;
   int get totalPoints => stats.values.fold(0, (s, v) => s + v);
   int get remainingPoints => maxPoints - totalPoints;
   bool get isValid =>
@@ -73,7 +74,6 @@ class RaceCreationState {
     Map<String, int>? stats,
     bool? isSaving,
     String? errorMessage,
-    bool? isBossMode,
   }) {
     return RaceCreationState(
       raceName: raceName ?? this.raceName,
@@ -81,7 +81,6 @@ class RaceCreationState {
       stats: stats ?? this.stats,
       isSaving: isSaving ?? this.isSaving,
       errorMessage: errorMessage,
-      isBossMode: isBossMode ?? this.isBossMode,
     );
   }
 }
@@ -92,17 +91,11 @@ class RaceCreationController extends StateNotifier<RaceCreationState> {
   RaceCreationController(this._ref)
       : super(RaceCreationState(
           stats: _initialStats(_ref),
-          isBossMode: _isBoss(_ref),
         ));
 
   static Map<String, int> _initialStats(Ref ref) {
     final worldview = ref.read(activeWorldviewProvider);
     return {for (final stat in worldview.stats) stat: 0};
-  }
-
-  static bool _isBoss(Ref ref) {
-    final userAsync = ref.read(currentUserModelProvider);
-    return userAsync.valueOrNull?.isBossEnabled ?? false;
   }
 
   void setRaceName(String name) {
@@ -116,7 +109,7 @@ class RaceCreationController extends StateNotifier<RaceCreationState> {
   void incrementStat(String stat) {
     if (state.remainingPoints <= 0) return;
     final current = state.stats[stat] ?? 0;
-    if (!state.isBossMode && current >= 10) return;
+    if (current >= AppConstants.maxPointsPerStat) return;
     final newStats = Map<String, int>.from(state.stats);
     newStats[stat] = current + 1;
     state = state.copyWith(stats: newStats);
@@ -134,7 +127,7 @@ class RaceCreationController extends StateNotifier<RaceCreationState> {
     final current = state.stats[stat] ?? 0;
     final delta = value - current;
     if (delta > 0 && state.remainingPoints < delta) return;
-    if (value < 0) return;
+    if (value < 0 || value > AppConstants.maxPointsPerStat) return;
     final newStats = Map<String, int>.from(state.stats);
     newStats[stat] = value;
     state = state.copyWith(stats: newStats);

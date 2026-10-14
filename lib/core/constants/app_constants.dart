@@ -7,6 +7,7 @@ class AppConstants {
 
   // Gameplay
   static const int maxStatPoints = 30;
+  static const int maxPointsPerStat = 10;
   static const int maxTroopCount = 12000;
   static const String defaultWorldviewKey = '1830_fantasy';
 

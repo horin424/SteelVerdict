@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/route_names.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/error_snackbar.dart';
@@ -122,10 +123,10 @@ class RaceCreationScreen extends ConsumerWidget {
                   statLabel: localizedStatName(stat, l10n),
                   description: description,
                   value: state.stats[stat] ?? 0,
-                  maxValue: state.isBossMode ? 999 : 10,
+                  maxValue: AppConstants.maxPointsPerStat,
                   canIncrement:
                       state.remainingPoints > 0 &&
-                      (state.isBossMode || (state.stats[stat] ?? 0) < 10),
+                      (state.stats[stat] ?? 0) < AppConstants.maxPointsPerStat,
                   onIncrement: () => controller.incrementStat(stat),
                   onDecrement: () => controller.decrementStat(stat),
                 ),
