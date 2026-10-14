@@ -3,6 +3,20 @@ import 'package:intl/intl.dart';
 class GameDateUtils {
   GameDateUtils._();
 
+  /// The game's day: the date in Japan (UTC+9, no daylight saving), as
+  /// midnight UTC of that date. The daily reward resets at midnight Japan time,
+  /// the same day the server uses (functions/src/utils/japanDay.ts). The app
+  /// used the phone's date and the server UTC, so from 0:00 to 9:00 in Japan
+  /// the app offered a reward the server refused.
+  static DateTime japanDate(DateTime moment) {
+    final inJapan = moment.toUtc().add(const Duration(hours: 9));
+    return DateTime.utc(inJapan.year, inJapan.month, inJapan.day);
+  }
+
+  /// Returns true if [moment] falls on the current game day (Japan time).
+  static bool isTodayInJapan(DateTime moment, {DateTime? now}) =>
+      japanDate(moment) == japanDate(now ?? DateTime.now());
+
   /// Returns true if the given [dateTime] is today (same calendar date).
   static bool isToday(DateTime dateTime) {
     final now = DateTime.now();

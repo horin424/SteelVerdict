@@ -1,6 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { getUser, ensureUserDoc } from "../utils/firestore";
+import { japanDateString } from "../utils/japanDay";
 
 // Daily ticket amounts per subscription tier — must match app_constants.dart
 // AppConstants.dailyTicketsFree=1, sub500=10, sub1000=15, sub3000=50
@@ -14,7 +15,7 @@ const DAILY_TICKETS: Record<string, number> = {
 /**
  * claimDailyReward — server-side daily ticket grant.
  *
- * Checks lastDailyRewardAt against current date (UTC).
+ * Checks lastDailyRewardAt against the current date in Japan (utils/japanDay).
  * Prevents multiple claims per day regardless of client state.
  */
 export const claimDailyReward = onCall(async (request) => {
@@ -25,13 +26,12 @@ export const claimDailyReward = onCall(async (request) => {
   await ensureUserDoc(uid);
   const user = await getUser(uid);
 
-  const nowUtc = new Date();
-  const todayUtc = toUtcDateString(nowUtc);
-  const lastClaimUtc = user.lastDailyRewardAt
-    ? toUtcDateString(new Date(user.lastDailyRewardAt))
+  const today = japanDateString(new Date());
+  const lastClaim = user.lastDailyRewardAt
+    ? japanDateString(new Date(user.lastDailyRewardAt))
     : "";
 
-  if (lastClaimUtc === todayUtc) {
+  if (lastClaim === today) {
     throw new HttpsError("already-exists", "Daily reward already claimed today.");
   }
 
@@ -48,9 +48,9 @@ export const claimDailyReward = onCall(async (request) => {
 
     // Double-check inside transaction to be safe
     const lastInTx = data.lastDailyRewardAt
-      ? toUtcDateString(new Date(data.lastDailyRewardAt))
+      ? japanDateString(new Date(data.lastDailyRewardAt))
       : "";
-    if (lastInTx === todayUtc) {
+    if (lastInTx === today) {
       throw new HttpsError("already-exists", "Daily reward already claimed today.");
     }
 
@@ -80,7 +80,7 @@ export const earnAdTickets = onCall(async (request) => {
   const uid = request.auth.uid;
   await ensureUserDoc(uid);
   const ref = admin.firestore().collection("users").doc(uid);
-  const todayUtc = toUtcDateString(new Date());
+  const today = japanDateString(new Date());
 
   let newCount = 0;
   let ticketsAdded = 0;
@@ -94,7 +94,7 @@ export const earnAdTickets = onCall(async (request) => {
     };
 
     const claimsDate = data.adTicketClaimsDate ?? "";
-    const claimsCount = claimsDate === todayUtc ? (data.adTicketClaimsCount ?? 0) : 0;
+    const claimsCount = claimsDate === today ? (data.adTicketClaimsCount ?? 0) : 0;
     if (claimsCount >= MAX_AD_TICKET_CLAIMS_PER_DAY) {
       throw new HttpsError(
         "resource-exhausted",
@@ -106,14 +106,10 @@ export const earnAdTickets = onCall(async (request) => {
     newCount = (data.ticketCount ?? 0) + ticketsAdded;
     tx.update(ref, {
       ticketCount: newCount,
-      adTicketClaimsDate: todayUtc,
+      adTicketClaimsDate: today,
       adTicketClaimsCount: claimsCount + 1,
     });
   });
 
   return { ticketsAdded, newTicketCount: newCount };
 });
-
-function toUtcDateString(date: Date): string {
-  return date.toISOString().substring(0, 10); // "YYYY-MM-DD"
-}

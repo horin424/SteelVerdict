@@ -1,10 +1,11 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { ensureUserDoc } from "../utils/firestore";
+import { japanDateString } from "../utils/japanDay";
 
 /**
  * claimXShareReward — grant 1 ticket for sharing to X once per day.
- * Checked server-side via lastXShareRewardAt field.
+ * Checked server-side via lastXShareRewardAt field; the day is Japan's (utils/japanDay).
  */
 export const claimXShareReward = onCall(async (request) => {
   if (!request.auth) {
@@ -14,8 +15,7 @@ export const claimXShareReward = onCall(async (request) => {
   await ensureUserDoc(uid);
   const ref = admin.firestore().collection("users").doc(uid);
 
-  const nowUtc = new Date();
-  const todayUtc = toUtcDateString(nowUtc);
+  const today = japanDateString(new Date());
 
   let newCount = 0;
   await admin.firestore().runTransaction(async (tx) => {
@@ -24,10 +24,10 @@ export const claimXShareReward = onCall(async (request) => {
     const data = snap.data() as { ticketCount: number; lastXShareRewardAt?: number };
 
     const lastClaim = data.lastXShareRewardAt
-      ? toUtcDateString(new Date(data.lastXShareRewardAt))
+      ? japanDateString(new Date(data.lastXShareRewardAt))
       : "";
 
-    if (lastClaim === todayUtc) {
+    if (lastClaim === today) {
       throw new HttpsError("already-exists", "X share reward already claimed today.");
     }
 
@@ -40,7 +40,3 @@ export const claimXShareReward = onCall(async (request) => {
 
   return { ticketsAdded: 1, newTicketCount: newCount };
 });
-
-function toUtcDateString(date: Date): string {
-  return date.toISOString().substring(0, 10); // "YYYY-MM-DD"
-}

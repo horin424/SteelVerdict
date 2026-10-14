@@ -30,7 +30,7 @@ final dailyRewardAvailableProvider = FutureProvider<bool>((ref) async {
   if (userModel == null) return false;
   // lastDailyRewardAt is null = never claimed = available
   if (userModel.lastDailyRewardAt == null) return true;
-  return !GameDateUtils.isToday(userModel.lastDailyRewardAt!);
+  return !GameDateUtils.isTodayInJapan(userModel.lastDailyRewardAt!);
 });
 
 // Home controller state
