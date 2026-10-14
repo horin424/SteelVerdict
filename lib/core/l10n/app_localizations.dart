@@ -3181,6 +3181,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t open the link.'**
   String get linkOpenFailed;
+
+  /// Splash: Remote Config maintenance_mode is on
+  ///
+  /// In en, this message translates to:
+  /// **'Under maintenance'**
+  String get startupMaintenanceTitle;
+
+  /// Splash: shown instead of starting while maintenance_mode is on
+  ///
+  /// In en, this message translates to:
+  /// **'The game is closed for maintenance. Please open the app again a little later.'**
+  String get startupMaintenanceMessage;
+
+  /// Splash: this version is below Remote Config min_app_version
+  ///
+  /// In en, this message translates to:
+  /// **'Update required'**
+  String get startupUpdateTitle;
+
+  /// Splash: shown instead of starting when an update is required
+  ///
+  /// In en, this message translates to:
+  /// **'A new version is available. Please update the app from the App Store or Google Play.'**
+  String get startupUpdateMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -1611,4 +1611,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get linkOpenFailed => 'リンクを開けませんでした';
+
+  @override
+  String get startupMaintenanceTitle => 'メンテナンス中';
+
+  @override
+  String get startupMaintenanceMessage =>
+      'ただいまメンテナンス中です。しばらくしてから、もう一度アプリを開いてください。';
+
+  @override
+  String get startupUpdateTitle => 'アップデートが必要です';
+
+  @override
+  String get startupUpdateMessage =>
+      '新しいバージョンがあります。App Store または Google Play からアップデートしてください。';
 }

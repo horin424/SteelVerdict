@@ -29,6 +29,7 @@ class FirebaseRemoteConfigService implements RemoteConfigService {
         RemoteConfigKeys.rcAdUnitRewarded: 'ca-app-pub-3940256099942544/5224354917',
         RemoteConfigKeys.rcAdUnitInterstitial: 'ca-app-pub-3940256099942544/1033173712',
         RemoteConfigKeys.rcMaintenanceMode: false,
+        RemoteConfigKeys.rcMinAppVersion: '',
       });
 
       await _remoteConfig.fetchAndActivate();
@@ -99,6 +100,15 @@ class FirebaseRemoteConfigService implements RemoteConfigService {
       return _remoteConfig.getBool(RemoteConfigKeys.rcMaintenanceMode);
     } catch (e) {
       return false;
+    }
+  }
+
+  @override
+  String get minAppVersion {
+    try {
+      return _remoteConfig.getString(RemoteConfigKeys.rcMinAppVersion).trim();
+    } catch (e) {
+      return '';
     }
   }
 }

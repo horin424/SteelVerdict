@@ -1652,4 +1652,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get linkOpenFailed => 'Couldn\'t open the link.';
+
+  @override
+  String get startupMaintenanceTitle => 'Under maintenance';
+
+  @override
+  String get startupMaintenanceMessage =>
+      'The game is closed for maintenance. Please open the app again a little later.';
+
+  @override
+  String get startupUpdateTitle => 'Update required';
+
+  @override
+  String get startupUpdateMessage =>
+      'A new version is available. Please update the app from the App Store or Google Play.';
 }

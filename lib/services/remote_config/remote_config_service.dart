@@ -15,4 +15,7 @@ abstract class RemoteConfigService {
 
   /// Check if maintenance mode is enabled.
   bool get isMaintenanceMode;
+
+  /// The lowest app version that may still be used ('' = no minimum).
+  String get minAppVersion;
 }

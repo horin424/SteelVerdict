@@ -1,6 +1,10 @@
 class AppConstants {
   AppConstants._();
 
+  // The app's version, the same as pubspec.yaml's (test/startup_gate_test.dart
+  // checks). Compared at start-up with Remote Config's min_app_version.
+  static const String appVersion = '1.0.0';
+
   // Gameplay
   static const int maxStatPoints = 30;
   static const int maxTroopCount = 12000;

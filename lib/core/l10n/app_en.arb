@@ -1504,5 +1504,13 @@
   "settingsDeleteSubscriptionNote": "Deleting your account does not cancel a subscription. The store keeps billing until you cancel it there.",
   "@settingsDeleteSubscriptionNote": {"description": "Account deletion dialog: store subscriptions keep billing"},
   "linkOpenFailed": "Couldn't open the link.",
-  "@linkOpenFailed": {"description": "A link could not be opened"}
+  "@linkOpenFailed": {"description": "A link could not be opened"},
+  "startupMaintenanceTitle": "Under maintenance",
+  "@startupMaintenanceTitle": {"description": "Splash: Remote Config maintenance_mode is on"},
+  "startupMaintenanceMessage": "The game is closed for maintenance. Please open the app again a little later.",
+  "@startupMaintenanceMessage": {"description": "Splash: shown instead of starting while maintenance_mode is on"},
+  "startupUpdateTitle": "Update required",
+  "@startupUpdateTitle": {"description": "Splash: this version is below Remote Config min_app_version"},
+  "startupUpdateMessage": "A new version is available. Please update the app from the App Store or Google Play.",
+  "@startupUpdateMessage": {"description": "Splash: shown instead of starting when an update is required"}
 }

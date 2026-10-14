@@ -571,5 +571,9 @@
   "shopTermsOfUse": "利用規約",
   "shopManageSubscriptions": "サブスクリプションの管理",
   "settingsDeleteSubscriptionNote": "アカウントを削除しても、サブスクリプションは解約されません。ストアで解約するまで請求が続きます。",
-  "linkOpenFailed": "リンクを開けませんでした"
+  "linkOpenFailed": "リンクを開けませんでした",
+  "startupMaintenanceTitle": "メンテナンス中",
+  "startupMaintenanceMessage": "ただいまメンテナンス中です。しばらくしてから、もう一度アプリを開いてください。",
+  "startupUpdateTitle": "アップデートが必要です",
+  "startupUpdateMessage": "新しいバージョンがあります。App Store または Google Play からアップデートしてください。"
 }

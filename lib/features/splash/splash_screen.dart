@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/route_names.dart';
 import '../../core/l10n/app_localizations.dart';
 import '../../features/auth/auth_providers.dart';
 import 'splash_providers.dart';
+import 'startup_gate.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -23,6 +25,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late Animation<double> _flashAnim;
   late Animation<double> _logoFadeAnim;
   late Animation<double> _loadingAnimation;
+  StartupBlock? _block;
 
   @override
   void initState() {
@@ -82,6 +85,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     }
     await Future.delayed(const Duration(milliseconds: 1200));
     if (!mounted) return;
+    // Remote Config can close the game or require an update: stay here.
+    final remoteConfig = ref.read(remoteConfigServiceProvider);
+    final block = startupBlockFor(
+      maintenanceMode: remoteConfig.isMaintenanceMode,
+      minAppVersion: remoteConfig.minAppVersion,
+      appVersion: AppConstants.appVersion,
+    );
+    if (block != null) {
+      setState(() => _block = block);
+      return;
+    }
     await _navigate();
   }
 
@@ -285,7 +299,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           ),
           const SizedBox(height: 64),
 
-          // Loading bar
+          // Loading bar, or why the game doesn't start
+          if (_block != null)
+            _buildBlockMessage(l10n)
+          else
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 60),
             child: Column(
@@ -310,6 +327,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBlockMessage(AppLocalizations l10n) {
+    final maintenance = _block == StartupBlock.maintenance;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 40),
+      child: Column(
+        children: [
+          Text(
+            maintenance ? l10n.startupMaintenanceTitle : l10n.startupUpdateTitle,
+            style: AppTextStyles.labelLarge.copyWith(color: AppColors.goldAccent),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            maintenance ? l10n.startupMaintenanceMessage : l10n.startupUpdateMessage,
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
