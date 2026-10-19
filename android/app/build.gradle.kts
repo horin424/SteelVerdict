@@ -32,8 +32,8 @@ android {
     }
 
     defaultConfig {
-        // Play Store rejects com.example.*. Update Firebase Android app +
-        // google-services.json to match this applicationId before release.
+        // Play Store rejects com.example.*. google-services.json has the Firebase
+        // app for this ID (and the old com.example.strategy_game one).
         applicationId = "app.steelverdict.game"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion

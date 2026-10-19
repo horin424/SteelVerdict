@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:60492504266:android:27f02115994e40d162e833",
+        "android_client_info": {
+          "package_name": "app.steelverdict.game"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXVA10ciTHyECr_8mqQ2Wriub_JzHUntQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:60492504266:android:5e7cd906f77bd85062e833",
         "android_client_info": {
           "package_name": "com.example.strategy_game"

@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.strategyGame</string>
+	<string>app.steelverdict.game</string>
 	<key>PROJECT_ID</key>
 	<string>steelverdict-81c34</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:60492504266:ios:61dba6bece232cff62e833</string>
+	<string>1:60492504266:ios:8348c1edfc091e8b62e833</string>
 </dict>
 </plist>
