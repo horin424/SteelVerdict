@@ -19,7 +19,10 @@ export { skipAd } from "./tickets/skipAd";
 // ─── PvP ──────────────────────────────────────────────────────────────────────
 export { findOrCreatePvpMatch } from "./pvp/findOrCreatePvpMatch";
 export { submitPvpStrategy } from "./pvp/submitPvpStrategy";
-export { checkDeserters } from "./pvp/checkDeserters";
+// Deployed as checkDesertersHourly: since the project was deleted and restored (Sept 2026), Cloud
+// Scheduler holds a job under the old name that it can neither show nor replace (get says 404,
+// create says 409), so a function named checkDeserters can't be given its schedule.
+export { checkDeserters as checkDesertersHourly } from "./pvp/checkDeserters";
 
 // ─── War History ──────────────────────────────────────────────────────────────
 export { generateWarHistory } from "./history/generateWarHistory";

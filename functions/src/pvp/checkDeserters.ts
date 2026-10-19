@@ -6,7 +6,8 @@ import { FirestorePvpMatch } from "../utils/firestore";
 import { fetchRemoteConfigData } from "../utils/prompt";
 
 /**
- * checkDeserters — runs every hour via Cloud Scheduler.
+ * checkDeserters — runs every hour via Cloud Scheduler. Deployed as
+ * checkDesertersHourly (see index.ts).
  *
  * Finds all "waiting" or "active" matches past their expiresAt timestamp.
  * - "waiting" (no opponent joined): mark as timeout, no winner.
