@@ -9,7 +9,7 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appTitle => 'スティールバーディクト';
+  String get appTitle => 'Steel Verdict';
 
   @override
   String get loading => '読み込み中...';
@@ -51,7 +51,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get splashTagline => '戦略を書け。戦場を制せよ。';
 
   @override
-  String get authTitle => 'スティールバーディクト';
+  String get authTitle => 'Steel Verdict';
 
   @override
   String get authSubtitle => '戦場へ';
@@ -60,7 +60,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get authWelcomeTo => 'ようこそ';
 
   @override
-  String get authAppName => 'スティール\nバーディクト';
+  String get authAppName => 'STEEL\nVERDICT';
 
   @override
   String get authContinueJourney => '旅を続けるにはサインイン';
@@ -719,7 +719,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsPrivacyPolicy => 'プライバシーポリシー';
 
   @override
-  String get settingsVersion => '鋼鉄の裁き v1.0.0';
+  String get settingsVersion => 'Steel Verdict v1.0.0';
 
   @override
   String get settingsSelectLanguage => '言語を選択';
@@ -908,7 +908,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sharedToXWithImage => '画像付きでXにシェアしました！';
 
   @override
-  String get parchmentFooter => '鋼鉄の裁き 戦記';
+  String get parchmentFooter => 'Steel Verdict 戦記';
 
   @override
   String get anonymousCommander => '匿名司令官';
@@ -955,10 +955,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shopFeatureAllGeneralFeatures => '将軍の全機能';
 
   @override
-  String get splashTitleLine1 => '鋼鉄の';
+  String get splashTitleLine1 => 'STEEL';
 
   @override
-  String get splashTitleLine2 => '裁き';
+  String get splashTitleLine2 => 'VERDICT';
 
   @override
   String get navHome => 'ホーム';

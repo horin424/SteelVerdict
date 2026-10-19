@@ -395,20 +395,20 @@ any time in Settings:
 |---|---|
 | First launch, any device | opens in Japanese |
 | User picks a language in Settings | saved, and wins from then on |
-| Launcher icon name | follows the device language: スティールバーディクト on a Japanese device, Steel Verdict otherwise |
+| Launcher icon name | Steel Verdict, on every device |
 
 The in-app default is set by `kDefaultLocale` in
-`lib/features/settings/settings_providers.dart`. The launcher name is separate -
-Android resolves it from `values/strings.xml` and `values-ja/strings.xml` before
-the app runs, so it follows the device and not this setting.
+`lib/features/settings/settings_providers.dart`. The launcher name is separate
+and does not change with the language: it is Steel Verdict everywhere (the
+client's choice, 19 Oct 2026).
 
-Two pieces make that work:
+Where each one is set:
 
 - **In-app text** — `localeProvider` in `lib/features/settings/settings_providers.dart`
   reads the saved choice, and falls back to the device language when the user has
   never chosen one.
-- **Launcher name** — `android/app/src/main/res/values/strings.xml` and
-  `values-ja/strings.xml`. Android picks the right one automatically.
+- **Launcher name** — `android/app/src/main/res/values/strings.xml` on Android;
+  `Info.plist` and `ios/Runner/{en,ja}.lproj/InfoPlist.strings` on iOS.
 
 This replaced a pair of product flavors (`en` / `ja`) and a second entry point
 (`lib/main_ja.dart`) that forced Japanese. Both shipped the *same* package name,

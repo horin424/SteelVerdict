@@ -243,11 +243,11 @@ class _JaContent extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '鋼鉄の裁き  ·  最終更新日：2026年3月28日',
+          'Steel Verdict  ·  最終更新日：2026年3月28日',
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: 12),
-        const _Body('本プライバシーポリシーは、鋼鉄の裁き（以下「本アプリ」）がご利用者の情報をどのように収集・利用・保護するかについて説明します。'),
+        const _Body('本プライバシーポリシーは、Steel Verdict（以下「本アプリ」）がご利用者の情報をどのように収集・利用・保護するかについて説明します。'),
 
         _Section(title: '1. 収集する情報', children: [
           const _SubTitle('アカウント情報'),
@@ -309,7 +309,7 @@ class _JaContent extends StatelessWidget {
         const SizedBox(height: 32),
         Center(
           child: Text(
-            '© 2026 鋼鉄の裁き. All rights reserved.',
+            '© 2026 Steel Verdict. All rights reserved.',
             style: AppTextStyles.labelSmall.copyWith(color: AppColors.textMuted),
           ),
         ),

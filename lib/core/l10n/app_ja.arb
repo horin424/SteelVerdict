@@ -1,7 +1,7 @@
 {
   "@@locale": "ja",
 
-  "appTitle": "スティールバーディクト",
+  "appTitle": "Steel Verdict",
   "loading": "読み込み中...",
   "error": "エラー",
   "retry": "再試行",
@@ -17,10 +17,10 @@
   "splashInitializing": "初期化中...",
   "splashTagline": "戦略を書け。戦場を制せよ。",
 
-  "authTitle": "スティールバーディクト",
+  "authTitle": "Steel Verdict",
   "authSubtitle": "戦場へ",
   "authWelcomeTo": "ようこそ",
-  "authAppName": "スティール\nバーディクト",
+  "authAppName": "STEEL\nVERDICT",
   "authContinueJourney": "旅を続けるにはサインイン",
   "authGoogleSignIn": "Googleで続ける",
   "authAppleSignIn": "Appleで続ける",
@@ -248,7 +248,7 @@
   "settingsSignOut": "ログアウト",
   "settingsSignOutConfirm": "本当にログアウトしますか？",
   "settingsPrivacyPolicy": "プライバシーポリシー",
-  "settingsVersion": "鋼鉄の裁き v1.0.0",
+  "settingsVersion": "Steel Verdict v1.0.0",
   "settingsSelectLanguage": "言語を選択",
   "settingsPersonalInfo": "個人情報",
   "settingsLinkAccount": "アカウント連携",
@@ -318,7 +318,7 @@
   "warChronicleGenerated": "戦記を生成しました！",
   "sharedToX": "Xにシェアしました！",
   "sharedToXWithImage": "画像付きでXにシェアしました！",
-  "parchmentFooter": "鋼鉄の裁き 戦記",
+  "parchmentFooter": "Steel Verdict 戦記",
 
   "anonymousCommander": "匿名司令官",
 
@@ -340,8 +340,8 @@
   "shopFeatureBossBattles": "ボスバトル解放",
   "shopFeatureAllGeneralFeatures": "将軍の全機能",
 
-  "splashTitleLine1": "鋼鉄の",
-  "splashTitleLine2": "裁き",
+  "splashTitleLine1": "STEEL",
+  "splashTitleLine2": "VERDICT",
 
   "navHome": "ホーム",
   "navGame": "ゲーム",

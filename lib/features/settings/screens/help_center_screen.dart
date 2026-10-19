@@ -261,7 +261,7 @@ class _JaContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        const _Body('このガイドでは、鋼鉄の裁きの基本操作、ゲームの流れ、サポートの案内をまとめています。'),
+        const _Body('このガイドでは、Steel Verdictの基本操作、ゲームの流れ、サポートの案内をまとめています。'),
 
         _Section(
           title: '1. はじめに',
@@ -307,7 +307,7 @@ class _JaContent extends StatelessWidget {
         const SizedBox(height: 32),
         Center(
           child: Text(
-            '鋼鉄の裁き サポート',
+            'Steel Verdict サポート',
             style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.textMuted,
             ),
