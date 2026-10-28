@@ -45,6 +45,12 @@ class AppConstants {
   // PvP
   static const int pvpTimeoutHours = 24;
 
+  // PvP is hidden in version 1 (agreed with the client, 28 Oct 2026). It comes
+  // back in 1.1 with what Apple asks of apps that show other players' text: a
+  // report button, a screen where the operator reviews reports, and blocking.
+  // Off: no PvP tab or tiles, and /pvp-* routes go home. The server keeps PvP.
+  static const bool pvpEnabled = false;
+
   // Strategy text
   static const int minStrategyLength = 5;
   static const int maxStrategyLength = 2000;

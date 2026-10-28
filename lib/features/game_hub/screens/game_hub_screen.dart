@@ -5,6 +5,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/utils/stat_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/route_names.dart';
 import '../../../core/widgets/ticket_badge.dart';
 import '../../../features/auth/auth_providers.dart';
@@ -64,24 +65,25 @@ class GameHubScreen extends ConsumerWidget {
               badgeColor: AppColors.blue,
               onTap: () => context.push(RouteNames.battleType),
             ),
-            const SizedBox(height: 16),
-
-            // Multiplayer card
-            _GameModeCard(
-              title: l10n.gameHubMultiplayer,
-              subtitle: l10n.gameHubPlayOnline,
-              description: l10n.gameHubMultiplayerDesc,
-              icon: Icons.people,
-              gradient: const LinearGradient(
-                colors: [Color(0xFF061A18), Color(0xFF0A2E2A), Color(0xFF0A706A)],
-                stops: [0.0, 0.4, 1.0],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            // Multiplayer card (PvP: hidden in version 1)
+            if (AppConstants.pvpEnabled) ...[
+              const SizedBox(height: 16),
+              _GameModeCard(
+                title: l10n.gameHubMultiplayer,
+                subtitle: l10n.gameHubPlayOnline,
+                description: l10n.gameHubMultiplayerDesc,
+                icon: Icons.people,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF061A18), Color(0xFF0A2E2A), Color(0xFF0A706A)],
+                  stops: [0.0, 0.4, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                badgeLabel: l10n.gameHubLive,
+                badgeColor: AppColors.teal,
+                onTap: () => context.go(RouteNames.pvpLobby),
               ),
-              badgeLabel: l10n.gameHubLive,
-              badgeColor: AppColors.teal,
-              onTap: () => context.go(RouteNames.pvpLobby),
-            ),
+            ],
             const SizedBox(height: 28),
 
             // Management section

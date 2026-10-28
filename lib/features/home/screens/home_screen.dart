@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/route_names.dart';
 import '../../../core/widgets/error_snackbar.dart';
 import '../../../features/auth/auth_providers.dart';
@@ -363,17 +364,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     }
                   },
                 ),
-                const SizedBox(height: 10),
-                _QuickActionButton(
-                  // Was "Leaderboard", but it opens the PvP lobby (there is
-                  // no leaderboard).
-                  label: l10n.pvpLobbyTitle,
-                  icon: Icons.people_outlined,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF7C3AED), Color(0xFF9D68F5)],
+                if (AppConstants.pvpEnabled) ...[
+                  const SizedBox(height: 10),
+                  _QuickActionButton(
+                    // Was "Leaderboard", but it opens the PvP lobby (there is
+                    // no leaderboard).
+                    label: l10n.pvpLobbyTitle,
+                    icon: Icons.people_outlined,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF7C3AED), Color(0xFF9D68F5)],
+                    ),
+                    onTap: () => context.go(RouteNames.pvpLobby),
                   ),
-                  onTap: () => context.go(RouteNames.pvpLobby),
-                ),
+                ],
                 const SizedBox(height: 24),
 
                 // Recommended section
@@ -395,14 +398,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     }
                   },
                 ),
-                const SizedBox(height: 8),
-                _RecommendedTile(
-                  icon: Icons.people_outlined,
-                  iconColor: AppColors.teal,
-                  title: l10n.homeMultiplayer,
-                  subtitle: l10n.homeMultiplayerSubtitle,
-                  onTap: () => context.go(RouteNames.pvpLobby),
-                ),
+                if (AppConstants.pvpEnabled) ...[
+                  const SizedBox(height: 8),
+                  _RecommendedTile(
+                    icon: Icons.people_outlined,
+                    iconColor: AppColors.teal,
+                    title: l10n.homeMultiplayer,
+                    subtitle: l10n.homeMultiplayerSubtitle,
+                    onTap: () => context.go(RouteNames.pvpLobby),
+                  ),
+                ],
                 const SizedBox(height: 8),
                 _RecommendedTile(
                   icon: Icons.history_edu_outlined,

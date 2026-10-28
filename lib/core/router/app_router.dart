@@ -29,12 +29,17 @@ import '../../features/admin/screens/admin_mode_addons_editor.dart';
 import '../../features/admin/screens/admin_costs_editor.dart';
 import '../../features/admin/screens/admin_system_config_editor.dart';
 import '../../features/auth/auth_providers.dart';
+import '../constants/app_constants.dart';
 import '../constants/route_names.dart';
 import '../l10n/app_localizations.dart';
 
 // Shell scaffold key
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+/// The PvP lobby and battle screens.
+bool isPvpLocation(String location) =>
+    location.startsWith(RouteNames.pvpLobby) || location.startsWith(RouteNames.pvpBattle);
 
 GoRouter createRouter(Ref ref) {
   return GoRouter(
@@ -68,6 +73,12 @@ GoRouter createRouter(Ref ref) {
       // If not authenticated, go to auth
       if (!isAuthenticated) {
         return RouteNames.auth;
+      }
+
+      // PvP is hidden in version 1 (AppConstants.pvpEnabled): nothing links
+      // there, and a stale link or a restored screen goes home.
+      if (!AppConstants.pvpEnabled && isPvpLocation(location)) {
+        return RouteNames.home;
       }
 
       return null;
@@ -302,14 +313,15 @@ class _ShellScaffold extends StatelessWidget {
                   isSelected: index == 1,
                   onTap: () => context.go(RouteNames.gameHub),
                 ),
-                _NavItem(
-                  icon: Icons.flag_outlined,
-                  activeIcon: Icons.flag,
-                  // Was "Missions"; this tab is the PvP lobby.
-                  label: AppLocalizations.of(context)!.modePvp,
-                  isSelected: index == 2,
-                  onTap: () => context.go(RouteNames.pvpLobby),
-                ),
+                if (AppConstants.pvpEnabled)
+                  _NavItem(
+                    icon: Icons.flag_outlined,
+                    activeIcon: Icons.flag,
+                    // Was "Missions"; this tab is the PvP lobby.
+                    label: AppLocalizations.of(context)!.modePvp,
+                    isSelected: index == 2,
+                    onTap: () => context.go(RouteNames.pvpLobby),
+                  ),
                 _NavItem(
                   icon: Icons.person_outline,
                   activeIcon: Icons.person,
