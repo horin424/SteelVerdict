@@ -14,6 +14,13 @@ class OneTimePurchaseTile extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onPurchase;
 
+  /// Shown instead of the price once the product is owned (the scenario pack:
+  /// "Choose", then "Purchased"); [onPurchase] then does that action.
+  final String? ownedLabel;
+
+  /// Owned and nothing left to do: the tile is shown but can't be tapped.
+  final bool done;
+
   const OneTimePurchaseTile({
     super.key,
     required this.productId,
@@ -23,11 +30,13 @@ class OneTimePurchaseTile extends StatelessWidget {
     required this.icon,
     required this.isLoading,
     required this.onPurchase,
+    this.ownedLabel,
+    this.done = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final available = price != null;
+    final available = ownedLabel != null ? !done : price != null;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
@@ -78,7 +87,7 @@ class OneTimePurchaseTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      price ?? '—',
+                      ownedLabel ?? price ?? '—',
                       style: AppTextStyles.labelMedium.copyWith(
                         color: AppColors.inkBrown,
                         fontWeight: FontWeight.bold,

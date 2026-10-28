@@ -1,29 +1,72 @@
 import 'dart:convert';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/scenario_model.dart';
 import '../../services/game_config/game_config_providers.dart';
 import '../../services/purchase/iap_purchase_service.dart';
 import '../../services/purchase/purchase_service.dart';
+import '../auth/auth_providers.dart';
 import '../splash/splash_providers.dart';
 import '../home/home_providers.dart';
 import '../shop/shop_providers.dart';
 
 const _kUnlockedKey = 'unlocked_scenarios';
 
-// All scenarios from Firestore game config, merged with locally unlocked IDs
-final scenariosProvider = Provider<List<ScenarioModel>>((ref) {
-  final storage = ref.watch(hiveStorageServiceProvider);
-  final gameConfig = ref.watch(gameConfigProvider);
+/// How many scenarios the scenario pack unlocks (server: PACK_SIZE).
+const kScenarioPackSize = 5;
 
-  // Load locally persisted unlocks
+/// Scenarios unlocked on this phone with an ad. They are not saved to the
+/// account, so a reinstall loses them; the pack's choice is saved there.
+Set<String> _localUnlockedIds(Ref ref) {
+  final storage = ref.watch(hiveStorageServiceProvider);
   final raw = storage.getSetting(_kUnlockedKey, defaultValue: '[]') as String;
-  final localIds = List<String>.from(jsonDecode(raw) as List);
+  return Set<String>.from(jsonDecode(raw) as List);
+}
+
+// All scenarios from Firestore game config, merged with the scenarios unlocked
+// on this phone (ads) and the ones chosen with the scenario pack (account).
+final scenariosProvider = Provider<List<ScenarioModel>>((ref) {
+  final gameConfig = ref.watch(gameConfigProvider);
+  final localIds = _localUnlockedIds(ref);
+  final packIds = ref.watch(currentUserModelProvider).valueOrNull?.packUnlockedScenarioIds ??
+      const <String>{};
 
   return gameConfig.scenarios.values.map((s) {
-    final isLocallyUnlocked = localIds.contains(s.scenarioId);
-    return isLocallyUnlocked ? s.copyWith(isUnlocked: true) : s;
+    final unlocked = localIds.contains(s.scenarioId) || packIds.contains(s.scenarioId);
+    return unlocked ? s.copyWith(isUnlocked: true) : s;
   }).toList()..sort((a, b) => a.difficulty.compareTo(b.difficulty));
 });
+
+/// What the scenario pack can choose from: every scenario the game config
+/// locks (not free, not unlocked for everyone), the same set the server
+/// accepts. A scenario unlocked with an ad stays in the list, since only
+/// choosing it keeps it after a reinstall.
+class PackChoice {
+  final ScenarioModel scenario;
+
+  /// Unlocked on this phone with an ad.
+  final bool unlockedHere;
+
+  const PackChoice(this.scenario, {required this.unlockedHere});
+}
+
+final packChoicesProvider = Provider<List<PackChoice>>((ref) {
+  final gameConfig = ref.watch(gameConfigProvider);
+  final localIds = _localUnlockedIds(ref);
+  return gameConfig.scenarios.values
+      .where((s) => !s.isFree && !s.isUnlocked)
+      .map((s) => PackChoice(s, unlockedHere: localIds.contains(s.scenarioId)))
+      .toList()
+    ..sort((a, b) {
+      final byWorld = a.scenario.worldviewKey.compareTo(b.scenario.worldviewKey);
+      return byWorld != 0 ? byWorld : a.scenario.difficulty.compareTo(b.scenario.difficulty);
+    });
+});
+
+/// How many scenarios the choice must have: the pack's size, or all of them
+/// when fewer are locked (the server checks the same).
+int packChoiceCount(int lockedCount) =>
+    lockedCount < kScenarioPackSize ? lockedCount : kScenarioPackSize;
 
 // Unlocked scenarios only
 final unlockedScenariosProvider = Provider<List<ScenarioModel>>((ref) {
@@ -98,21 +141,51 @@ class ScenarioUnlockController extends StateNotifier<ScenarioUnlockState> {
     }
   }
 
-  /// Buys the scenario pack and completes with what happened. The scenario is
-  /// unlocked only once the server has granted the pack: it used to be
-  /// unlocked as soon as the store's sheet opened, even if the user then
-  /// cancelled.
-  Future<PurchaseOutcome> unlockWithPurchase(String scenarioId) async {
+  /// Buys the scenario pack and completes with what happened. Nothing is
+  /// unlocked here: once the server has granted the pack, the player chooses
+  /// its scenarios (choosePackScenarios). Unlocking at the store's sheet used
+  /// to happen even when the user then cancelled.
+  Future<PurchaseOutcome> buyScenarioPack() async {
     state = state.copyWith(isUnlocking: true, error: null);
     final purchaseController = _ref.read(purchaseControllerProvider.notifier);
     final outcome = await purchaseController.purchase(ProductIds.scenarioPack1);
-    try {
-      if (outcome.isGranted) await _persistUnlock(scenarioId);
-      state = state.copyWith(isUnlocking: false);
-    } catch (e) {
-      state = state.copyWith(isUnlocking: false, error: 'err_unlock_failed');
-    }
+    state = state.copyWith(isUnlocking: false);
     return outcome;
+  }
+
+  /// Saves the scenarios chosen with the pack to the account (final). True
+  /// when saved; otherwise [ScenarioUnlockState.error] says why.
+  Future<bool> choosePackScenarios(List<String> scenarioIds) async {
+    state = state.copyWith(isUnlocking: true, error: null);
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('chooseScenarioPack')
+          .call({'scenarioIds': scenarioIds});
+      _ref.invalidate(currentUserModelProvider);
+      _ref.invalidate(scenariosProvider);
+      state = state.copyWith(isUnlocking: false);
+      return true;
+    } on FirebaseFunctionsException catch (e) {
+      // The account already has a choice: show it rather than an error alone.
+      if (e.code == 'already-exists') _ref.invalidate(currentUserModelProvider);
+      state = state.copyWith(isUnlocking: false, error: packChoiceError(e.code));
+      return false;
+    } catch (e) {
+      state = state.copyWith(isUnlocking: false, error: 'err_pack_choice_failed');
+      return false;
+    }
+  }
+}
+
+/// The error code to show when the server refuses a pack choice.
+String packChoiceError(String functionsCode) {
+  switch (functionsCode) {
+    case 'already-exists':
+      return 'err_pack_already_chosen';
+    case 'failed-precondition':
+      return 'err_pack_not_owned';
+    default:
+      return 'err_pack_choice_failed';
   }
 }
 

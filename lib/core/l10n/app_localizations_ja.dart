@@ -324,7 +324,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unlockPurchase => '購入';
 
   @override
-  String get unlockPurchaseDesc => 'このシナリオを永久に解放';
+  String get unlockPurchaseDesc => 'シナリオパックを購入して、5つ選んで解放';
 
   @override
   String get gameModeTitle => 'ゲームモードを選択';
@@ -1619,4 +1619,65 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shopFeature15Tickets => '1日15チケット';
+
+  @override
+  String get packPickTitle => '解放するシナリオを選ぶ';
+
+  @override
+  String packPickBody(int count) {
+    return '解放するシナリオを$countつ選んでください。選んだシナリオはアカウントに保存され、機種変更の後も使えます。あとから変更はできません。';
+  }
+
+  @override
+  String packPickCount(int picked, int count) {
+    return '$picked / $count 選択中';
+  }
+
+  @override
+  String packPickConfirm(int count) {
+    return 'この$countつで決定';
+  }
+
+  @override
+  String get packPickConfirmTitle => 'このシナリオで決定しますか？';
+
+  @override
+  String get packPickConfirmBody => 'あとから変更はできません。';
+
+  @override
+  String packPickDone(int count) {
+    return '$countつのシナリオを解放しました';
+  }
+
+  @override
+  String get packPickPhoneOnly => 'この端末のみ解放済み（広告）';
+
+  @override
+  String get packPickNothing => '選べるシナリオはありません。';
+
+  @override
+  String get packChoose => '選ぶ';
+
+  @override
+  String get packOwned => '購入済み';
+
+  @override
+  String packChosenSummary(int count) {
+    return '$countつのシナリオを解放済み';
+  }
+
+  @override
+  String get unlockWithPack => 'シナリオパックで解放';
+
+  @override
+  String get unlockWithPackDesc => '購入済みのパックで5つ選べます';
+
+  @override
+  String get errPackAlreadyChosen => 'シナリオはすでに選んであります。';
+
+  @override
+  String get errPackNotOwned => 'このアカウントにはシナリオパックがありません。';
+
+  @override
+  String get errPackChoiceFailed => '選択を保存できませんでした。もう一度お試しください。';
 }

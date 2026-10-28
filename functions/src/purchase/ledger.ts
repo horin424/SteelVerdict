@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import { HttpsError } from "firebase-functions/v2/https";
 import { Product, Tier, productFor } from "./products";
+import { PACK_PICKED_AT_FIELD, PACK_PICKS_FIELD } from "./scenarioPack";
 import { VerifiedPurchase, androidLedgerId } from "./stores";
 
 /**
@@ -130,7 +131,14 @@ export async function claimPurchase(
       }
       if (mayMove) {
         tx.update(rowRef, { ...fields, uid, movedFrom: row.uid });
-        tx.update(userRef, unlock);
+        // The scenarios picked with the pack move with it: they are final, so
+        // a restore must not offer a new choice.
+        const picks = holderUserSnap?.exists ? holderUserSnap.get(PACK_PICKS_FIELD) : undefined;
+        const hasOwnPicks = Array.isArray(userSnap.get(PACK_PICKS_FIELD)) && userSnap.get(PACK_PICKS_FIELD).length > 0;
+        const carried = Array.isArray(picks) && picks.length > 0 && !hasOwnPicks
+          ? { [PACK_PICKS_FIELD]: picks, [PACK_PICKED_AT_FIELD]: holderUserSnap!.get(PACK_PICKED_AT_FIELD) ?? now }
+          : {};
+        tx.update(userRef, { ...unlock, ...carried });
         if (holderUserSnap?.exists) tx.update(holderUserRef!, { [product.unlockField]: false });
         return { status: "granted", granted: "scenario_pack", moved: true };
       }

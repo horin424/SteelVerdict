@@ -328,7 +328,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unlockPurchase => 'Purchase';
 
   @override
-  String get unlockPurchaseDesc => 'Permanently unlock this scenario';
+  String get unlockPurchaseDesc =>
+      'Buy the scenario pack and choose 5 scenarios';
 
   @override
   String get gameModeTitle => 'Choose Game Mode';
@@ -1678,4 +1679,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopFeature15Tickets => '15 daily tickets';
+
+  @override
+  String get packPickTitle => 'Choose your scenarios';
+
+  @override
+  String packPickBody(int count) {
+    return 'Choose $count scenarios to unlock. They are saved to your account, so they come back on a new phone. You can\'t change them later.';
+  }
+
+  @override
+  String packPickCount(int picked, int count) {
+    return '$picked of $count chosen';
+  }
+
+  @override
+  String packPickConfirm(int count) {
+    return 'Unlock these $count';
+  }
+
+  @override
+  String get packPickConfirmTitle => 'Unlock these scenarios?';
+
+  @override
+  String get packPickConfirmBody => 'You can\'t change your choice later.';
+
+  @override
+  String packPickDone(int count) {
+    return '$count scenarios unlocked';
+  }
+
+  @override
+  String get packPickPhoneOnly => 'Unlocked on this phone only (ad)';
+
+  @override
+  String get packPickNothing => 'There are no locked scenarios to choose.';
+
+  @override
+  String get packChoose => 'Choose';
+
+  @override
+  String get packOwned => 'Purchased';
+
+  @override
+  String packChosenSummary(int count) {
+    return '$count scenarios unlocked';
+  }
+
+  @override
+  String get unlockWithPack => 'Use your scenario pack';
+
+  @override
+  String get unlockWithPackDesc =>
+      'Choose 5 scenarios with the pack you bought';
+
+  @override
+  String get errPackAlreadyChosen => 'Your scenarios have already been chosen.';
+
+  @override
+  String get errPackNotOwned => 'This account doesn\'t have the scenario pack.';
+
+  @override
+  String get errPackChoiceFailed =>
+      'Couldn\'t save your choice. Please try again.';
 }

@@ -43,6 +43,13 @@ class UserModel {
   final int totalLosses;
   final DateTime? lastDailyRewardAt;
 
+  /// The scenario pack (古代バトルパック) is owned (set by validatePurchase).
+  final bool scenarioPack1Unlocked;
+
+  /// The scenarios chosen with the pack (saved by chooseScenarioPack, final).
+  /// Empty until the player chooses.
+  final List<String> packScenarioIds;
+
   const UserModel({
     required this.uid,
     required this.displayName,
@@ -54,7 +61,17 @@ class UserModel {
     this.totalWins = 0,
     this.totalLosses = 0,
     this.lastDailyRewardAt,
+    this.scenarioPack1Unlocked = false,
+    this.packScenarioIds = const [],
   });
+
+  /// The pack is owned and its scenarios are still to be chosen.
+  bool get canChoosePackScenarios => scenarioPack1Unlocked && packScenarioIds.isEmpty;
+
+  /// The scenarios the pack unlocks for this account (none if the pack has
+  /// moved to another account or been refunded).
+  Set<String> get packUnlockedScenarioIds =>
+      scenarioPack1Unlocked ? packScenarioIds.toSet() : const <String>{};
 
   /// What older server code stored as every guest's name, in English.
   static const legacyGuestName = 'Anonymous Commander';
@@ -92,6 +109,10 @@ class UserModel {
       lastDailyRewardAt: json['lastDailyRewardAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(asInt(json['lastDailyRewardAt']))
           : null,
+      scenarioPack1Unlocked: json['scenarioPack1Unlocked'] as bool? ?? false,
+      packScenarioIds: json['scenarioPack1Picks'] is List
+          ? List<String>.unmodifiable((json['scenarioPack1Picks'] as List).whereType<String>())
+          : const [],
     );
   }
 
@@ -108,6 +129,8 @@ class UserModel {
       'totalLosses': totalLosses,
       if (lastDailyRewardAt != null)
         'lastDailyRewardAt': lastDailyRewardAt!.millisecondsSinceEpoch,
+      'scenarioPack1Unlocked': scenarioPack1Unlocked,
+      if (packScenarioIds.isNotEmpty) 'scenarioPack1Picks': packScenarioIds,
     };
   }
 
@@ -122,6 +145,8 @@ class UserModel {
     int? totalWins,
     int? totalLosses,
     DateTime? lastDailyRewardAt,
+    bool? scenarioPack1Unlocked,
+    List<String>? packScenarioIds,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -134,6 +159,8 @@ class UserModel {
       totalWins: totalWins ?? this.totalWins,
       totalLosses: totalLosses ?? this.totalLosses,
       lastDailyRewardAt: lastDailyRewardAt ?? this.lastDailyRewardAt,
+      scenarioPack1Unlocked: scenarioPack1Unlocked ?? this.scenarioPack1Unlocked,
+      packScenarioIds: packScenarioIds ?? this.packScenarioIds,
     );
   }
 

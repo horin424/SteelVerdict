@@ -109,7 +109,7 @@
   "unlockWatchAdDesc": "短い広告を見てアンロック",
   "unlockFree": "無料",
   "unlockPurchase": "購入",
-  "unlockPurchaseDesc": "このシナリオを永久に解放",
+  "unlockPurchaseDesc": "シナリオパックを購入して、5つ選んで解放",
 
   "gameModeTitle": "ゲームモードを選択",
   "gameModeChooseMode": "モードを選択",
@@ -571,5 +571,22 @@
   "timeMinutesAgo": "{count}分前",
   "timeHoursAgo": "{count}時間前",
   "timeDaysAgo": "{count}日前",
-  "shopFeature15Tickets": "1日15チケット"
+  "shopFeature15Tickets": "1日15チケット",
+  "packPickTitle": "解放するシナリオを選ぶ",
+  "packPickBody": "解放するシナリオを{count}つ選んでください。選んだシナリオはアカウントに保存され、機種変更の後も使えます。あとから変更はできません。",
+  "packPickCount": "{picked} / {count} 選択中",
+  "packPickConfirm": "この{count}つで決定",
+  "packPickConfirmTitle": "このシナリオで決定しますか？",
+  "packPickConfirmBody": "あとから変更はできません。",
+  "packPickDone": "{count}つのシナリオを解放しました",
+  "packPickPhoneOnly": "この端末のみ解放済み（広告）",
+  "packPickNothing": "選べるシナリオはありません。",
+  "packChoose": "選ぶ",
+  "packOwned": "購入済み",
+  "packChosenSummary": "{count}つのシナリオを解放済み",
+  "unlockWithPack": "シナリオパックで解放",
+  "unlockWithPackDesc": "購入済みのパックで5つ選べます",
+  "errPackAlreadyChosen": "シナリオはすでに選んであります。",
+  "errPackNotOwned": "このアカウントにはシナリオパックがありません。",
+  "errPackChoiceFailed": "選択を保存できませんでした。もう一度お試しください。"
 }

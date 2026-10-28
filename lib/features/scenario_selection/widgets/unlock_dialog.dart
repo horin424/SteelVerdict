@@ -10,6 +10,8 @@ import '../../shop/purchase_messages.dart';
 import '../../shop/shop_providers.dart';
 import '../../../services/purchase/iap_purchase_service.dart';
 import '../../../core/utils/error_messages.dart';
+import '../../auth/auth_providers.dart';
+import 'scenario_pack_picker.dart';
 
 class UnlockDialog extends ConsumerWidget {
   final ScenarioModel scenario;
@@ -40,11 +42,22 @@ class UnlockDialog extends ConsumerWidget {
     );
   }
 
+  /// Opens the pack's choice with this scenario ticked; closes this sheet once
+  /// a choice is saved.
+  Future<void> _choose(BuildContext context) async {
+    final saved = await ScenarioPackPicker.show(context, preselectedId: scenario.scenarioId);
+    if (saved && context.mounted) {
+      Navigator.pop(context);
+      onUnlocked();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final unlockState = ref.watch(scenarioUnlockControllerProvider);
     final controller = ref.read(scenarioUnlockControllerProvider.notifier);
+    final user = ref.watch(currentUserModelProvider).valueOrNull;
     // What the option sells is the scenario pack, at the store's price.
     final packPrice = (ref.watch(productsProvider).valueOrNull ?? const <ProductDetails>[])
         .where((p) => p.id == ProductIds.scenarioPack1)
@@ -94,26 +107,36 @@ class UnlockDialog extends ConsumerWidget {
               }
             },
           ),
-          const SizedBox(height: 12),
-
-          // Purchase option
-          _UnlockOption(
-            icon: Icons.shopping_cart_outlined,
-            title: l10n.unlockPurchase,
-            subtitle: l10n.unlockPurchaseDesc,
-            badge: packPrice ?? '—',
-            badgeColor: packPrice == null ? AppColors.textMuted : AppColors.goldAccent,
-            isLoading: unlockState.isUnlocking,
-            onTap: packPrice == null ? null : () async {
-              final outcome = await controller.unlockWithPurchase(scenario.scenarioId);
-              if (!context.mounted) return;
-              showPurchaseOutcome(context, outcome);
-              if (outcome.isGranted) {
-                Navigator.pop(context);
-                onUnlocked();
-              }
-            },
-          ),
+          // The scenario pack: choose with a pack already bought, or buy it and
+          // then choose. Once its scenarios are chosen it has nothing to offer.
+          if (user?.canChoosePackScenarios ?? false) ...[
+            const SizedBox(height: 12),
+            _UnlockOption(
+              icon: Icons.map_outlined,
+              title: l10n.unlockWithPack,
+              subtitle: l10n.unlockWithPackDesc,
+              badge: l10n.packChoose,
+              badgeColor: AppColors.goldAccent,
+              isLoading: unlockState.isUnlocking,
+              onTap: () => _choose(context),
+            ),
+          ] else if (!(user?.scenarioPack1Unlocked ?? false)) ...[
+            const SizedBox(height: 12),
+            _UnlockOption(
+              icon: Icons.shopping_cart_outlined,
+              title: l10n.unlockPurchase,
+              subtitle: l10n.unlockPurchaseDesc,
+              badge: packPrice ?? '—',
+              badgeColor: packPrice == null ? AppColors.textMuted : AppColors.goldAccent,
+              isLoading: unlockState.isUnlocking,
+              onTap: packPrice == null ? null : () async {
+                final outcome = await controller.buyScenarioPack();
+                if (!context.mounted) return;
+                showPurchaseOutcome(context, outcome);
+                if (outcome.isGranted) await _choose(context);
+              },
+            ),
+          ],
 
           if (unlockState.error != null) ...[
             const SizedBox(height: 12),

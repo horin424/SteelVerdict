@@ -29,3 +29,4 @@ export { generateWarHistory } from "./history/generateWarHistory";
 
 // ─── Purchases ────────────────────────────────────────────────────────────────
 export { validatePurchase } from "./purchase/validatePurchase";
+export { chooseScenarioPack } from "./purchase/scenarioPack";

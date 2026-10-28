@@ -3,7 +3,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge && npm run verify:modes && npm run verify:matchmaking && npm run verify:userdoc && npm run verify:filter && npm run verify:summary && npm run verify:apple && npm run verify:japanday",
+    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge && npm run verify:modes && npm run verify:matchmaking && npm run verify:userdoc && npm run verify:filter && npm run verify:summary && npm run verify:apple && npm run verify:japanday && npm run verify:pack",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
     "lint": "eslint --ext .ts .",
@@ -17,6 +17,7 @@
     "verify:summary": "node scripts/verify-summary.js",
     "verify:apple": "node scripts/verify-apple.js",
     "verify:japanday": "node scripts/verify-japan-day.js",
+    "verify:pack": "node scripts/verify-scenario-pack.js",
     "verify:rules": "node scripts/verify-users-rules.js",
     "verify:purchases": "node scripts/verify-purchases.js"
   },

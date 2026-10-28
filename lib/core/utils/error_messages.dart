@@ -34,6 +34,12 @@ String localizedError(String raw, AppLocalizations l10n) {
       return l10n.errUnlockFailed;
     case 'err_purchase_failed':
       return l10n.errPurchaseFailed;
+    case 'err_pack_already_chosen':
+      return l10n.errPackAlreadyChosen;
+    case 'err_pack_not_owned':
+      return l10n.errPackNotOwned;
+    case 'err_pack_choice_failed':
+      return l10n.errPackChoiceFailed;
     case 'err_chronicle_failed':
       return l10n.errChronicleFailed;
     case 'err_race_save_failed':

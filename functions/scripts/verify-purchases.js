@@ -62,7 +62,9 @@ require("../lib/purchase/appleVerifier").decodeAppleTransaction = async (jws) =>
 
 const { purchaseAccountId } = require("../lib/purchase/accountId");
 const { validatePurchase } = require("../lib/purchase/validatePurchase");
+const { chooseScenarioPack } = require("../lib/purchase/scenarioPack");
 const wrapped = ft.wrap(validatePurchase);
+const wrappedChoose = ft.wrap(chooseScenarioPack);
 const db = admin.firestore();
 
 // --------------------------------------------------------------- helpers
@@ -93,6 +95,13 @@ async function claim(uid, data) {
     return await wrapped({ auth: { uid, token: {} }, data });
   } catch (e) {
     return { error: e.code || e.message };
+  }
+}
+async function choose(uid, scenarioIds) {
+  try {
+    return await wrappedChoose({ auth: { uid, token: {} }, data: { scenarioIds } });
+  } catch (e) {
+    return { error: e.code, reason: e.message };
   }
 }
 const android = (uid, productId, purchaseToken) => claim(uid, { platform: "android", productId, purchaseToken });
@@ -211,12 +220,38 @@ async function makeUser(uid, { guest = false } = {}) {
   check("a guest buys the scenario pack: granted",
     (await android("guest-1", "strategy_game_scenario_pack_1", "pack-guest")).status, "granted");
   check("guest has it", (await user("guest-1")).scenarioPack1Unlocked, true);
+
+  console.log("\nChoosing the pack's 5 scenarios");
+  await db.collection("system_config").doc("game_config").set({
+    scenarios: {
+      free_1: { isFree: true, isUnlocked: true },
+      s2: { isFree: false, isUnlocked: false }, s3: {}, s4: {}, s5: {}, s6: {}, s7: {},
+    },
+  });
+  const fivePicks = ["s2", "s3", "s4", "s5", "s6"];
+  check("an account without the pack: refused",
+    await choose("bob", fivePicks), { error: "failed-precondition", reason: "pack_not_owned" });
+  check("4 scenarios: refused",
+    await choose("guest-1", fivePicks.slice(0, 4)), { error: "invalid-argument", reason: "wrong_count" });
+  check("a free scenario among them: refused",
+    await choose("guest-1", ["free_1", "s3", "s4", "s5", "s6"]), { error: "invalid-argument", reason: "not_locked" });
+  check("nothing was saved by the refused choices", (await user("guest-1")).scenarioPack1Picks, undefined);
+  check("5 locked scenarios: saved", await choose("guest-1", fivePicks), { scenarioIds: fivePicks });
+  check("the account holds the 5", (await user("guest-1")).scenarioPack1Picks, fivePicks);
+  check("when they were picked is recorded", typeof (await user("guest-1")).scenarioPack1PickedAt, "number");
+  check("choosing again: refused (the choice is final)",
+    await choose("guest-1", ["s3", "s4", "s5", "s6", "s7"]), { error: "already-exists", reason: "already_chosen" });
+  check("the first 5 stay", (await user("guest-1")).scenarioPack1Picks, fivePicks);
+
   check("the same person reinstalls (new account) and restores: moved here",
     pick(await android("reinstalled", "strategy_game_scenario_pack_1", "pack-guest"), "status", "moved"),
     { status: "granted", moved: true });
   check("new account has it", (await user("reinstalled")).scenarioPack1Unlocked, true);
   check("the old guest account no longer has it (moved, not copied)",
     (await user("guest-1")).scenarioPack1Unlocked, false);
+  check("the 5 picks moved with the pack (no new choice)", (await user("reinstalled")).scenarioPack1Picks, fivePicks);
+  check("so the new account can't choose again",
+    (await choose("reinstalled", ["s3", "s4", "s5", "s6", "s7"])).reason, "already_chosen");
   playProduct("pack-alice", "strategy_game_scenario_pack_1", "alice");
   await android("alice", "strategy_game_scenario_pack_1", "pack-alice");
   check("bob sends alice's pack (alice is not a guest): refused",
@@ -239,6 +274,7 @@ async function makeUser(uid, { guest = false } = {}) {
   check("pack held by a deleted account: moved to the restorer",
     pick(await android("reinstalled", "strategy_game_scenario_pack_1", "pack-deleted"), "status", "moved"),
     { status: "granted", moved: true });
+  check("the restorer's own picks are kept", (await user("reinstalled")).scenarioPack1Picks, fivePicks);
 
   console.log("\nApp Store (iOS)");
   const tx = (o) => ({

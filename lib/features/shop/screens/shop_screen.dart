@@ -8,6 +8,8 @@ import '../../../core/utils/legal_links.dart';
 import '../../../core/widgets/link_text_button.dart';
 import '../../../features/auth/auth_providers.dart';
 import '../../../models/user_model.dart';
+import '../../../services/purchase/iap_purchase_service.dart';
+import '../../scenario_selection/widgets/scenario_pack_picker.dart';
 import '../purchase_messages.dart';
 import '../shop_providers.dart';
 import '../widgets/subscription_plan_card.dart';
@@ -39,6 +41,7 @@ class ShopScreen extends ConsumerWidget {
       data: (u) => u?.subscriptionTier ?? SubscriptionTier.free,
       orElse: () => SubscriptionTier.free,
     );
+    final user = userAsync.valueOrNull;
 
     // Prices come from the store, in the user's currency. A product the store
     // didn't return has no price and can't be bought.
@@ -140,14 +143,31 @@ class ShopScreen extends ConsumerWidget {
             Text(l10n.shopScenarioPacksDesc, style: AppTextStyles.bodySmall),
             const SizedBox(height: 12),
 
+            // Bought: choose its scenarios ("Choose"), then it is used up.
             OneTimePurchaseTile(
-              productId: 'strategy_game_scenario_pack_1',
+              productId: ProductIds.scenarioPack1,
               title: l10n.shopAncientBattles,
-              subtitle: l10n.shopAncientBattlesDesc,
-              price: prices['strategy_game_scenario_pack_1'],
+              subtitle: user != null && user.packScenarioIds.isNotEmpty && user.scenarioPack1Unlocked
+                  ? l10n.packChosenSummary(user.packScenarioIds.length)
+                  : l10n.shopAncientBattlesDesc,
+              price: prices[ProductIds.scenarioPack1],
               icon: Icons.map_outlined,
               isLoading: purchaseState.isPurchasing,
-              onPurchase: () => _buy(context, ref, 'strategy_game_scenario_pack_1'),
+              ownedLabel: user == null || !user.scenarioPack1Unlocked
+                  ? null
+                  : user.canChoosePackScenarios ? l10n.packChoose : l10n.packOwned,
+              done: user != null && user.scenarioPack1Unlocked && !user.canChoosePackScenarios,
+              onPurchase: () async {
+                if (user?.canChoosePackScenarios ?? false) {
+                  await ScenarioPackPicker.show(context);
+                  return;
+                }
+                final outcome =
+                    await ref.read(purchaseControllerProvider.notifier).purchase(ProductIds.scenarioPack1);
+                if (!context.mounted) return;
+                showPurchaseOutcome(context, outcome);
+                if (outcome.isGranted) await ScenarioPackPicker.show(context);
+              },
             ),
 
             const SizedBox(height: 32),

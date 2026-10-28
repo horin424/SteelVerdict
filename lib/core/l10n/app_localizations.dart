@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// Purchase unlock description
   ///
   /// In en, this message translates to:
-  /// **'Permanently unlock this scenario'**
+  /// **'Buy the scenario pack and choose 5 scenarios'**
   String get unlockPurchaseDesc;
 
   /// Game mode selection title
@@ -3181,6 +3181,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'15 daily tickets'**
   String get shopFeature15Tickets;
+
+  /// Scenario pack: title of the screen where the player picks the scenarios it unlocks
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your scenarios'**
+  String get packPickTitle;
+
+  /// Scenario pack: what the choice does
+  ///
+  /// In en, this message translates to:
+  /// **'Choose {count} scenarios to unlock. They are saved to your account, so they come back on a new phone. You can\'t change them later.'**
+  String packPickBody(int count);
+
+  /// Scenario pack: how many are chosen so far
+  ///
+  /// In en, this message translates to:
+  /// **'{picked} of {count} chosen'**
+  String packPickCount(int picked, int count);
+
+  /// Scenario pack: button that saves the choice
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock these {count}'**
+  String packPickConfirm(int count);
+
+  /// Scenario pack: confirm dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock these scenarios?'**
+  String get packPickConfirmTitle;
+
+  /// Scenario pack: confirm dialog text (the choice is final)
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t change your choice later.'**
+  String get packPickConfirmBody;
+
+  /// Scenario pack: the choice was saved
+  ///
+  /// In en, this message translates to:
+  /// **'{count} scenarios unlocked'**
+  String packPickDone(int count);
+
+  /// Scenario pack: this scenario was unlocked with an ad, which is kept on this phone only; choosing it saves it to the account
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked on this phone only (ad)'**
+  String get packPickPhoneOnly;
+
+  /// Scenario pack: nothing left to choose
+  ///
+  /// In en, this message translates to:
+  /// **'There are no locked scenarios to choose.'**
+  String get packPickNothing;
+
+  /// Scenario pack: badge on the shop tile when the pack is owned but nothing is chosen yet
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get packChoose;
+
+  /// Scenario pack: badge on the shop tile once the scenarios are chosen
+  ///
+  /// In en, this message translates to:
+  /// **'Purchased'**
+  String get packOwned;
+
+  /// Scenario pack: shop tile subtitle once the scenarios are chosen
+  ///
+  /// In en, this message translates to:
+  /// **'{count} scenarios unlocked'**
+  String packChosenSummary(int count);
+
+  /// Unlock dialog: the pack is owned and can still choose scenarios
+  ///
+  /// In en, this message translates to:
+  /// **'Use your scenario pack'**
+  String get unlockWithPack;
+
+  /// Unlock dialog: what the pack option does
+  ///
+  /// In en, this message translates to:
+  /// **'Choose 5 scenarios with the pack you bought'**
+  String get unlockWithPackDesc;
+
+  /// Scenario pack: the server already has the choice (it is final)
+  ///
+  /// In en, this message translates to:
+  /// **'Your scenarios have already been chosen.'**
+  String get errPackAlreadyChosen;
+
+  /// Scenario pack: the server says the account doesn't own the pack
+  ///
+  /// In en, this message translates to:
+  /// **'This account doesn\'t have the scenario pack.'**
+  String get errPackNotOwned;
+
+  /// Scenario pack: the choice couldn't be saved
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your choice. Please try again.'**
+  String get errPackChoiceFailed;
 }
 
 class _AppLocalizationsDelegate
