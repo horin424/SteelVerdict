@@ -2,7 +2,7 @@ name: strategy_game
 description: "AI-powered text strategy simulation game."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.11.1
