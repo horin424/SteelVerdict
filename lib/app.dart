@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/l10n/app_localizations.dart';
 import 'core/router/router_provider.dart';
 import 'core/theme/app_theme.dart';
+import 'features/auth/local_data_providers.dart';
 import 'features/settings/settings_providers.dart';
 import 'features/shop/shop_providers.dart';
 
@@ -30,6 +31,8 @@ class App extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     // Purchases are handled from sign-in on, not only while the shop is open.
     ref.watch(purchaseBootstrapProvider);
+    // Phone data from before per-account storage goes to the first sign-in.
+    ref.watch(localDataBootstrapProvider);
 
     return MaterialApp.router(
       scaffoldMessengerKey: appScaffoldMessengerKey,

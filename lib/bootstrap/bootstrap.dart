@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,6 +44,18 @@ Future<void> bootstrap() async {
   // first evaluation and caches the result, so migrating any later would show
   // an upgrading player "create your race" for one launch.
   await migrateLegacyRaceIfNeeded();
+
+  // Same reason: races and strategies saved before per-account keys go to the
+  // account signed in now (Firebase restores it in initializeApp), before
+  // currentRaceProvider first reads them. The two typed boxes follow in
+  // HiveStorageService.initialize(); a later first sign-in in
+  // localDataBootstrapProvider.
+  try {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) await adoptUnownedLocalData(uid);
+  } catch (e) {
+    debugPrint('Local data handover failed: $e');
+  }
 
   runApp(const ProviderScope(child: App()));
 }

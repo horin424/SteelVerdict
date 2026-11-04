@@ -11,14 +11,17 @@ import 'scenario_title.dart';
 import '../../services/game_config/game_config_providers.dart';
 
 // Battle records provider
+// The signed-in account's only (localDataUidProvider).
 final battleRecordsProvider = FutureProvider<List<BattleRecordModel>>((ref) async {
   final storageService = ref.watch(hiveStorageServiceProvider);
+  ref.watch(localDataUidProvider);
   return storageService.getBattleRecords();
 });
 
-// War histories provider
+// War histories provider (the signed-in account's only)
 final warHistoriesProvider = FutureProvider<List<WarHistoryModel>>((ref) async {
   final storageService = ref.watch(hiveStorageServiceProvider);
+  ref.watch(localDataUidProvider);
   return storageService.getWarHistories();
 });
 

@@ -45,6 +45,13 @@ final currentUserModelProvider = FutureProvider<UserModel?>((ref) async {
   }
 });
 
+/// The signed-in account's uid. The phone's game data (races, battle records,
+/// chronicles, saved strategies) is kept per account, so providers that read it
+/// watch this and read again when another account signs in.
+final localDataUidProvider = Provider<String?>((ref) {
+  return ref.watch(authStateChangesProvider.select((s) => s.valueOrNull?.uid));
+});
+
 // Provider for the race belonging to the currently selected worldview.
 //
 // Each worldview defines its own stats, so a race created in 1830 Fantasy
@@ -54,6 +61,7 @@ final currentUserModelProvider = FutureProvider<UserModel?>((ref) async {
 final currentRaceProvider = Provider<RaceModel?>((ref) {
   final storageService = ref.watch(hiveStorageServiceProvider);
   final worldviewKey = ref.watch(selectedWorldviewKeyProvider);
+  ref.watch(localDataUidProvider);
   try {
     return storageService.getRace(worldviewKey);
   } catch (e) {

@@ -84,6 +84,9 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
         content: TextField(
           controller: nameController,
           autofocus: true,
+          // The name is the phone storage key, which has a byte limit
+          // (LocalDataKeys.maxKeyBytes); 40 characters fit with room to spare.
+          maxLength: 40,
           style: AppTextStyles.bodyMedium,
           decoration: InputDecoration(hintText: l10n.battleSaveStrategyNameHint),
         ),
