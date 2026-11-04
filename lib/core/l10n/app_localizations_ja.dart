@@ -121,7 +121,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get authLinkTitle => 'アカウント連携';
 
   @override
-  String get authLinkSubtitle => 'メールとパスワードを追加して進捗を永久に保護してください。';
+  String get authLinkSubtitle =>
+      'メールとパスワードを追加すると、チケット・プラン・古代バトルパックがアカウントに保存され、他の端末でも使えます。種族・戦史・保存した戦略は、この端末に保存されます。';
 
   @override
   String get authEmailRequired => 'メールアドレスは必須です';
@@ -140,7 +141,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get authGuestProgressWarning =>
-      'アプリをアンインストールすると進捗が失われる可能性があります。メールアドレスを連携してデータを保護してください。';
+      'アプリをアンインストールすると、ゲストのデータは失われる可能性があります。メールアドレスを連携すると、チケットやプランはアカウントに残ります。';
 
   @override
   String get authLinkAccountArrow => 'アカウント連携 →';
@@ -210,7 +211,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeAdDailyLimit => '本日の広告は20回まで視聴済みです。明日またご利用ください。';
 
   @override
-  String get homeLinkAccountBanner => 'アカウントを連携してデバイス間でデータを同期';
+  String get homeLinkAccountBanner => 'アカウントを連携すると、チケットやプランを他の端末でも使えます';
 
   @override
   String get homeLosses => '敗北';

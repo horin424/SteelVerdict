@@ -112,7 +112,7 @@
   "authLinkTitle": "Link Account",
   "@authLinkTitle": { "description": "Link account screen title" },
 
-  "authLinkSubtitle": "Add an email and password to permanently secure your progress.",
+  "authLinkSubtitle": "Add an email and password to keep your tickets, plan and Ancient Battles Pack with your account and use them on other devices. Races, war history and saved strategies are saved on this phone.",
   "@authLinkSubtitle": { "description": "Link account screen subtitle" },
 
   "authEmailRequired": "Email is required",
@@ -130,7 +130,7 @@
   "authLinkSuccess": "Account linked successfully!",
   "@authLinkSuccess": { "description": "Account link success message" },
 
-  "authGuestProgressWarning": "Your progress may be lost if you uninstall the app. Link an email address to secure your data.",
+  "authGuestProgressWarning": "If you uninstall the app, a guest's data may be lost. Link an email address to keep your tickets and plan with your account.",
   "@authGuestProgressWarning": { "description": "Guest progress warning in banner" },
 
   "authLinkAccountArrow": "Link Account →",
@@ -202,7 +202,7 @@
   "homeAdDailyLimit": "You've watched today's 20 ads. Please come back tomorrow.",
   "@homeAdDailyLimit": { "description": "Ad ticket button: the 20 ads a day (Japan time) are used, so no ad is shown" },
 
-  "homeLinkAccountBanner": "Link your account to save data across devices",
+  "homeLinkAccountBanner": "Link your account to use your tickets and plan on other devices",
   "@homeLinkAccountBanner": { "description": "Link account banner text on home" },
 
   "homeLosses": "Losses",

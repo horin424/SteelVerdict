@@ -323,7 +323,7 @@ abstract class AppLocalizations {
   /// Link account screen subtitle
   ///
   /// In en, this message translates to:
-  /// **'Add an email and password to permanently secure your progress.'**
+  /// **'Add an email and password to keep your tickets, plan and Ancient Battles Pack with your account and use them on other devices. Races, war history and saved strategies are saved on this phone.'**
   String get authLinkSubtitle;
 
   /// Email validation error
@@ -359,7 +359,7 @@ abstract class AppLocalizations {
   /// Guest progress warning in banner
   ///
   /// In en, this message translates to:
-  /// **'Your progress may be lost if you uninstall the app. Link an email address to secure your data.'**
+  /// **'If you uninstall the app, a guest\'s data may be lost. Link an email address to keep your tickets and plan with your account.'**
   String get authGuestProgressWarning;
 
   /// Link account arrow button in banner
@@ -491,7 +491,7 @@ abstract class AppLocalizations {
   /// Link account banner text on home
   ///
   /// In en, this message translates to:
-  /// **'Link your account to save data across devices'**
+  /// **'Link your account to use your tickets and plan on other devices'**
   String get homeLinkAccountBanner;
 
   /// Losses stat label

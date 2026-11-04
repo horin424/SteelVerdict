@@ -124,7 +124,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authLinkSubtitle =>
-      'Add an email and password to permanently secure your progress.';
+      'Add an email and password to keep your tickets, plan and Ancient Battles Pack with your account and use them on other devices. Races, war history and saved strategies are saved on this phone.';
 
   @override
   String get authEmailRequired => 'Email is required';
@@ -143,7 +143,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authGuestProgressWarning =>
-      'Your progress may be lost if you uninstall the app. Link an email address to secure your data.';
+      'If you uninstall the app, a guest\'s data may be lost. Link an email address to keep your tickets and plan with your account.';
 
   @override
   String get authLinkAccountArrow => 'Link Account →';
@@ -216,7 +216,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeLinkAccountBanner =>
-      'Link your account to save data across devices';
+      'Link your account to use your tickets and plan on other devices';
 
   @override
   String get homeLosses => 'Losses';

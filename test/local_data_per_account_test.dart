@@ -278,4 +278,31 @@ void main() {
     expect(ja.homeDailySuccess(15), contains('+15チケット'));
     expect(en.homeDailySuccess(10), 'Daily reward claimed! +10 tickets');
   });
+
+  test('the guest texts promise only what the account keeps', () async {
+    final ja = await AppLocalizations.delegate.load(const Locale('ja'));
+    final en = await AppLocalizations.delegate.load(const Locale('en'));
+    // Tickets, plan and the pack are on the server; races, war history and
+    // saved strategies stay on the phone, even after linking an email.
+    for (final text in [
+      ja.homeLinkAccountBanner,
+      ja.authGuestProgressWarning,
+      ja.authLinkSubtitle,
+    ]) {
+      expect(text, isNot(anyOf(contains('同期'), contains('永久'), contains('進捗'))));
+    }
+    for (final text in [
+      en.homeLinkAccountBanner,
+      en.authGuestProgressWarning,
+      en.authLinkSubtitle,
+    ]) {
+      expect(
+        text.toLowerCase(),
+        isNot(anyOf(contains('sync'), contains('permanent'), contains('progress'),
+            contains('across devices'))),
+      );
+    }
+    expect(ja.authLinkSubtitle, contains('この端末に保存されます'));
+    expect(en.authLinkSubtitle, contains('saved on this phone'));
+  });
 }
