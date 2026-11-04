@@ -356,9 +356,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     final controller = ref.read(
                       homeControllerProvider.notifier,
                     );
-                    final success = await controller.claimDailyReward();
-                    if (success && context.mounted) {
-                      ErrorSnackbar.showSuccess(context, l10n.homeDailySuccess);
+                    final added = await controller.claimDailyReward();
+                    if (added != null && context.mounted) {
+                      // The number the server added (1 on the free plan,
+                      // 10 / 15 / 50 on the paid ones), not a fixed "+3".
+                      ErrorSnackbar.showSuccess(
+                        context,
+                        l10n.homeDailySuccess(added),
+                      );
                       ref.invalidate(currentUserModelProvider);
                       ref.invalidate(dailyRewardAvailableProvider);
                     }

@@ -416,11 +416,11 @@ abstract class AppLocalizations {
   /// **'Daily reward already claimed.'**
   String get homeDailyAlreadyClaimed;
 
-  /// Daily reward success message
+  /// Daily reward success message; count = tickets the server added (depends on the plan)
   ///
   /// In en, this message translates to:
-  /// **'Daily reward claimed! +3 tickets'**
-  String get homeDailySuccess;
+  /// **'Daily reward claimed! +{count} tickets'**
+  String homeDailySuccess(int count);
 
   /// Leaderboard quick action
   ///

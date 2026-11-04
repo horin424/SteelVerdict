@@ -4,6 +4,7 @@ import '../../features/auth/auth_providers.dart';
 import '../../services/ads/ad_service.dart';
 import '../../services/ads/admob_ad_service.dart';
 import '../../services/analytics/analytics_service.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/utils/date_utils.dart';
 import '../splash/splash_providers.dart';
 
@@ -63,14 +64,17 @@ class HomeController extends StateNotifier<HomeControllerState> {
 
   HomeController(this._ref) : super(const HomeControllerState());
 
-  Future<bool> claimDailyReward() async {
+  /// Claims today's tickets; returns how many the server added (it depends on
+  /// the plan: 1, 10, 15 or 50), or null if nothing was added.
+  Future<int?> claimDailyReward() async {
     state = state.copyWith(isClaimingReward: true);
     try {
       // Must go through Cloud Function — Firestore rules block direct ticket writes
       final callable = FirebaseFunctions.instance.httpsCallable('claimDailyReward');
       final result = await callable.call();
-      final data = result.data as Map<String, dynamic>;
-      final ticketsAdded = (data['ticketsAdded'] as num?)?.toInt() ?? 3;
+      final data = Map<String, dynamic>.from(result.data as Map);
+      final ticketsAdded = (data['ticketsAdded'] as num?)?.toInt() ??
+          AppConstants.dailyTicketsFree;
 
       final analytics = _ref.read(analyticsServiceProvider);
       await analytics.logTicketEarned(ticketsAdded, 'daily_reward');
@@ -80,19 +84,19 @@ class HomeController extends StateNotifier<HomeControllerState> {
         isClaimingReward: false,
         message: 'Claimed $ticketsAdded daily tickets!',
       );
-      return true;
+      return ticketsAdded;
     } on FirebaseFunctionsException catch (e) {
       final msg = e.code == 'already-exists'
           ? 'Already claimed today!'
           : 'Failed to claim reward.';
       state = state.copyWith(isClaimingReward: false, message: msg);
-      return false;
+      return null;
     } catch (e) {
       state = state.copyWith(
         isClaimingReward: false,
         message: 'Failed to claim reward.',
       );
-      return false;
+      return null;
     }
   }
 

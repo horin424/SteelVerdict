@@ -172,7 +172,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeDailyAlreadyClaimed => 'デイリー報酬は既に受け取り済みです。';
 
   @override
-  String get homeDailySuccess => 'デイリー報酬を受け取りました！+3チケット';
+  String homeDailySuccess(int count) {
+    return 'デイリー報酬を受け取りました！+$countチケット';
+  }
 
   @override
   String get homeLeaderboard => 'リーダーボード';

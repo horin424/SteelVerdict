@@ -57,7 +57,7 @@
   "homeDailyMissions": "デイリーミッション",
   "homeReady": "受取可",
   "homeDailyAlreadyClaimed": "デイリー報酬は既に受け取り済みです。",
-  "homeDailySuccess": "デイリー報酬を受け取りました！+3チケット",
+  "homeDailySuccess": "デイリー報酬を受け取りました！+{count}チケット",
   "homeLeaderboard": "リーダーボード",
   "homeRecommended": "おすすめ",
   "homeChallengeAI": "AIに挑戦",

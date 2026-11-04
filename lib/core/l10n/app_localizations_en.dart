@@ -175,7 +175,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeDailyAlreadyClaimed => 'Daily reward already claimed.';
 
   @override
-  String get homeDailySuccess => 'Daily reward claimed! +3 tickets';
+  String homeDailySuccess(int count) {
+    return 'Daily reward claimed! +$count tickets';
+  }
 
   @override
   String get homeLeaderboard => 'Leaderboard';

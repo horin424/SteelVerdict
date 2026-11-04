@@ -163,8 +163,11 @@
   "homeDailyAlreadyClaimed": "Daily reward already claimed.",
   "@homeDailyAlreadyClaimed": { "description": "Daily reward already claimed message" },
 
-  "homeDailySuccess": "Daily reward claimed! +3 tickets",
-  "@homeDailySuccess": { "description": "Daily reward success message" },
+  "homeDailySuccess": "Daily reward claimed! +{count} tickets",
+  "@homeDailySuccess": {
+    "description": "Daily reward success message; count = tickets the server added (depends on the plan)",
+    "placeholders": { "count": { "type": "int" } }
+  },
 
   "homeLeaderboard": "Leaderboard",
   "@homeLeaderboard": { "description": "Leaderboard quick action" },
