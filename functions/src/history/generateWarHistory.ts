@@ -32,10 +32,14 @@ export const generateWarHistory = onCall(
       throw new HttpsError("unauthenticated", "Authentication required.");
     }
     const uid = request.auth.uid;
-    const data = request.data as GenerateWarHistoryRequest;
+    const data = (request.data ?? {}) as GenerateWarHistoryRequest;
 
-    if (!data.playerStrategy || !data.raceName) {
-      throw new HttpsError("invalid-argument", "playerStrategy and raceName are required.");
+    // Everything the chronicle needs is checked before any ticket is taken (19 Nov 2026: a call
+    // without raceStats took 3 tickets, then crashed and kept them).
+    const isText = (v: unknown): boolean => typeof v === "string" && v.trim() !== "";
+    const statsOk = data.raceStats !== null && typeof data.raceStats === "object" && !Array.isArray(data.raceStats);
+    if (!isText(data.playerStrategy) || !isText(data.raceName) || !statsOk) {
+      throw new HttpsError("invalid-argument", "playerStrategy, raceName and raceStats are required.");
     }
 
     await ensureUserDoc(uid);
@@ -47,30 +51,31 @@ export const generateWarHistory = onCall(
       await deductTickets(uid, cost);
     }
 
-    const statsText = Object.entries(data.raceStats)
-      .map(([k, v]) => `${k}: ${v}`)
-      .join(", ");
-
-    const outcomeWord =
-      data.outcome === "win" ? "VICTORY"
-        : data.outcome === "loss" ? "DEFEAT"
-          : data.outcome === "survival"
-            ? `SURVIVAL (${data.survivalDays ?? "?"} days)`
-            : "STALEMATE";
-
-    const worldviewKey = data.worldviewKey || "1830_fantasy";
-    const scenarioId = data.scenarioId || "chronicle";
-
-    let worldviewContext = "";
     try {
-      worldviewContext = await assemblePrompt(worldviewKey, scenarioId, "epic", {
-        includeOutputContract: false,
-      });
-    } catch (err) {
-      console.warn("assemblePrompt for chronicle failed, using base only:", err);
-    }
+      const statsText = Object.entries(data.raceStats)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ");
 
-    const systemPrompt = `${worldviewContext}
+      const outcomeWord =
+        data.outcome === "win" ? "VICTORY"
+          : data.outcome === "loss" ? "DEFEAT"
+            : data.outcome === "survival"
+              ? `SURVIVAL (${data.survivalDays ?? "?"} days)`
+              : "STALEMATE";
+
+      const worldviewKey = data.worldviewKey || "1830_fantasy";
+      const scenarioId = data.scenarioId || "chronicle";
+
+      let worldviewContext = "";
+      try {
+        worldviewContext = await assemblePrompt(worldviewKey, scenarioId, "epic", {
+          includeOutputContract: false,
+        });
+      } catch (err) {
+        console.warn("assemblePrompt for chronicle failed, using base only:", err);
+      }
+
+      const systemPrompt = `${worldviewContext}
 
 You are a prestigious military historian writing official war chronicles.
 Write in a formal, epic narrative style — as if this battle will be remembered for centuries.
@@ -82,7 +87,7 @@ Do NOT append [[RESULT:...]] markers — this is a chronicle, not a battle judgm
 End with a paragraph reflecting on the historical significance of this battle.
 ${data.locale === "ja" ? "必ず日本語で執筆してください。" : ""}`.trim();
 
-    const userMessage = `Write an official war history chronicle for the following battle:
+      const userMessage = `Write an official war history chronicle for the following battle:
 
 Title: ${data.battleTitle}
 Commander's Race: ${data.raceName}
@@ -94,17 +99,30 @@ ${data.shortReport ? `Battle Summary: ${data.shortReport}` : ""}
 
 Write the full chronicle now (approximately 3000 characters):`;
 
-    let chronicleText: string;
-    try {
-      chronicleText = await callClaude(
-        CLAUDE_API_KEY.value(),
-        systemPrompt,
-        userMessage,
-        CLAUDE_HAIKU,
-        CHRONICLE_MAX_TOKENS,
-      );
+      let chronicleText: string;
+      try {
+        chronicleText = await callClaude(
+          CLAUDE_API_KEY.value(),
+          systemPrompt,
+          userMessage,
+          CLAUDE_HAIKU,
+          CHRONICLE_MAX_TOKENS,
+        );
+      } catch (err) {
+        console.error("generateWarHistory AI error:", err);
+        throw new HttpsError("internal", "Failed to generate war history. Please try again.");
+      }
+
+      if (!chronicleText || !chronicleText.trim()) {
+        throw new HttpsError("internal", "Empty chronicle generated. Please try again.");
+      }
+
+      return {
+        chronicleText,
+        ticketsConsumed: cost,
+      };
     } catch (err) {
-      console.error("generateWarHistory AI error:", err);
+      // Any failure after the charge gives the tickets back, once.
       if (cost > 0) {
         try {
           await addTickets(uid, cost);
@@ -112,21 +130,9 @@ Write the full chronicle now (approximately 3000 characters):`;
           console.error("Chronicle ticket refund failed:", refundErr);
         }
       }
+      if (err instanceof HttpsError) throw err;
+      console.error("generateWarHistory failed:", err);
       throw new HttpsError("internal", "Failed to generate war history. Please try again.");
     }
-
-    if (!chronicleText || !chronicleText.trim()) {
-      if (cost > 0) {
-        try {
-          await addTickets(uid, cost);
-        } catch (_) { /* ignore */ }
-      }
-      throw new HttpsError("internal", "Empty chronicle generated. Please try again.");
-    }
-
-    return {
-      chronicleText,
-      ticketsConsumed: cost,
-    };
   },
 );
