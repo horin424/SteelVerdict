@@ -1,5 +1,8 @@
 import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+// From the module itself: in the functions emulator, admin.firestore.Timestamp is undefined (its stub of
+// firebase-admin drops it), and the local run of 20 Nov 2026 answered 500 to every reward.
+import { Timestamp } from "firebase-admin/firestore";
 import { japanDateString } from "../utils/japanDay";
 import {
   AdReward, KeyStore, REWARD_RECORD_DAYS, adTicketDecision, createKeyStore, fetchVerifierKeys,
@@ -32,7 +35,7 @@ export async function grantAdTickets(
       adUnit: reward.adUnit,
       rewardedAt: reward.rewardedAt,
       receivedAt: now.getTime(),
-      expireAt: admin.firestore.Timestamp.fromMillis(now.getTime() + REWARD_RECORD_DAYS * 24 * 60 * 60 * 1000),
+      expireAt: Timestamp.fromMillis(now.getTime() + REWARD_RECORD_DAYS * 24 * 60 * 60 * 1000),
     });
     if (decision.granted) tx.update(userRef, decision.update);
     return decision.granted ? "granted" : "daily_cap";
