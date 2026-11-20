@@ -15,6 +15,7 @@ export { judgeCompletedPvpMatch } from "./battle/judgeCompletedPvpMatch";
 export { claimDailyReward, earnAdTickets } from "./tickets/claimDailyReward";
 export { claimXShareReward } from "./tickets/claimXShareReward";
 export { skipAd } from "./tickets/skipAd";
+export { admobRewardCallback } from "./tickets/admobRewardCallback";
 
 // ─── PvP ──────────────────────────────────────────────────────────────────────
 export { findOrCreatePvpMatch } from "./pvp/findOrCreatePvpMatch";
