@@ -488,6 +488,102 @@ abstract class AppLocalizations {
   /// **'You\'ve watched today\'s 20 ads. Please come back tomorrow.'**
   String get homeAdDailyLimit;
 
+  /// Tooltip of the flag button that reports AI output (battle result, war history)
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get aiReportButton;
+
+  /// Title of the report sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Report AI output'**
+  String get aiReportTitle;
+
+  /// Report sheet: what it does and what is sent
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us if the AI wrote something inappropriate. The text, the strategy you entered and your answers below are sent to the operator.'**
+  String get aiReportExplain;
+
+  /// Report sheet: choice between the battle report and the chronicle
+  ///
+  /// In en, this message translates to:
+  /// **'What to report'**
+  String get aiReportWhat;
+
+  /// Report sheet: the AI battle report
+  ///
+  /// In en, this message translates to:
+  /// **'Battle report'**
+  String get aiReportTargetBattle;
+
+  /// Report sheet: the AI war chronicle
+  ///
+  /// In en, this message translates to:
+  /// **'War chronicle'**
+  String get aiReportTargetChronicle;
+
+  /// Report sheet: reason heading
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get aiReportWhy;
+
+  /// Report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Offensive or hateful'**
+  String get aiReportReasonOffensive;
+
+  /// Report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Excessively violent'**
+  String get aiReportReasonViolence;
+
+  /// Report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Sexual content'**
+  String get aiReportReasonSexual;
+
+  /// Report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get aiReportReasonOther;
+
+  /// Report sheet: optional comment
+  ///
+  /// In en, this message translates to:
+  /// **'Details (optional)'**
+  String get aiReportCommentHint;
+
+  /// Report sheet: send button
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get aiReportSend;
+
+  /// After a report was sent
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you. Your report was sent.'**
+  String get aiReportSent;
+
+  /// Report refused: the daily limit
+  ///
+  /// In en, this message translates to:
+  /// **'You can send up to 20 reports a day. Please try again tomorrow.'**
+  String get aiReportLimit;
+
+  /// Report failed (network or server)
+  ///
+  /// In en, this message translates to:
+  /// **'The report couldn\'t be sent. Please try again later.'**
+  String get aiReportFailed;
+
   /// Link account banner text on home
   ///
   /// In en, this message translates to:

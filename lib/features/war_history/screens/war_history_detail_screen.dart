@@ -15,6 +15,7 @@ import '../war_history_providers.dart';
 import '../widgets/parchment_render_widget.dart';
 import '../../../features/battle/widgets/battle_report_display.dart';
 import '../../../features/game_mode_selection/game_mode_providers.dart';
+import '../../../features/reports/ai_report_sheet.dart';
 import '../../../core/utils/error_messages.dart';
 
 class WarHistoryDetailScreen extends ConsumerStatefulWidget {
@@ -190,6 +191,23 @@ class _WarHistoryDetailScreenState
           style: AppTextStyles.headlineMedium,
         ),
         actions: [
+          // Report the AI output (Google Play's AI-Generated Content policy):
+          // the battle report, or the chronicle if one was made.
+          IconButton(
+            icon: const Icon(Icons.report_outlined, color: AppColors.textMuted),
+            tooltip: AppLocalizations.of(context)!.aiReportButton,
+            onPressed: () => showAiReportSheet(
+              context,
+              targets: [
+                AiReportTarget(kind: 'battle', text: record.aiReport),
+                if (warHistory != null) AiReportTarget(kind: 'chronicle', text: warHistory.longNarrative),
+              ],
+              strategy: record.playerStrategy,
+              gameMode: record.gameMode,
+              scenarioId: record.scenarioId,
+              worldviewKey: record.worldviewKey,
+            ),
+          ),
           IconButton(
             icon: Icon(
               record.isFavorite ? Icons.star : Icons.star_outline,

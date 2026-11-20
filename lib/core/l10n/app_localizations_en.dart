@@ -215,6 +215,57 @@ class AppLocalizationsEn extends AppLocalizations {
       'You\'ve watched today\'s 20 ads. Please come back tomorrow.';
 
   @override
+  String get aiReportButton => 'Report';
+
+  @override
+  String get aiReportTitle => 'Report AI output';
+
+  @override
+  String get aiReportExplain =>
+      'Tell us if the AI wrote something inappropriate. The text, the strategy you entered and your answers below are sent to the operator.';
+
+  @override
+  String get aiReportWhat => 'What to report';
+
+  @override
+  String get aiReportTargetBattle => 'Battle report';
+
+  @override
+  String get aiReportTargetChronicle => 'War chronicle';
+
+  @override
+  String get aiReportWhy => 'Reason';
+
+  @override
+  String get aiReportReasonOffensive => 'Offensive or hateful';
+
+  @override
+  String get aiReportReasonViolence => 'Excessively violent';
+
+  @override
+  String get aiReportReasonSexual => 'Sexual content';
+
+  @override
+  String get aiReportReasonOther => 'Other';
+
+  @override
+  String get aiReportCommentHint => 'Details (optional)';
+
+  @override
+  String get aiReportSend => 'Send';
+
+  @override
+  String get aiReportSent => 'Thank you. Your report was sent.';
+
+  @override
+  String get aiReportLimit =>
+      'You can send up to 20 reports a day. Please try again tomorrow.';
+
+  @override
+  String get aiReportFailed =>
+      'The report couldn\'t be sent. Please try again later.';
+
+  @override
   String get homeLinkAccountBanner =>
       'Link your account to use your tickets and plan on other devices';
 

@@ -140,6 +140,8 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
           'shortSummary': result.shortSummary,
           'scenarioId': widget.scenarioId,
           'gameMode': widget.gameMode,
+          // Sent with a report of the AI output (the 「報告」 button), for context.
+          'strategy': strategy,
           if (result.survivalDays != null) 'survivalDays': result.survivalDays,
           if (result.worldviewKey != null) 'worldviewKey': result.worldviewKey,
         },

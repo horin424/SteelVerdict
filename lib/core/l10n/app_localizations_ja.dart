@@ -211,6 +211,55 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeAdDailyLimit => '本日の広告は20回まで視聴済みです。明日またご利用ください。';
 
   @override
+  String get aiReportButton => '報告';
+
+  @override
+  String get aiReportTitle => 'AIの出力を報告';
+
+  @override
+  String get aiReportExplain =>
+      'AIが不適切な内容を書いた場合は、お知らせください。この文章と、入力した戦略、下で選んだ内容が運営に送られます。';
+
+  @override
+  String get aiReportWhat => '報告する文章';
+
+  @override
+  String get aiReportTargetBattle => '戦闘レポート';
+
+  @override
+  String get aiReportTargetChronicle => '戦記';
+
+  @override
+  String get aiReportWhy => '理由';
+
+  @override
+  String get aiReportReasonOffensive => '不快・差別的な表現';
+
+  @override
+  String get aiReportReasonViolence => '過度に暴力的な表現';
+
+  @override
+  String get aiReportReasonSexual => '性的な表現';
+
+  @override
+  String get aiReportReasonOther => 'その他';
+
+  @override
+  String get aiReportCommentHint => '詳しい内容（任意）';
+
+  @override
+  String get aiReportSend => '送信';
+
+  @override
+  String get aiReportSent => '報告を受け付けました。ご協力ありがとうございます。';
+
+  @override
+  String get aiReportLimit => '報告は1日20件までです。明日またお試しください。';
+
+  @override
+  String get aiReportFailed => '報告を送れませんでした。時間をおいて、もう一度お試しください。';
+
+  @override
   String get homeLinkAccountBanner => 'アカウントを連携すると、チケットやプランを他の端末でも使えます';
 
   @override

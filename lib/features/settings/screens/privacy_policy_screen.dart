@@ -179,6 +179,8 @@ class _EnContent extends StatelessWidget {
           const _Body('The app uses Google AdMob to display rewarded ads. AdMob may collect device identifiers and usage data to serve relevant advertisements.'),
           const _SubTitle('Purchase Data'),
           const _Body('In-app purchases are processed by Apple App Store or Google Play. We receive a receipt token to validate purchases but do not store your payment information.'),
+          const _SubTitle('Reports of AI Output'),
+          const _Body('If you report an AI-generated battle report or war chronicle with the Report button, the reported text, the strategy you entered, the reason you chose and your comment are sent to us with your user ID, so that we can review it.'),
         ]),
 
         _Section(title: '2. How We Use Your Information', children: [
@@ -188,6 +190,7 @@ class _EnContent extends StatelessWidget {
           const _Bullet('To match you with opponents in PvP mode'),
           const _Bullet('To display rewarded advertisements and credit earned tickets'),
           const _Bullet('To validate in-app purchases'),
+          const _Bullet('To review AI output that you report'),
         ]),
 
         _Section(title: '3. Third-Party Services', children: [
@@ -275,6 +278,8 @@ class _JaContent extends StatelessWidget {
           const _Body('本アプリはGoogle AdMobを使用してリワード広告を表示します。AdMobはデバイス識別子や利用状況データを収集する場合があります。'),
           const _SubTitle('購入データ'),
           const _Body('アプリ内購入はApple App StoreまたはGoogle Playによって処理されます。当方は購入確認のためのレシートトークンを受け取りますが、支払い情報は保存しません。'),
+          const _SubTitle('AIの出力の報告'),
+          const _Body('「報告」ボタンでAIが生成した戦闘レポートや戦記を報告すると、報告した文章、入力した戦略、選んだ理由とコメントが、ユーザーIDとともに当方に送られます。内容の確認に使います。'),
         ]),
 
         _Section(title: '2. 情報の利用目的', children: [
@@ -284,6 +289,7 @@ class _JaContent extends StatelessWidget {
           const _Bullet('PvPモードでの対戦相手とのマッチング'),
           const _Bullet('リワード広告の表示および獲得チケットの付与'),
           const _Bullet('アプリ内購入の検証'),
+          const _Bullet('報告されたAIの出力の確認'),
         ]),
 
         _Section(title: '3. 利用する第三者サービス', children: [

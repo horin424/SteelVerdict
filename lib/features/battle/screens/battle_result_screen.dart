@@ -7,6 +7,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/constants/route_names.dart';
 import '../../../core/widgets/error_snackbar.dart';
 import '../widgets/battle_report_display.dart';
+import '../../reports/ai_report_sheet.dart';
 import '../../../services/sound/sound_service_provider.dart';
 
 class BattleResultScreen extends ConsumerStatefulWidget {
@@ -86,6 +87,7 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
     final reportText = widget.resultData?['reportText'] as String? ?? l10n.battleNoReport;
     final shortSummary = widget.resultData?['shortSummary'] as String? ?? '';
     final survivalDays = (widget.resultData?['survivalDays'] as num?)?.toInt();
+    final aiText = (widget.resultData?['reportText'] as String? ?? '').trim();
 
     final outcomeColor = _outcomeColor(outcome);
 
@@ -97,6 +99,27 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
           icon: const Icon(Icons.home),
           onPressed: () => context.go(RouteNames.home),
         ),
+        actions: [
+          // Report the AI output (Google Play's AI-Generated Content policy).
+          if (aiText.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.report_outlined),
+              tooltip: l10n.aiReportButton,
+              onPressed: () => showAiReportSheet(
+                context,
+                targets: [
+                  AiReportTarget(
+                    kind: 'battle',
+                    text: shortSummary.trim().isEmpty ? aiText : '${shortSummary.trim()}\n\n$aiText',
+                  ),
+                ],
+                strategy: widget.resultData?['strategy'] as String? ?? '',
+                gameMode: widget.resultData?['gameMode'] as String? ?? '',
+                scenarioId: widget.resultData?['scenarioId'] as String? ?? '',
+                worldviewKey: widget.resultData?['worldviewKey'] as String? ?? '',
+              ),
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

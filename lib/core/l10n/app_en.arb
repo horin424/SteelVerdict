@@ -202,6 +202,54 @@
   "homeAdDailyLimit": "You've watched today's 20 ads. Please come back tomorrow.",
   "@homeAdDailyLimit": { "description": "Ad ticket button: the 20 ads a day (Japan time) are used, so no ad is shown" },
 
+  "aiReportButton": "Report",
+  "@aiReportButton": { "description": "Tooltip of the flag button that reports AI output (battle result, war history)" },
+
+  "aiReportTitle": "Report AI output",
+  "@aiReportTitle": { "description": "Title of the report sheet" },
+
+  "aiReportExplain": "Tell us if the AI wrote something inappropriate. The text, the strategy you entered and your answers below are sent to the operator.",
+  "@aiReportExplain": { "description": "Report sheet: what it does and what is sent" },
+
+  "aiReportWhat": "What to report",
+  "@aiReportWhat": { "description": "Report sheet: choice between the battle report and the chronicle" },
+
+  "aiReportTargetBattle": "Battle report",
+  "@aiReportTargetBattle": { "description": "Report sheet: the AI battle report" },
+
+  "aiReportTargetChronicle": "War chronicle",
+  "@aiReportTargetChronicle": { "description": "Report sheet: the AI war chronicle" },
+
+  "aiReportWhy": "Reason",
+  "@aiReportWhy": { "description": "Report sheet: reason heading" },
+
+  "aiReportReasonOffensive": "Offensive or hateful",
+  "@aiReportReasonOffensive": { "description": "Report reason" },
+
+  "aiReportReasonViolence": "Excessively violent",
+  "@aiReportReasonViolence": { "description": "Report reason" },
+
+  "aiReportReasonSexual": "Sexual content",
+  "@aiReportReasonSexual": { "description": "Report reason" },
+
+  "aiReportReasonOther": "Other",
+  "@aiReportReasonOther": { "description": "Report reason" },
+
+  "aiReportCommentHint": "Details (optional)",
+  "@aiReportCommentHint": { "description": "Report sheet: optional comment" },
+
+  "aiReportSend": "Send",
+  "@aiReportSend": { "description": "Report sheet: send button" },
+
+  "aiReportSent": "Thank you. Your report was sent.",
+  "@aiReportSent": { "description": "After a report was sent" },
+
+  "aiReportLimit": "You can send up to 20 reports a day. Please try again tomorrow.",
+  "@aiReportLimit": { "description": "Report refused: the daily limit" },
+
+  "aiReportFailed": "The report couldn't be sent. Please try again later.",
+  "@aiReportFailed": { "description": "Report failed (network or server)" },
+
   "homeLinkAccountBanner": "Link your account to use your tickets and plan on other devices",
   "@homeLinkAccountBanner": { "description": "Link account banner text on home" },
 
