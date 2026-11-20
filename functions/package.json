@@ -3,7 +3,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge && npm run verify:modes && npm run verify:matchmaking && npm run verify:userdoc && npm run verify:filter && npm run verify:summary && npm run verify:apple && npm run verify:japanday && npm run verify:pack && npm run verify:warhistory && npm run verify:adreward",
+    "verify": "npm run build && npm run verify:outcome && npm run verify:pvp && npm run verify:judge && npm run verify:modes && npm run verify:matchmaking && npm run verify:userdoc && npm run verify:filter && npm run verify:summary && npm run verify:apple && npm run verify:japanday && npm run verify:pack && npm run verify:warhistory && npm run verify:adreward && npm run verify:aireport",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
     "lint": "eslint --ext .ts .",
@@ -20,9 +20,11 @@
     "verify:pack": "node scripts/verify-scenario-pack.js",
     "verify:warhistory": "node scripts/verify-war-history.js",
     "verify:adreward": "node scripts/verify-ad-reward.js",
+    "verify:aireport": "node scripts/verify-ai-report.js",
     "verify:rules": "node scripts/verify-users-rules.js",
     "verify:purchases": "node scripts/verify-purchases.js",
-    "verify:adreward-db": "node scripts/verify-ad-reward-db.js"
+    "verify:adreward-db": "node scripts/verify-ad-reward-db.js",
+    "verify:aireport-db": "node scripts/verify-ai-report-db.js"
   },
   "engines": {
     "node": "22"

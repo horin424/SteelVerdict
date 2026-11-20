@@ -1,6 +1,7 @@
 /**
- * Checks the users/{uid} rules (B10) and the pvp_matches rules (B1) against a
- * running Firestore emulator.
+ * Checks the users/{uid} rules (B10), the pvp_matches rules (B1) and the
+ * content_reports rules (reports of AI output: admins read them and may only
+ * mark them handled) against a running Firestore emulator.
  *
  * PvP matches are written only by Cloud Functions. Players used to be allowed
  * to write their own strategy directly, which skipped submitPvpStrategy's
@@ -44,6 +45,7 @@ function tokenFor(uid) {
 }
 
 function value(v) {
+  if (Array.isArray(v)) return { arrayValue: { values: v.map(value) } };
   if (typeof v === "string") return { stringValue: v };
   if (typeof v === "boolean") return { booleanValue: v };
   if (Number.isInteger(v)) return { integerValue: String(v) };
@@ -78,11 +80,23 @@ const MATCH = {
   winner: "",
   status: "active",
 };
+// A report of AI output (the 「報告」 button) and the admin list, also fresh.
+const REPORT = {
+  uid: "uid-alice",
+  kind: "battle",
+  reason: "offensive",
+  aiText: "The enemy ...",
+  status: "new",
+  createdAt: 1000,
+};
 async function reset() {
   await request("DELETE", "users/uid-alice", { as: "owner" });
   await request("PATCH", "users/uid-alice", { as: "owner", fields: ALICE });
   await request("DELETE", "pvp_matches/m1", { as: "owner" });
   await request("PATCH", "pvp_matches/m1", { as: "owner", fields: MATCH });
+  await request("PATCH", "system_config/admin_uids", { as: "owner", fields: { uids: ["uid-admin"] } });
+  await request("DELETE", "content_reports/r1", { as: "owner" });
+  await request("PATCH", "content_reports/r1", { as: "owner", fields: REPORT });
 }
 
 const update = (as, fields) =>
@@ -140,6 +154,30 @@ async function expect(name, expected, run) {
   await expect("read own match", "allowed", () => request("GET", "pvp_matches/m1", { as: A }));
   await expect("read another pair's match", "denied", () =>
     request("GET", "pvp_matches/m1", { as: "uid-carol" }));
+
+  console.log("\ncontent_reports rules (the 「報告」 button)\n");
+  const ADMIN = "uid-admin";
+  const markReport = (as, fields) =>
+    request("PATCH", "content_reports/r1", { as, fields, mask: Object.keys(fields) });
+  await expect("an admin reads a report", "allowed", () => request("GET", "content_reports/r1", { as: ADMIN }));
+  await expect("an admin lists the reports", "allowed", () => request("GET", "content_reports", { as: ADMIN }));
+  await expect("the reporter reads their own report", "denied", () => request("GET", "content_reports/r1", { as: A }));
+  await expect("a player lists the reports", "denied", () => request("GET", "content_reports", { as: A }));
+  await expect("signed out", "denied", () => request("GET", "content_reports/r1"));
+  await expect("a player writes a report directly (skips the daily limit)", "denied", () =>
+    request("PATCH", "content_reports/r2", { as: A, fields: { ...REPORT } }));
+  await expect("an admin writes a report directly", "denied", () =>
+    request("PATCH", "content_reports/r2", { as: ADMIN, fields: { ...REPORT } }));
+  await expect("an admin marks it handled", "allowed", () =>
+    markReport(ADMIN, { status: "done", reviewedAt: 2000, reviewedBy: ADMIN }));
+  await expect("an admin sets it back to new", "allowed", () => markReport(ADMIN, { status: "new" }));
+  await expect("an admin marks it handled in another admin's name", "denied", () =>
+    markReport(ADMIN, { status: "done", reviewedBy: "uid-someone" }));
+  await expect("reviewedAt as text", "denied", () => markReport(ADMIN, { status: "done", reviewedAt: "today" }));
+  await expect("a status that isn't new or done", "denied", () => markReport(ADMIN, { status: "deleted" }));
+  await expect("an admin changes the reported text", "denied", () => markReport(ADMIN, { aiText: "nothing here" }));
+  await expect("an admin deletes a report", "denied", () => request("DELETE", "content_reports/r1", { as: ADMIN }));
+  await expect("a player marks it handled", "denied", () => markReport(A, { status: "done", reviewedBy: A }));
 
   console.log(fail ? `\n${fail} check(s) FAILED\n` : "\nall checks passed\n");
   process.exit(fail ? 1 : 0);

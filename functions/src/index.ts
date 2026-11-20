@@ -28,6 +28,9 @@ export { checkDeserters as checkDesertersHourly } from "./pvp/checkDeserters";
 // ─── War History ──────────────────────────────────────────────────────────────
 export { generateWarHistory } from "./history/generateWarHistory";
 
+// ─── Reports of AI output (the 「報告」 button) ───────────────────────────────────
+export { reportAiContent } from "./reports/reportAiContent";
+
 // ─── Purchases ────────────────────────────────────────────────────────────────
 export { validatePurchase } from "./purchase/validatePurchase";
 export { chooseScenarioPack } from "./purchase/scenarioPack";

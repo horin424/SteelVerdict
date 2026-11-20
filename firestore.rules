@@ -54,5 +54,29 @@ service cloud.firestore {
       // here, which skipped the charge (B1). The app uses the function only.
       allow write: if false;
     }
+
+    // ── Reports of AI output (the 「報告」 button) ─────────────────────────────
+    // reportAiContent writes them. Only admins (system_config/admin_uids) read
+    // them, in the PC admin page, and they may only mark one handled: status
+    // "new" or "done", reviewedAt (a number) and reviewedBy (their own uid).
+    // Nobody creates or deletes them from the app or the admin page.
+    match /content_reports/{reportId} {
+      function isAdmin() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/system_config/admin_uids)
+          && request.auth.uid in get(/databases/$(database)/documents/system_config/admin_uids).data.uids;
+      }
+      function changes() {
+        return request.resource.data.diff(resource.data).affectedKeys();
+      }
+
+      allow read: if isAdmin();
+      allow update: if isAdmin()
+        && changes().hasOnly(["status", "reviewedAt", "reviewedBy"])
+        && request.resource.data.status in ["new", "done"]
+        && (!("reviewedAt" in changes()) || request.resource.data.reviewedAt is int)
+        && (!("reviewedBy" in changes()) || request.resource.data.reviewedBy == request.auth.uid);
+      allow create, delete: if false;
+    }
   }
 }
