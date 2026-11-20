@@ -219,7 +219,7 @@ class _EnContent extends StatelessWidget {
           title: '4. Support',
           children: [
             const _Body(
-              'If you need help, start with this help center. For account or policy questions, use the Privacy Policy page. For bugs or feedback, contact support at your@example.com.',
+              'If you need help, start with this help center. For account or policy questions, use the Privacy Policy page. For bugs or feedback, contact support at bluebirdsblackraven@gmail.com.',
             ),
           ],
         ),
@@ -299,7 +299,7 @@ class _JaContent extends StatelessWidget {
           title: '4. サポート',
           children: [
             const _Body(
-              '困ったときはまずこのヘルプセンターをご覧ください。アカウントや規約に関する内容はプライバシーポリシーをご確認ください。バグ報告や要望は your@example.com までお願いします。',
+              '困ったときはまずこのヘルプセンターをご覧ください。アカウントや規約に関する内容はプライバシーポリシーをご確認ください。バグ報告や要望は bluebirdsblackraven@gmail.com までお願いします。',
             ),
           ],
         ),

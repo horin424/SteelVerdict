@@ -215,7 +215,7 @@ class _EnContent extends StatelessWidget {
         ]),
 
         _Section(title: '8. Contact', children: [
-          const _Body('For any questions about this Privacy Policy, please contact us at: your@example.com'),
+          const _Body('For any questions about this Privacy Policy, please contact us at: bluebirdsblackraven@gmail.com'),
         ]),
 
         const SizedBox(height: 32),
@@ -311,7 +311,7 @@ class _JaContent extends StatelessWidget {
         ]),
 
         _Section(title: '8. お問い合わせ', children: [
-          const _Body('本プライバシーポリシーに関するお問い合わせは your@example.com までご連絡ください。'),
+          const _Body('本プライバシーポリシーに関するお問い合わせは bluebirdsblackraven@gmail.com までご連絡ください。'),
         ]),
 
         const SizedBox(height: 32),
