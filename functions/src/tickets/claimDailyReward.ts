@@ -64,52 +64,16 @@ export const claimDailyReward = onCall(async (request) => {
   return { ticketsAdded: amount, newTicketCount: newCount };
 });
 
-/** Soft daily cap — prevents unauthenticated spam / API abuse while still
- *  allowing generous rewarded-ad farming. Adjust via code if product wants more. */
-const MAX_AD_TICKET_CLAIMS_PER_DAY = 20;
-const TICKETS_PER_AD = 2;
-
 /**
- * earnAdTickets — grant tickets for watching a rewarded ad.
- * Server-side daily claim cap (client cannot bypass).
+ * earnAdTickets — adds no tickets any more (20 Nov 2026). It gave +2 to any
+ * signed-in caller, 20 times a day, with nothing to show that an ad was
+ * watched. The ad tickets now come from admobRewardCallback, when Google
+ * confirms the ad (tickets/adReward.ts). Kept so older app builds get a clear
+ * answer instead of "not found".
  */
-export const earnAdTickets = onCall(async (request) => {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Authentication required.");
-  }
-  const uid = request.auth.uid;
-  await ensureUserDoc(uid);
-  const ref = admin.firestore().collection("users").doc(uid);
-  const today = japanDateString(new Date());
-
-  let newCount = 0;
-  let ticketsAdded = 0;
-  await admin.firestore().runTransaction(async (tx) => {
-    const snap = await tx.get(ref);
-    if (!snap.exists) throw new HttpsError("not-found", "User not found.");
-    const data = snap.data() as {
-      ticketCount: number;
-      adTicketClaimsDate?: string;
-      adTicketClaimsCount?: number;
-    };
-
-    const claimsDate = data.adTicketClaimsDate ?? "";
-    const claimsCount = claimsDate === today ? (data.adTicketClaimsCount ?? 0) : 0;
-    if (claimsCount >= MAX_AD_TICKET_CLAIMS_PER_DAY) {
-      throw new HttpsError(
-        "resource-exhausted",
-        "Daily ad ticket limit reached. Try again tomorrow.",
-      );
-    }
-
-    ticketsAdded = TICKETS_PER_AD;
-    newCount = (data.ticketCount ?? 0) + ticketsAdded;
-    tx.update(ref, {
-      ticketCount: newCount,
-      adTicketClaimsDate: today,
-      adTicketClaimsCount: claimsCount + 1,
-    });
-  });
-
-  return { ticketsAdded, newTicketCount: newCount };
+export const earnAdTickets = onCall(async () => {
+  throw new HttpsError(
+    "failed-precondition",
+    "Ad tickets now come when Google confirms the ad. Please update the app.",
+  );
 });

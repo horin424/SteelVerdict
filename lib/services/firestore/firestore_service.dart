@@ -5,6 +5,9 @@ abstract class FirestoreService {
   /// Get user data from Firestore.
   Future<UserModel?> getUserData(String uid);
 
+  /// The user document as it changes (null while it doesn't exist).
+  Stream<UserModel?> watchUser(String uid);
+
   /// Create a new user document.
   Future<void> createUser(UserModel user);
 

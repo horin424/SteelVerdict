@@ -476,6 +476,18 @@ abstract class AppLocalizations {
   /// **'Ad not available. Try again later.'**
   String get homeAdNotAvailable;
 
+  /// After a rewarded ad: the server hasn't added the tickets yet (they come when Google confirms the ad)
+  ///
+  /// In en, this message translates to:
+  /// **'Your tickets are taking a little longer. Please check again in a moment.'**
+  String get homeAdRewardPending;
+
+  /// Ad ticket button: the 20 ads a day (Japan time) are used, so no ad is shown
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve watched today\'s 20 ads. Please come back tomorrow.'**
+  String get homeAdDailyLimit;
+
   /// Link account banner text on home
   ///
   /// In en, this message translates to:

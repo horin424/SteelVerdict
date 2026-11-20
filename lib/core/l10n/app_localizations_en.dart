@@ -207,6 +207,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeAdNotAvailable => 'Ad not available. Try again later.';
 
   @override
+  String get homeAdRewardPending =>
+      'Your tickets are taking a little longer. Please check again in a moment.';
+
+  @override
+  String get homeAdDailyLimit =>
+      'You\'ve watched today\'s 20 ads. Please come back tomorrow.';
+
+  @override
   String get homeLinkAccountBanner =>
       'Link your account to save data across devices';
 

@@ -50,6 +50,12 @@ class UserModel {
   /// Empty until the player chooses.
   final List<String> packScenarioIds;
 
+  /// Rewarded ads that added tickets on [adTicketClaimsDate] (a Japan date,
+  /// "YYYY-MM-DD"). Written only by the server (admobRewardCallback), so they
+  /// are read here but never written back (not in [toJson]).
+  final String? adTicketClaimsDate;
+  final int adTicketClaimsCount;
+
   const UserModel({
     required this.uid,
     required this.displayName,
@@ -63,6 +69,8 @@ class UserModel {
     this.lastDailyRewardAt,
     this.scenarioPack1Unlocked = false,
     this.packScenarioIds = const [],
+    this.adTicketClaimsDate,
+    this.adTicketClaimsCount = 0,
   });
 
   /// The pack is owned and its scenarios are still to be chosen.
@@ -113,6 +121,10 @@ class UserModel {
       packScenarioIds: json['scenarioPack1Picks'] is List
           ? List<String>.unmodifiable((json['scenarioPack1Picks'] as List).whereType<String>())
           : const [],
+      adTicketClaimsDate: json['adTicketClaimsDate'] is String
+          ? json['adTicketClaimsDate'] as String
+          : null,
+      adTicketClaimsCount: asInt(json['adTicketClaimsCount']),
     );
   }
 
@@ -147,6 +159,8 @@ class UserModel {
     DateTime? lastDailyRewardAt,
     bool? scenarioPack1Unlocked,
     List<String>? packScenarioIds,
+    String? adTicketClaimsDate,
+    int? adTicketClaimsCount,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -161,6 +175,8 @@ class UserModel {
       lastDailyRewardAt: lastDailyRewardAt ?? this.lastDailyRewardAt,
       scenarioPack1Unlocked: scenarioPack1Unlocked ?? this.scenarioPack1Unlocked,
       packScenarioIds: packScenarioIds ?? this.packScenarioIds,
+      adTicketClaimsDate: adTicketClaimsDate ?? this.adTicketClaimsDate,
+      adTicketClaimsCount: adTicketClaimsCount ?? this.adTicketClaimsCount,
     );
   }
 

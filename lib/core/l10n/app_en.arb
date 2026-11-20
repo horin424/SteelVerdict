@@ -196,6 +196,12 @@
   "homeAdNotAvailable": "Ad not available. Try again later.",
   "@homeAdNotAvailable": { "description": "Ad not available message" },
 
+  "homeAdRewardPending": "Your tickets are taking a little longer. Please check again in a moment.",
+  "@homeAdRewardPending": { "description": "After a rewarded ad: the server hasn't added the tickets yet (they come when Google confirms the ad)" },
+
+  "homeAdDailyLimit": "You've watched today's 20 ads. Please come back tomorrow.",
+  "@homeAdDailyLimit": { "description": "Ad ticket button: the 20 ads a day (Japan time) are used, so no ad is shown" },
+
   "homeLinkAccountBanner": "Link your account to save data across devices",
   "@homeLinkAccountBanner": { "description": "Link account banner text on home" },
 

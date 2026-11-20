@@ -10,6 +10,7 @@ import '../../../core/widgets/error_snackbar.dart';
 import '../../../features/auth/auth_providers.dart';
 import '../../../features/game_mode_selection/game_mode_providers.dart';
 import '../../../features/settings/settings_providers.dart';
+import '../ad_tickets.dart';
 import '../home_providers.dart';
 import '../widgets/ad_ticket_button.dart';
 import '../../../services/sound/sound_service_provider.dart';
@@ -430,12 +431,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     final controller = ref.read(
                       homeControllerProvider.notifier,
                     );
-                    final success = await controller.watchAdForTickets();
-                    if (success && context.mounted) {
-                      ErrorSnackbar.showSuccess(context, l10n.homeAdReward);
-                      ref.invalidate(currentUserModelProvider);
-                    } else if (context.mounted && !success) {
-                      ErrorSnackbar.showError(context, l10n.homeAdNotAvailable);
+                    final outcome = await controller.watchAdForTickets();
+                    if (!context.mounted) return;
+                    switch (outcome) {
+                      case AdTicketOutcome.granted:
+                        ErrorSnackbar.showSuccess(context, l10n.homeAdReward);
+                        ref.invalidate(currentUserModelProvider);
+                      case AdTicketOutcome.pending:
+                        ErrorSnackbar.showSuccess(context, l10n.homeAdRewardPending);
+                      case AdTicketOutcome.dailyLimit:
+                        ErrorSnackbar.showError(context, l10n.homeAdDailyLimit);
+                      case AdTicketOutcome.notWatched:
+                      case AdTicketOutcome.failed:
+                        ErrorSnackbar.showError(context, l10n.homeAdNotAvailable);
                     }
                   },
                 ),

@@ -68,7 +68,11 @@ class AdMobAdService implements AdService {
   }
 
   @override
-  Future<bool> showRewardedAd({RewardCallback? onRewarded}) async {
+  Future<bool> showRewardedAd({
+    RewardCallback? onRewarded,
+    String? serverUserId,
+    String? serverCustomData,
+  }) async {
     if (_rewardedAd == null || !_isRewardedLoaded) {
       debugPrint('Rewarded ad not loaded');
       await loadRewardedAd();
@@ -96,6 +100,13 @@ class AdMobAdService implements AdService {
     );
 
     try {
+      if (serverUserId != null) {
+        // Set after loading and before showing, as AdMob asks.
+        await _rewardedAd!.setServerSideOptions(ServerSideVerificationOptions(
+          userId: serverUserId,
+          customData: serverCustomData,
+        ));
+      }
       await _rewardedAd!.show(
         onUserEarnedReward: (ad, reward) {
           rewarded = true;

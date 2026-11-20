@@ -67,6 +67,8 @@
   "homeWarHistorySubtitle": "過去のバトルを確認",
   "homeAdReward": "広告報酬を獲得！+2チケット",
   "homeAdNotAvailable": "広告が利用できません。後でもう一度お試しください。",
+  "homeAdRewardPending": "チケットの反映に時間がかかっています。しばらくしてからご確認ください。",
+  "homeAdDailyLimit": "本日の広告は20回まで視聴済みです。明日またご利用ください。",
   "homeLinkAccountBanner": "アカウントを連携してデバイス間でデータを同期",
   "homeLosses": "敗北",
   "homeWins": "勝利",

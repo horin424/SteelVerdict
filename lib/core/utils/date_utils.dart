@@ -14,6 +14,14 @@ class GameDateUtils {
     return DateTime.utc(inJapan.year, inJapan.month, inJapan.day);
   }
 
+  /// The game's day as "YYYY-MM-DD", the string the server stores
+  /// (japanDateString in functions/src/utils/japanDay.ts).
+  static String japanDateString(DateTime moment) {
+    final day = japanDate(moment);
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${day.year.toString().padLeft(4, '0')}-${two(day.month)}-${two(day.day)}';
+  }
+
   /// Returns true if [moment] falls on the current game day (Japan time).
   static bool isTodayInJapan(DateTime moment, {DateTime? now}) =>
       japanDate(moment) == japanDate(now ?? DateTime.now());

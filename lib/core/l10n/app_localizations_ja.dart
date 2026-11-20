@@ -204,6 +204,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeAdNotAvailable => '広告が利用できません。後でもう一度お試しください。';
 
   @override
+  String get homeAdRewardPending => 'チケットの反映に時間がかかっています。しばらくしてからご確認ください。';
+
+  @override
+  String get homeAdDailyLimit => '本日の広告は20回まで視聴済みです。明日またご利用ください。';
+
+  @override
   String get homeLinkAccountBanner => 'アカウントを連携してデバイス間でデータを同期';
 
   @override

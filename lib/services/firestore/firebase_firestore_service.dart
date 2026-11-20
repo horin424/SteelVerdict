@@ -31,6 +31,14 @@ class FirebaseFirestoreService implements FirestoreService {
   }
 
   @override
+  Stream<UserModel?> watchUser(String uid) {
+    return _users.doc(uid).snapshots().map((doc) {
+      final data = doc.data() as Map<String, dynamic>?;
+      return data == null ? null : UserModel.fromJson({...data, 'uid': uid});
+    });
+  }
+
+  @override
   Future<void> createUser(UserModel user) async {
     try {
       await _users.doc(user.uid).set(user.toJson());

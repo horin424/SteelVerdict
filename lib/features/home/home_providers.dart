@@ -1,6 +1,8 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/auth_providers.dart';
+import 'ad_tickets.dart';
 import '../../services/ads/ad_service.dart';
 import '../../services/ads/admob_ad_service.dart';
 import '../../services/analytics/analytics_service.dart';
@@ -100,32 +102,39 @@ class HomeController extends StateNotifier<HomeControllerState> {
     }
   }
 
-  Future<bool> watchAdForTickets() async {
+  /// Shows a rewarded ad for tickets. The server adds them when Google
+  /// confirms the ad was watched to the end (see AdTickets); this waits for
+  /// them to show in the user document.
+  Future<AdTicketOutcome> watchAdForTickets() async {
     state = state.copyWith(isWatchingAd: true);
     try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) return AdTicketOutcome.failed;
+      final firestore = _ref.read(firestoreServiceProvider);
+      final before = await firestore.getUserData(uid);
+      if (before == null) return AdTicketOutcome.failed;
+      // Don't play an ad that can't add tickets any more today.
+      if (AdTickets.adsLeftToday(before) == 0) return AdTicketOutcome.dailyLimit;
+
       final adService = _ref.read(adServiceProvider);
       await adService.loadRewardedAd();
-      final rewarded = await adService.showRewardedAd();
+      final rewarded = await adService.showRewardedAd(
+        serverUserId: uid,
+        serverCustomData: AdTickets.purpose,
+      );
+      if (!rewarded) return AdTicketOutcome.notWatched;
 
-      if (rewarded) {
-        // Must go through Cloud Function — Firestore rules block direct ticket writes
-        final callable = FirebaseFunctions.instance.httpsCallable('earnAdTickets');
-        await callable.call();
-
-        final analytics = _ref.read(analyticsServiceProvider);
-        await analytics.logAdWatched('rewarded');
-        await analytics.logTicketEarned(2, 'ad_reward');
-
-        _ref.invalidate(currentUserModelProvider);
-        state = state.copyWith(isWatchingAd: false, message: 'Earned 2 tickets!');
-        return true;
-      } else {
-        state = state.copyWith(isWatchingAd: false, message: null);
-        return false;
-      }
+      final analytics = _ref.read(analyticsServiceProvider);
+      await analytics.logAdWatched('rewarded');
+      final arrived = await AdTickets.waitForGrant(firestore.watchUser(uid), before);
+      _ref.invalidate(currentUserModelProvider);
+      if (!arrived) return AdTicketOutcome.pending;
+      await analytics.logTicketEarned(AdTickets.perAd, 'ad_reward');
+      return AdTicketOutcome.granted;
     } catch (e) {
-      state = state.copyWith(isWatchingAd: false, message: 'Ad failed: $e');
-      return false;
+      return AdTicketOutcome.failed;
+    } finally {
+      state = state.copyWith(isWatchingAd: false, message: null);
     }
   }
 }

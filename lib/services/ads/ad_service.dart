@@ -5,7 +5,15 @@ abstract class AdService {
   Future<void> loadRewardedAd();
 
   /// Show the loaded rewarded ad. Returns true if reward was granted.
-  Future<bool> showRewardedAd({RewardCallback? onRewarded});
+  ///
+  /// With [serverUserId], Google also tells the server about the reward
+  /// (AdMob server-side verification, admobRewardCallback), with that uid
+  /// and [serverCustomData]. The ad tickets come only that way.
+  Future<bool> showRewardedAd({
+    RewardCallback? onRewarded,
+    String? serverUserId,
+    String? serverCustomData,
+  });
 
   /// Load an interstitial ad.
   Future<void> loadInterstitialAd();
