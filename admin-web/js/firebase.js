@@ -17,10 +17,16 @@ import {
 import {
   getFirestore,
   connectFirestoreEmulator,
+  collection,
   doc,
+  getCountFromServer,
+  limit,
   onSnapshot,
+  orderBy,
+  query,
   setDoc,
   updateDoc,
+  where,
   deleteField,
   FieldPath,
 } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
@@ -34,9 +40,14 @@ export {
   updatePassword,
   sendPasswordResetEmail,
   doc,
+  getCountFromServer,
+  limit,
   onSnapshot,
+  orderBy,
+  query,
   setDoc,
   updateDoc,
+  where,
   deleteField,
   FieldPath,
 };
@@ -107,5 +118,7 @@ export function initFirebase(config) {
     projectId: config.projectId,
     configRef: doc(db, "system_config", "game_config"),
     adminUidsRef: doc(db, "system_config", "admin_uids"),
+    // Reports of AI output from the app's 「報告」 button (functions/src/reports).
+    reportsRef: collection(db, "content_reports"),
   };
 }

@@ -3,20 +3,27 @@
 // Same five sections as the in-app panel (lib/features/admin), reading and
 // writing the same document, system_config/game_config. The config is watched
 // live, so counts and lists follow changes made from the app or another
-// browser while the page is open.
+// browser while the page is open. A sixth page, web only, lists the players'
+// reports of AI output (content_reports).
 import {
   FieldPath,
   deleteField,
+  doc,
   forgetConfig,
+  getCountFromServer,
   initFirebase,
+  limit,
   onAuthStateChanged,
   onSnapshot,
+  orderBy,
+  query,
   resolveConfig,
   saveConfig,
   setDoc,
   signInWithEmailAndPassword,
   signOut,
   updateDoc,
+  where,
 } from "./firebase.js";
 import { parseConfig } from "./model.js";
 import { getLang, setLang, t } from "./i18n.js";
@@ -29,6 +36,7 @@ import { mountScenarios } from "./editors/scenarios.js";
 import { mountModeAddons } from "./editors/modeAddons.js";
 import { mountCosts } from "./editors/costs.js";
 import { mountSystemConfig } from "./editors/systemConfig.js";
+import { mountReports } from "./editors/reports.js";
 
 const ROUTES = {
   worldviews: { mount: mountWorldviews, title: "adminWorldviews" },
@@ -36,6 +44,7 @@ const ROUTES = {
   "mode-addons": { mount: mountModeAddons, title: "adminModeAddons" },
   costs: { mount: mountCosts, title: "adminCosts" },
   system: { mount: mountSystemConfig, title: "adminSystemConfig" },
+  reports: { mount: mountReports, title: "adminReports" },
 };
 
 const app = document.getElementById("app");
@@ -56,6 +65,13 @@ const state = {
 
 const routeName = () => location.hash.replace(/^#\/?/, "");
 const editorDirty = () => Boolean(state.editor && state.editor.isDirty());
+
+/// Forgets the open page. A page that listens to Firestore itself (the reports
+/// list) stops listening here.
+function closeEditor() {
+  if (state.editor && state.editor.dispose) state.editor.dispose();
+  state.editor = null;
+}
 
 // ── Top bar ──────────────────────────────────────────────────────────────────
 
@@ -92,14 +108,14 @@ async function toggleLang() {
   else {
     // Through refresh(), so loading, error and not-an-admin screens are
     // redrawn as themselves, not replaced by the panel.
-    state.editor = null;
+    closeEditor();
     refresh();
   }
 }
 
 async function doSignOut() {
   if (editorDirty() && !(await confirmDiscard())) return;
-  state.editor = null;
+  closeEditor();
   await signOut(state.fb.auth);
 }
 
@@ -291,6 +307,8 @@ function renderHub() {
       Object.keys(p.ticketCosts).length + Object.keys(p.modelConfig).length,
     ],
     ["system", "settings", "steel", "adminSystemConfig", "adminSystemConfigDesc", p.devUids.length],
+    // Web only (the app has no reports screen): the open reports.
+    ["reports", "report", "red", "adminReports", "adminReportsDesc", openReportsCount()],
   ];
   return h(
     "div",
@@ -306,12 +324,30 @@ function renderHub() {
           { class: "hub-card", href: `#/${route}` },
           h("span", { class: `hub-icon tone-${tone}` }, icon(iconName)),
           h("span", { class: "hub-text" }, h("strong", {}, t(title)), h("span", {}, t(desc))),
-          h("span", { class: "count" }, String(count)),
+          count instanceof Node ? count : h("span", { class: "count" }, String(count)),
           icon("chevronRight", "chevron"),
         ),
       ),
     ),
   );
+}
+
+/// The number of open reports, filled in when the server answers. A count
+/// query reads no report text. Only admin_uids may read reports; others see "–".
+function openReportsCount() {
+  const el = h("span", { class: "count", title: t("reportsOpenCount") }, state.canWrite ? "…" : "–");
+  if (state.canWrite) {
+    getCountFromServer(query(state.fb.reportsRef, where("status", "==", "new")))
+      .then((snap) => {
+        const n = snap.data().count;
+        el.textContent = String(n);
+        el.classList.toggle("attention", n > 0);
+      })
+      .catch(() => {
+        el.textContent = "–";
+      });
+  }
+  return el;
 }
 
 function editorContext() {
@@ -326,13 +362,31 @@ function editorContext() {
     // otherwise be read as a nested path.
     deleteKey: (section, key) => updateDoc(state.fb.configRef, new FieldPath(section, key), deleteField()),
     deleteField,
+    // Reports page: up to `count` open reports (status "new", fetched in id
+    // order, which needs no extra index), or the newest `count` of all. Shown
+    // newest first either way.
+    watchReports: ({ open, count }, onData, onError) =>
+      onSnapshot(
+        open
+          ? query(state.fb.reportsRef, where("status", "==", "new"), limit(count))
+          : query(state.fb.reportsRef, orderBy("createdAt", "desc"), limit(count)),
+        (snap) =>
+          onData(
+            snap.docs
+              .map((d) => ({ ...d.data(), id: d.id }))
+              .sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0)),
+            snap.metadata.fromCache,
+          ),
+        onError,
+      ),
+    updateReport: (id, change) => updateDoc(doc(state.fb.reportsRef, id), change),
   };
 }
 
 function renderRoute() {
   const name = routeName();
   const route = ROUTES[name];
-  state.editor = null;
+  closeEditor();
   state.routeName = name;
   const readOnly = state.canWrite ? null : h("div", { class: "banner error" }, t("readOnly"));
   if (!route) {
@@ -359,7 +413,7 @@ function renderRoute() {
 function refresh() {
   if (!state.user) return;
   if (state.configError) {
-    state.editor = null;
+    closeEditor();
     renderMessage(t("configLoadFailed", { error: errorText(state.configError) }), true);
     return;
   }
@@ -370,14 +424,14 @@ function refresh() {
     return;
   }
   if (!state.raw) {
-    state.editor = null;
+    closeEditor();
     renderMessage(t("configMissing"), true);
     return;
   }
   const uid = state.user.uid;
   // The app shows its panel to dev_uids; the rules let admin_uids write.
   if (!state.parsed.devUids.includes(uid) && !state.adminUids.includes(uid)) {
-    state.editor = null;
+    closeEditor();
     renderDenied();
     return;
   }
@@ -443,7 +497,7 @@ function start(config, source) {
   onAuthStateChanged(state.fb.auth, (user) => {
     stopListening();
     state.user = user;
-    state.editor = null;
+    closeEditor();
     state.raw = null;
     state.parsed = null;
     renderTopbar();
@@ -471,7 +525,7 @@ window.addEventListener("hashchange", async () => {
     return;
   }
   lastHash = location.hash;
-  state.editor = null;
+  closeEditor();
   refresh();
 });
 

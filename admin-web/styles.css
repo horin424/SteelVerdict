@@ -286,6 +286,7 @@ button.save { min-width: 180px; padding: 11px 26px; }
 .tone-purple { background: rgba(124, 58, 237, 0.15); color: #9d68f5; }
 .tone-gold { background: rgba(212, 160, 23, 0.15); color: var(--gold); }
 .tone-steel { background: rgba(38, 56, 72, 0.7); color: #d1d5db; }
+.tone-red { background: rgba(224, 32, 32, 0.14); color: var(--danger-text); }
 .hub-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .hub-text strong { font-size: 15px; font-weight: 600; color: var(--heading); }
 .hub-text span { color: var(--text-2); font-size: 12.5px; }
@@ -299,6 +300,8 @@ button.save { min-width: 180px; padding: 11px 26px; }
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
+/* Open reports waiting: the one count that asks for action. */
+.count.attention { background: rgba(224, 32, 32, 0.16); color: var(--danger-text); font-weight: 700; }
 svg.chevron { width: 14px; height: 14px; flex: none; fill: #5c4e38; transition: fill 0.15s; }
 .hub-card:hover svg.chevron { fill: var(--gold); }
 
@@ -450,6 +453,51 @@ input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shado
   background: linear-gradient(to bottom, rgba(22, 34, 48, 0), var(--card) 40%);
 }
 
+/* ── Reports (web only) ──────────────────────────────────── */
+.reports { display: grid; gap: 16px; }
+/* 未対応 / すべて: plain tabs with a gold underline, like the app's tab bars. */
+.tabs { display: flex; gap: 4px; }
+.tabs button {
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.tabs button:hover:not(:disabled) { background: none; color: var(--text); }
+.tabs button.active { color: var(--gold); border-bottom-color: var(--gold); }
+.list-note { margin: 0; padding: 16px 14px; color: var(--text-2); font-size: 13px; }
+.list-note.error { color: var(--danger-text); overflow-wrap: anywhere; }
+.list-item.done .list-title { color: var(--text-2); }
+.list-done { margin-left: 8px; font-size: 11.5px; color: var(--ok-text); }
+.list-sub.excerpt { color: var(--text); opacity: 0.7; }
+.list-more { padding: 10px 14px 14px; }
+.list-more:empty { display: none; }
+.report-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; }
+.report-done { font-weight: 700; color: var(--heading); }
+.report-meta {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 6px 20px;
+  margin: 0;
+  font-size: 13px;
+}
+.report-meta dt { color: var(--text-2); }
+.report-meta dd { margin: 0; overflow-wrap: anywhere; }
+.report-text {
+  padding: 14px 16px;
+  background: var(--input);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 /* ── Toast and dialogs (SnackBar, Dialog) ────────────────── */
 .toast {
   position: fixed;
@@ -509,6 +557,8 @@ input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shado
   .brand-name { font-size: 15px; letter-spacing: 0.04em; }
   .hub { grid-template-columns: 1fr; }
   main { padding: 20px 16px 56px; }
+  .report-meta { grid-template-columns: 1fr; gap: 0; }
+  .report-meta dd { margin-bottom: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
