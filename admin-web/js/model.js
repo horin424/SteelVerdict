@@ -97,6 +97,16 @@ export const DEFAULT_TICKET_COSTS = Object.freeze({
 const TEST_AD_REWARDED = "ca-app-pub-3940256099942544/5224354917";
 const TEST_AD_INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712";
 
+/// The daily AI limits (functions/src/limits/aiLimits.ts), kept in game_config
+/// under ai_daily_limits. Only the server reads them, not the app. For a key
+/// that is missing, or not a number of 0 or more, the server uses its default.
+export const AI_LIMIT_KEYS = Object.freeze({
+  freePerUser: "free_per_user",
+  allPerUser: "all_per_user",
+  appTotal: "app_total",
+});
+export const AI_LIMIT_DEFAULTS = Object.freeze({ freePerUser: 30, allPerUser: 100, appTotal: 3000 });
+
 // ── Dart-compatible casts ────────────────────────────────────────────────────
 // `x as String?` throws on a value of the wrong type, and the app's parser
 // catches that per entry and skips the entry. These throw the same way so the
@@ -338,6 +348,24 @@ export function parseConfig(data) {
     problems.push({ kind: "fallbackPrompt" });
   }
 
+  // The daily AI limits, read as the server reads them. A stored value the
+  // server ignores is kept here, so the costs page can show it to be fixed.
+  const limitsRaw = data.ai_daily_limits;
+  const aiDailyLimits = { ...AI_LIMIT_DEFAULTS };
+  const invalidAiDailyLimits = {};
+  if (isMap(limitsRaw)) {
+    for (const [field, key] of Object.entries(AI_LIMIT_KEYS)) {
+      if (!Object.prototype.hasOwnProperty.call(limitsRaw, key)) continue;
+      const v = limitsRaw[key];
+      if (typeof v === "number" && Number.isFinite(v) && v >= 0) {
+        aiDailyLimits[field] = Math.floor(v);
+      } else {
+        invalidAiDailyLimits[field] = v;
+        problems.push({ kind: "aiDailyLimit", key });
+      }
+    }
+  }
+
   let adUnitRewarded = TEST_AD_REWARDED;
   let adUnitInterstitial = TEST_AD_INTERSTITIAL;
   try {
@@ -358,6 +386,8 @@ export function parseConfig(data) {
     fallbackPrompt,
     adUnitRewarded,
     adUnitInterstitial,
+    aiDailyLimits,
+    invalidAiDailyLimits,
     problems,
   };
 }

@@ -401,6 +401,8 @@ svg.chevron { width: 14px; height: 14px; flex: none; fill: #5c4e38; transition: 
 .field-label { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; font-weight: 600; color: var(--text-2); }
 .counter { font-weight: 400; font-variant-numeric: tabular-nums; }
 .field-hint { margin: 0; font-size: 12px; color: var(--text-2); }
+.ai-usage { font-variant-numeric: tabular-nums; }
+.ai-usage.attention, .ai-usage.error { color: var(--danger-text); }
 .field-error { margin: 0; color: var(--danger-text); font-size: 13px; }
 
 input[type="text"], input[type="email"], input[type="password"], textarea, select {

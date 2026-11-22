@@ -281,6 +281,7 @@ function problemsBanner() {
     ticketCost: "problemTicketCost",
     fallbackPrompt: "problemFallbackPrompt",
     adUnit: "problemAdUnit",
+    aiDailyLimit: "problemAiDailyLimit",
   };
   return h(
     "div",
@@ -380,6 +381,14 @@ function editorContext() {
         onError,
       ),
     updateReport: (id, change) => updateDoc(doc(state.fb.reportsRef, id), change),
+    // Costs & models page: the count of AI calls on one Japan day ("YYYY-MM-DD"),
+    // null when there is none yet. Only admin_uids may read it.
+    watchAiUsage: (day, onData, onError) =>
+      onSnapshot(
+        doc(state.fb.aiUsageRef, day),
+        (snap) => onData(snap.exists() ? snap.data() : null, snap.metadata.fromCache),
+        onError,
+      ),
   };
 }
 

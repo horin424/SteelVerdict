@@ -120,5 +120,7 @@ export function initFirebase(config) {
     adminUidsRef: doc(db, "system_config", "admin_uids"),
     // Reports of AI output from the app's 「報告」 button (functions/src/reports).
     reportsRef: collection(db, "content_reports"),
+    // The day's count of AI calls, one document per Japan day (functions/src/limits).
+    aiUsageRef: collection(db, "ai_usage"),
   };
 }
