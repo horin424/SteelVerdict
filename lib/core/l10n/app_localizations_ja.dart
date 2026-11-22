@@ -1585,6 +1585,19 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String errAiFreeLimit(String count) {
+    return 'チケット不要のモードは、本日の上限（$count回）に達しました。日本時間0時にリセットされます。';
+  }
+
+  @override
+  String errAiDailyLimit(String count) {
+    return '本日のAIの利用回数が上限（$count回）に達しました。日本時間0時にリセットされます。';
+  }
+
+  @override
+  String get errAiAppLimit => 'ただいまAIをご利用いただけません。日本時間0時以降にもう一度お試しください。';
+
+  @override
   String shopPricePerMonth(String amount) {
     return '¥$amount/月';
   }

@@ -1,6 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import '../../core/utils/error_messages.dart';
 import '../../models/battle_record_model.dart';
 import '../../models/war_history_model.dart';
 import '../splash/splash_providers.dart';
@@ -149,9 +150,11 @@ class WarHistoryController extends StateNotifier<WarHistoryControllerState> {
     } on FirebaseFunctionsException catch (e) {
       state = state.copyWith(
         isGenerating: false,
-        error: e.message?.contains('Not enough tickets') == true
-            ? e.message
-            : 'err_chronicle_failed',
+        // A daily AI limit (functions/src/limits) names itself; otherwise as before.
+        error: aiLimitError(e.message) ??
+            (e.message?.contains('Not enough tickets') == true
+                ? e.message
+                : 'err_chronicle_failed'),
       );
       return null;
     } catch (e) {

@@ -1627,6 +1627,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String errAiFreeLimit(String count) {
+    return 'You\'ve reached today\'s limit of $count plays in the modes that need no tickets. It resets at midnight Japan time.';
+  }
+
+  @override
+  String errAiDailyLimit(String count) {
+    return 'You\'ve reached today\'s limit of $count AI uses. It resets at midnight Japan time.';
+  }
+
+  @override
+  String get errAiAppLimit =>
+      'The AI isn\'t available right now. Please try again after midnight Japan time.';
+
+  @override
   String shopPricePerMonth(String amount) {
     return '¥$amount/mo';
   }

@@ -18,6 +18,13 @@ String localizedError(String raw, AppLocalizations l10n) {
     final count = raw.split(':').last;
     return l10n.errNotEnoughTicketsNeed(count);
   }
+  // The daily AI limits carry the limit: err_ai_free_limit:30
+  if (raw.startsWith('err_ai_free_limit:')) {
+    return l10n.errAiFreeLimit(raw.split(':').last);
+  }
+  if (raw.startsWith('err_ai_daily_limit:')) {
+    return l10n.errAiDailyLimit(raw.split(':').last);
+  }
 
   switch (raw) {
     case 'err_not_signed_in':
@@ -50,6 +57,8 @@ String localizedError(String raw, AppLocalizations l10n) {
       return l10n.errRaceIncomplete;
     case 'err_skip_no_tickets':
       return l10n.skipAdNoTickets;
+    case 'err_ai_app_limit':
+      return l10n.errAiAppLimit;
 
     // Codes that already existed before this helper.
     case 'content_filter_blocked':
@@ -65,5 +74,24 @@ String localizedError(String raw, AppLocalizations l10n) {
 
     default:
       return raw;
+  }
+}
+
+/// The server's daily AI limits (functions/src/limits) refuse a battle or a
+/// chronicle with a message like "DAILY_FREE_LIMIT:30": the limit that was
+/// reached, and its number. Returns the code [localizedError] shows for it
+/// ("err_ai_free_limit:30"), or null when the message is not one of them.
+String? aiLimitError(String? serverMessage) {
+  final match = RegExp(r'\b(DAILY_FREE_LIMIT|DAILY_AI_LIMIT|APP_AI_LIMIT):(\d+)')
+      .firstMatch(serverMessage ?? '');
+  if (match == null) return null;
+  final count = match.group(2)!;
+  switch (match.group(1)) {
+    case 'DAILY_FREE_LIMIT':
+      return 'err_ai_free_limit:$count';
+    case 'DAILY_AI_LIMIT':
+      return 'err_ai_daily_limit:$count';
+    default:
+      return 'err_ai_app_limit';
   }
 }

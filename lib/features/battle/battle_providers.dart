@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import '../../core/utils/error_messages.dart';
 import '../../models/battle_record_model.dart';
 import '../../services/battle_api/battle_api_service.dart';
 import '../../services/battle_api/cloud_functions_battle_service.dart';
@@ -203,8 +204,12 @@ class BattleController extends StateNotifier<BattleControllerState> {
       return response;
     } on FirebaseFunctionsException catch (e) {
       final msg = e.message ?? '';
+      final limit = aiLimitError(msg);
       final String errorMessage;
-      if (msg.contains('CONTENT_FILTER_BLOCKED')) {
+      if (limit != null) {
+        // A daily AI limit was reached (functions/src/limits).
+        errorMessage = limit;
+      } else if (msg.contains('CONTENT_FILTER_BLOCKED')) {
         errorMessage = 'content_filter_blocked';
       } else if (msg.contains('OUTCOME_PARSE_FAILED') ||
           msg.contains('empty report')) {

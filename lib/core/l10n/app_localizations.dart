@@ -3140,6 +3140,24 @@ abstract class AppLocalizations {
   /// **'Not enough tickets. You need {count}.'**
   String errNotEnoughTicketsNeed(String count);
 
+  /// Server refused: the player's daily limit of AI battles that cost no ticket (practice, tabletop, history puzzle); count is the limit
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve reached today\'s limit of {count} plays in the modes that need no tickets. It resets at midnight Japan time.'**
+  String errAiFreeLimit(String count);
+
+  /// Server refused: the player's daily limit of all AI uses (battles and chronicles); count is the limit
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve reached today\'s limit of {count} AI uses. It resets at midnight Japan time.'**
+  String errAiDailyLimit(String count);
+
+  /// Server refused: the whole app reached its daily AI limit
+  ///
+  /// In en, this message translates to:
+  /// **'The AI isn\'t available right now. Please try again after midnight Japan time.'**
+  String get errAiAppLimit;
+
   /// Subscription price with period suffix
   ///
   /// In en, this message translates to:
