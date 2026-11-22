@@ -8,6 +8,8 @@ interface RemoteConfigData {
   model_config?: Record<string, string>;
   dev_uids?: string[];
   fallback_prompt?: string;
+  /** The daily AI limits, read by readAiLimits (src/limits/aiLimits.ts). */
+  ai_daily_limits?: unknown;
 }
 
 interface WorldviewConfig {
@@ -73,6 +75,7 @@ export async function fetchRemoteConfigData(): Promise<RemoteConfigData> {
       model_config:   data.model_config ?? {},
       dev_uids:       data.dev_uids ?? [],
       fallback_prompt: data.fallback_prompt,
+      ai_daily_limits: data.ai_daily_limits,
     };
     _rcCacheAt = now;
     return _rcCache;

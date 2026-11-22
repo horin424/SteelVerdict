@@ -13,6 +13,8 @@ import { deductTickets, addTickets, getUser, ensureUserDoc } from "../utils/fire
 import { parseOutcome, stripResultMarkers } from "../utils/outcome";
 import { containsInappropriateContent } from "../utils/contentFilter";
 import { checkRaceStats } from "../utils/race";
+import { readAiLimits } from "../limits/aiLimits";
+import { reserveAiCall } from "../limits/reserveAiCall";
 
 interface BattleRequest {
   playerStrategy: string;
@@ -155,6 +157,18 @@ export const submitBattle = onCall(
       data.raceStats,
       data.raceName,
     );
+
+    // The daily AI limits (src/limits): this battle is counted now, just before
+    // the AI. A battle that charges no ticket also counts against the free limit.
+    // A refusal gives back the tickets taken above.
+    try {
+      await reserveAiCall(uid, { free: !(cost > 0), dev: isDevUser }, readAiLimits(rcData.ai_daily_limits));
+    } catch (err) {
+      await refundTickets(uid, cost, isDevUser);
+      if (err instanceof HttpsError) throw err;
+      console.error("AI limit check failed:", err);
+      throw new HttpsError("internal", "AI service error. Please try again.");
+    }
 
     let reportText: string;
     try {

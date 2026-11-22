@@ -2,7 +2,9 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { CLAUDE_API_KEY, CLAUDE_HAIKU, CHRONICLE_MAX_TOKENS } from "../utils/config";
 import { callClaude } from "../utils/ai";
 import { deductTickets, addTickets, getUser, ensureUserDoc } from "../utils/firestore";
-import { assemblePrompt } from "../utils/prompt";
+import { assemblePrompt, fetchRemoteConfigData } from "../utils/prompt";
+import { readAiLimits } from "../limits/aiLimits";
+import { reserveAiCall } from "../limits/reserveAiCall";
 
 interface GenerateWarHistoryRequest {
   battleTitle: string;
@@ -98,6 +100,13 @@ Strategy Employed: ${data.playerStrategy}
 ${data.shortReport ? `Battle Summary: ${data.shortReport}` : ""}
 
 Write the full chronicle now (approximately 3000 characters):`;
+
+      // The daily AI limits (src/limits): counted now, just before the AI. A
+      // chronicle counts against the player's limit for all calls, never the
+      // free one, on the unlimited plan too. A refusal is refunded below.
+      const config = await fetchRemoteConfigData();
+      const dev = (config.dev_uids ?? []).includes(uid);
+      await reserveAiCall(uid, { free: false, dev }, readAiLimits(config.ai_daily_limits));
 
       let chronicleText: string;
       try {

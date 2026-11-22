@@ -1,7 +1,8 @@
 /**
- * Checks the users/{uid} rules (B10), the pvp_matches rules (B1) and the
+ * Checks the users/{uid} rules (B10), the pvp_matches rules (B1), the
  * content_reports rules (reports of AI output: admins read them and may only
- * mark them handled) against a running Firestore emulator.
+ * mark them handled) and the ai_usage rules (the daily AI limits: admins read
+ * the day's count, nobody writes it) against a running Firestore emulator.
  *
  * PvP matches are written only by Cloud Functions. Players used to be allowed
  * to write their own strategy directly, which skipped submitPvpStrategy's
@@ -89,6 +90,8 @@ const REPORT = {
   status: "new",
   createdAt: 1000,
 };
+// A day's count of AI calls (the daily AI limits), also fresh.
+const USAGE = { day: "2026-11-22", count: 5, free: 2, updatedAt: 1000 };
 async function reset() {
   await request("DELETE", "users/uid-alice", { as: "owner" });
   await request("PATCH", "users/uid-alice", { as: "owner", fields: ALICE });
@@ -97,6 +100,8 @@ async function reset() {
   await request("PATCH", "system_config/admin_uids", { as: "owner", fields: { uids: ["uid-admin"] } });
   await request("DELETE", "content_reports/r1", { as: "owner" });
   await request("PATCH", "content_reports/r1", { as: "owner", fields: REPORT });
+  await request("DELETE", "ai_usage/2026-11-22", { as: "owner" });
+  await request("PATCH", "ai_usage/2026-11-22", { as: "owner", fields: USAGE });
 }
 
 const update = (as, fields) =>
@@ -178,6 +183,23 @@ async function expect(name, expected, run) {
   await expect("an admin changes the reported text", "denied", () => markReport(ADMIN, { aiText: "nothing here" }));
   await expect("an admin deletes a report", "denied", () => request("DELETE", "content_reports/r1", { as: ADMIN }));
   await expect("a player marks it handled", "denied", () => markReport(A, { status: "done", reviewedBy: A }));
+
+  console.log("\nthe daily AI limits: the player's counters and ai_usage\n");
+  await expect("own AI counter (aiCallsCount)", "denied", () => update(A, { aiCallsCount: 0 }));
+  await expect("own AI day and free counter", "denied", () =>
+    update(A, { aiCallsDate: "2000-01-01", aiFreeCallsCount: 0 }));
+  const writeUsage = (as, fields) =>
+    request("PATCH", "ai_usage/2026-11-22", { as, fields, mask: Object.keys(fields) });
+  await expect("an admin reads a day's count", "allowed", () => request("GET", "ai_usage/2026-11-22", { as: ADMIN }));
+  await expect("an admin lists the days", "allowed", () => request("GET", "ai_usage", { as: ADMIN }));
+  await expect("a player reads a day's count", "denied", () => request("GET", "ai_usage/2026-11-22", { as: A }));
+  await expect("a player lists the days", "denied", () => request("GET", "ai_usage", { as: A }));
+  await expect("signed out", "denied", () => request("GET", "ai_usage/2026-11-22"));
+  await expect("a player resets the day's count", "denied", () => writeUsage(A, { count: 0 }));
+  await expect("a player starts a new day", "denied", () =>
+    request("PATCH", "ai_usage/2026-11-23", { as: A, fields: { ...USAGE, day: "2026-11-23", count: 0 } }));
+  await expect("an admin changes the day's count", "denied", () => writeUsage(ADMIN, { count: 0 }));
+  await expect("an admin deletes a day", "denied", () => request("DELETE", "ai_usage/2026-11-22", { as: ADMIN }));
 
   console.log(fail ? `\n${fail} check(s) FAILED\n` : "\nall checks passed\n");
   process.exit(fail ? 1 : 0);

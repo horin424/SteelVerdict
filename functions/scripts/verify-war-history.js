@@ -45,6 +45,9 @@ ai.callClaude = async () => {
   return aiResult;
 };
 prompt.assemblePrompt = async () => "";
+// The daily AI limits have their own checks (verify-ai-limits.js); here every
+// chronicle is within them.
+require("../lib/limits/reserveAiCall").reserveAiCall = async () => {};
 
 const { generateWarHistory } = require("../lib/history/generateWarHistory");
 const wrapped = ft.wrap(generateWarHistory);

@@ -2,6 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // An account listed in system_config/admin_uids (the accounts that may edit
+    // in the admin pages).
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/system_config/admin_uids)
+        && request.auth.uid in get(/databases/$(database)/documents/system_config/admin_uids).data.uids;
+    }
+
     // ── Users ──────────────────────────────────────────────────────────────
     // Users can only read their own document. Cloud Functions write it, except
     // for the two fields the client may change below.
@@ -61,11 +69,6 @@ service cloud.firestore {
     // "new" or "done", reviewedAt (a number) and reviewedBy (their own uid).
     // Nobody creates or deletes them from the app or the admin page.
     match /content_reports/{reportId} {
-      function isAdmin() {
-        return request.auth != null
-          && exists(/databases/$(database)/documents/system_config/admin_uids)
-          && request.auth.uid in get(/databases/$(database)/documents/system_config/admin_uids).data.uids;
-      }
       function changes() {
         return request.resource.data.diff(resource.data).affectedKeys();
       }
@@ -77,6 +80,15 @@ service cloud.firestore {
         && (!("reviewedAt" in changes()) || request.resource.data.reviewedAt is int)
         && (!("reviewedBy" in changes()) || request.resource.data.reviewedBy == request.auth.uid);
       allow create, delete: if false;
+    }
+
+    // ── AI use per day (the daily AI limits) ─────────────────────────────────
+    // submitBattle and generateWarHistory count every AI call here, one document
+    // per Japan day. Admins read it in the PC admin; nobody writes it from the
+    // app or the admin page.
+    match /ai_usage/{day} {
+      allow read: if isAdmin();
+      allow write: if false;
     }
   }
 }

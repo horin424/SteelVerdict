@@ -56,6 +56,10 @@ aiModule.callClaude = async () => {
   throw new Error("stubbed AI");
 };
 
+// The daily AI limits have their own checks (verify-ai-limits.js); here every
+// battle is within them.
+require("../lib/limits/reserveAiCall").reserveAiCall = async () => {};
+
 const { submitBattle } = require("../lib/battle/submitBattle");
 const wrapped = ft.wrap(submitBattle);
 
