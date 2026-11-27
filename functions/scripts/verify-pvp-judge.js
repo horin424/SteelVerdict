@@ -21,8 +21,8 @@ const admin = require("firebase-admin");
 const aiModule = require("../lib/utils/ai");
 let aiCalls = [];
 let nextAiResponse = "";
-aiModule.callGeminiFlash = async (apiKey, systemPrompt, userMessage) => {
-  aiCalls.push({ apiKey, systemPrompt, userMessage });
+aiModule.callGeminiFlash = async (apiKey, systemPrompt, userMessage, model) => {
+  aiCalls.push({ apiKey, systemPrompt, userMessage, model });
   return nextAiResponse;
 };
 
@@ -141,6 +141,11 @@ async function judge(response, m) {
     "Alice holds the ridge and breaks the flank.");
   checkTrue("resolvedAt is stamped", typeof r.write?.patch.resolvedAt === "number");
   check("exactly one write", writes.length, 1);
+  check("no judge model set: Gemini Flash", r.ai?.model, "gemini-2.5-flash");
+  CONFIG.model_config.pvp_judge = "gemini-2.5-pro";
+  r = await judge("WINNER: PLAYER A\nREPORT: Alice again.");
+  check("the judge model set in the PC admin is used", r.ai?.model, "gemini-2.5-pro");
+  delete CONFIG.model_config.pvp_judge;
 
   r = await judge("WINNER: PLAYER B\nREPORT: Bob's flank lands first.");
   check("player B wins -> winner is B's uid", r.write?.patch.winner, B);

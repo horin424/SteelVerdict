@@ -30,6 +30,11 @@ import {
   deleteField,
   FieldPath,
 } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import {
+  getFunctions,
+  connectFunctionsEmulator,
+  httpsCallable,
+} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-functions.js";
 
 export {
   onAuthStateChanged,
@@ -108,9 +113,12 @@ export function initFirebase(config) {
   const app = initializeApp(config);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  // Callable functions, in us-central1 like all of this project's functions.
+  const functions = getFunctions(app);
   if (USE_EMULATORS) {
     connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
     connectFirestoreEmulator(db, "127.0.0.1", 8080);
+    connectFunctionsEmulator(functions, "127.0.0.1", 5001);
   }
   return {
     auth,
@@ -122,5 +130,9 @@ export function initFirebase(config) {
     reportsRef: collection(db, "content_reports"),
     // The day's count of AI calls, one document per Japan day (functions/src/limits).
     aiUsageRef: collection(db, "ai_usage"),
+    // One of the admin's callable functions (functions/src/ai: the API keys and
+    // the model checks); resolves with its answer. A key check makes real calls
+    // to the AI companies, so it gets more time than the SDK's default.
+    call: (name, data) => httpsCallable(functions, name, { timeout: 70 * 1000 })(data).then((r) => r.data),
   };
 }

@@ -429,7 +429,25 @@ input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shado
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px 18px; }
 .stat-row { display: grid; grid-template-columns: minmax(0, 1fr) auto 76px; align-items: center; gap: 10px; }
 .model-list { display: grid; gap: 8px; }
-.model-row { display: grid; grid-template-columns: 170px 150px minmax(0, 1fr); align-items: center; gap: 10px; }
+.model-row { display: grid; grid-template-columns: 240px 150px minmax(0, 1fr); align-items: center; gap: 10px; }
+
+/* API keys (web only): one row per company, saved on its own, not with 保存. */
+.key-list { display: grid; }
+.key-row {
+  display: grid;
+  grid-template-columns: 240px 200px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.key-row:last-child { border-bottom: none; }
+.key-name, .key-state { display: grid; gap: 2px; }
+.key-name strong { font-weight: 700; color: var(--text-light); }
+.key-state code { font-family: var(--mono); font-size: 14px; color: var(--gold); letter-spacing: 0.04em; }
+.key-edit { display: flex; gap: 8px; }
+.key-edit button { flex: none; white-space: nowrap; }
+.key-row .key-note, .key-row .field-error { grid-column: 1 / -1; }
 
 .uid-list { display: grid; gap: 6px; }
 .uid-row {
@@ -538,7 +556,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shado
   .split { grid-template-columns: 1fr; }
   .list-col { position: static; max-height: 320px; }
   .row-2, .row-3 { grid-template-columns: 1fr; }
-  .model-row { grid-template-columns: 1fr; }
+  .model-row, .key-row { grid-template-columns: 1fr; }
   .topbar { flex-wrap: wrap; }
 }
 

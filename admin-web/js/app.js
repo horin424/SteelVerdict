@@ -389,6 +389,8 @@ function editorContext() {
         (snap) => onData(snap.exists() ? snap.data() : null, snap.metadata.fromCache),
         onError,
       ),
+    // Costs & models page: the API keys and the model checks (functions/src/ai).
+    callFunction: (name, data) => state.fb.call(name, data),
   };
 }
 

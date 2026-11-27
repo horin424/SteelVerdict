@@ -14,9 +14,19 @@
 // write as ai_daily_limits, and today's count of AI calls (ai_usage), which only
 // admin_uids may read. A limit the admin leaves alone is not written, so one
 // that was never stored keeps the server's default.
-import { h, toast, parseWholeNumber, errorText } from "../ui.js";
+//
+// Web only, 27 Nov 2026 (client point ②), through the admin callables in
+// functions/src/ai:
+// - 「APIキー」: the AI companies' keys. A key is saved on its own, not with the
+//   page's 保存: the server tries it for real, stores it as a new Secret
+//   Manager version, and the AI uses it within a minute. Only its last 4
+//   characters are ever shown.
+// - Every model the server reads is listed (戦史 and the PvP judge too), with
+//   the models the key can use as suggestions. A changed model name is tried
+//   with the key in use before the page saves it.
+import { h, toast, parseWholeNumber, errorText, confirmDialog } from "../ui.js";
 import { t } from "../i18n.js";
-import { AI_LIMIT_KEYS, modeName } from "../model.js";
+import { AI_LIMIT_KEYS, modeName, normalizeText } from "../model.js";
 import {
   FormTracker,
   SaveMerger,
@@ -62,14 +72,71 @@ const COST_ORDER = [
   "gemini",
 ];
 
-// The model keys submitBattle reads, with the default it falls back to when a
-// key is missing (functions/src/utils/config.ts). Always listed, so a model
-// that was cleared can be set again; the app only lists keys already stored.
-const MODEL_DEFAULTS = {
-  claude: "claude-haiku-4-5-20251001",
-  gemini_flash: "gemini-2.5-flash",
-  gemini_flash_lite: "gemini-2.5-flash-lite",
+// The model keys the server reads (functions/src/ai/models.ts): what each one
+// is used for, the company whose key it runs on, and the model used while none
+// is set. Always listed, so a model that was cleared can be set again; the app
+// only lists keys already stored.
+const MODELS = {
+  claude: { label: "modelUseClaude", provider: "claude", fallback: "claude-haiku-4-5-20251001" },
+  war_history: { label: "modelUseWarHistory", provider: "claude", fallback: "claude-haiku-4-5-20251001" },
+  gemini_flash: { label: "modelUseGeminiFlash", provider: "gemini", fallback: "gemini-2.5-flash" },
+  gemini_flash_lite: { label: "modelUseGeminiFlashLite", provider: "gemini", fallback: "gemini-2.5-flash-lite" },
+  pvp_judge: { label: "modelUsePvpJudge", provider: "gemini", fallback: "gemini-2.5-flash" },
 };
+const modelLabel = (k) => (MODELS[k] ? t(MODELS[k].label) : modeName(k, t));
+
+// The API keys, checked as the server checks them (functions/src/ai/keys.ts).
+const PROVIDERS = {
+  gemini: {
+    name: "apiKeyGemini",
+    use: "apiKeyGeminiUse",
+    company: "Google",
+    pattern: /^AIza[0-9A-Za-z_-]{35}$/,
+    format: "apiKeyFormatGemini",
+  },
+  claude: {
+    name: "apiKeyClaude",
+    use: "apiKeyClaudeUse",
+    company: "Anthropic",
+    pattern: /^sk-ant-[0-9A-Za-z_-]{20,300}$/,
+    format: "apiKeyFormatClaude",
+  },
+};
+
+/// Why a key or a model was refused, as the server reports it (functions/src/ai/providers.ts).
+function checkReason(reason, provider, model) {
+  const name = PROVIDERS[provider]?.company ?? provider;
+  switch (reason) {
+    case "invalid_key":
+      return t("aiCheckInvalidKey", { name });
+    case "no_credit":
+      return t("aiCheckNoCredit");
+    case "model_not_found":
+      return t("aiCheckModelNotFound", { model });
+    case "rate_limited":
+      return t("aiCheckRateLimited");
+    case "network":
+      return t("aiCheckNetwork", { name });
+    case "key_unreadable":
+      return t("aiCheckKeyUnreadable");
+    default:
+      return t("aiCheckProviderError", { name });
+  }
+}
+
+/// What a refused setAiApiKey call means (functions/src/ai/aiSettings.ts).
+function keyErrorText(e, provider) {
+  const message = String(e?.message ?? "");
+  if (message.startsWith("KEY_CHECK_FAILED:")) {
+    const reason = e.details?.reason ?? message.slice("KEY_CHECK_FAILED:".length);
+    return checkReason(reason, provider, e.details?.model ?? "");
+  }
+  if (message === "invalid_key_format") return t(PROVIDERS[provider].format);
+  if (message === "empty_key") return t("apiKeyEmpty");
+  if (message === "KEY_SAVE_FAILED") return t("apiKeySaveFailed");
+  if (message === "NOT_ADMIN") return t("readOnly");
+  return errorText(e);
+}
 
 function ordered(keys) {
   return [...COST_ORDER.filter((k) => keys.includes(k)), ...keys.filter((k) => !COST_ORDER.includes(k)).sort()];
@@ -84,12 +151,24 @@ export function mountCosts(root, ctx) {
   let loadedStoredLimits = null;
   let limitInputs = {};
   let saving = false;
+  let disposed = false;
   // Today's count of AI calls: undefined until it arrives.
   let usage;
   let usageError = null;
   let usageEl = null;
   let unsubUsage = null;
   let dayTimer = null;
+  // The API keys: undefined while loading, null for a non-admin, else
+  // getAiSettings' answer or { error }.
+  let keyState = null;
+  let keysAsAdmin = null;
+  let keysRequest = 0;
+  // Kept across form reloads, so a key being typed survives a save of the form.
+  const keysEl = h("div", { class: "key-list" });
+  const suggestions = {
+    gemini: h("datalist", { id: "sv-models-gemini" }),
+    claude: h("datalist", { id: "sv-models-claude" }),
+  };
   const form = new FormTracker();
   const stale = new StaleWatch(() => {
     const r = ctx.raw();
@@ -104,13 +183,16 @@ export function mountCosts(root, ctx) {
   const body = h("section", { class: "single" });
   root.append(body);
 
+  const ja = () => ctx.lang() === "ja";
+  const paren = (s) => (ja() ? `（${s}）` : ` (${s})`);
+
   function load() {
     form.reset();
     const p = ctx.parsed();
     // Invalid stored costs keep their raw value, so they compare as stored.
     loadedCosts = { ...p.ticketCosts, ...p.invalidTicketCosts };
     loadedModels = {
-      ...Object.fromEntries(Object.keys(MODEL_DEFAULTS).map((k) => [k, ""])),
+      ...Object.fromEntries(Object.keys(MODELS).map((k) => [k, ""])),
       ...p.modelConfig,
     };
 
@@ -129,20 +211,26 @@ export function mountCosts(root, ctx) {
     });
 
     modelInputs = {};
-    const modelRows = Object.keys(loadedModels)
-      .sort()
-      .map((k) => {
-        const input = h("input", {
-          type: "text",
-          class: "mono",
-          spellcheck: "false",
-          placeholder: MODEL_DEFAULTS[k] ?? "",
-          value: loadedModels[k],
-        });
-        modelInputs[k] = input;
-        form.input(input);
-        return h("label", { class: "model-row" }, h("span", {}, modeName(k, t)), h("code", {}, k), input);
+    const modelKeys = [
+      ...Object.keys(MODELS),
+      ...Object.keys(loadedModels)
+        .filter((k) => !MODELS[k])
+        .sort(),
+    ];
+    const modelRows = modelKeys.map((k) => {
+      const input = h("input", {
+        type: "text",
+        class: "mono",
+        spellcheck: "false",
+        autocomplete: "off",
+        placeholder: MODELS[k]?.fallback ?? "",
+        list: MODELS[k] ? suggestions[MODELS[k].provider].id : null,
+        value: loadedModels[k],
       });
+      modelInputs[k] = input;
+      form.input(input);
+      return h("label", { class: "model-row" }, h("span", {}, modelLabel(k)), h("code", {}, k), input);
+    });
 
     // A stored limit the server ignores keeps its raw value, so it shows to be fixed.
     loadedLimits = { ...p.aiDailyLimits, ...p.invalidAiDailyLimits };
@@ -166,6 +254,9 @@ export function mountCosts(root, ctx) {
     stale.capture();
     const save = saveButton(ctx, () => onSave(save));
     body.replaceChildren(
+      h("h3", { class: "section-label" }, t("adminApiKeysSection")),
+      h("p", { class: "field-hint" }, t("apiKeysHint")),
+      keysEl,
       h("h3", { class: "section-label" }, t("adminTicketCostsSection")),
       h("div", { class: "stat-grid" }, costRows),
       h("h3", { class: "section-label" }, t("adminAiLimitsSection")),
@@ -173,13 +264,16 @@ export function mountCosts(root, ctx) {
       h("div", { class: "stat-grid" }, limitRows),
       usageEl,
       h("h3", { class: "section-label" }, t("adminAiModelsSection")),
-      h("p", { class: "field-hint" }, t("modelEmptyHint")),
+      h("p", { class: "field-hint" }, t("modelEmptyHint"), " ", t("modelCheckHint")),
       h("div", { class: "model-list" }, modelRows),
+      suggestions.gemini,
+      suggestions.claude,
       h("div", { class: "save-bar" }, save),
     );
   }
 
   async function onSave(button) {
+    if (ctx.canWrite() && !(await checkModels(button))) return;
     saving = true;
     const ok = await guardedSave({
       ctx,
@@ -236,9 +330,177 @@ export function mountCosts(root, ctx) {
     if (ok) load();
   }
 
+  // Each changed model name is tried with the key in use (checkAiModel) before
+  // the save. A name the company refuses is not saved; a check that can't run
+  // (no answer, no credit, …) is the admin's call.
+  async function checkModels(button) {
+    const changed = Object.entries(modelInputs).filter(([k, input]) => {
+      const typed = input.value.trim();
+      return MODELS[k] && typed !== "" && normalizeText(typed) !== normalizeText(loadedModels[k] ?? "");
+    });
+    if (!changed.length) return true;
+    const label = button.textContent;
+    button.disabled = true;
+    button.textContent = t("modelChecking");
+    const unchecked = [];
+    try {
+      for (const [k, input] of changed) {
+        const provider = MODELS[k].provider;
+        let r;
+        try {
+          r = await ctx.callFunction("checkAiModel", { provider, model: input.value.trim() });
+        } catch (e) {
+          if (String(e?.message) === "invalid_model") {
+            toast(t("modelInvalidName", { label: modelLabel(k) }), "error");
+            input.focus();
+            return false;
+          }
+          unchecked.push(modelLabel(k) + paren(errorText(e)));
+          continue;
+        }
+        if (r.ok) {
+          input.value = r.model; // as the company writes it ("models/" dropped)
+        } else if (r.reason === "model_not_found") {
+          toast(t("modelRefused", { label: modelLabel(k), reason: checkReason(r.reason, provider, r.model) }), "error");
+          input.focus();
+          return false;
+        } else {
+          unchecked.push(modelLabel(k) + paren(checkReason(r.reason, provider, r.model)));
+        }
+      }
+    } finally {
+      button.disabled = !ctx.canWrite();
+      button.textContent = label;
+    }
+    if (!unchecked.length) return true;
+    return confirmDialog({
+      message: t("modelCheckFailedConfirm", { list: unchecked.join(ja() ? "、" : "; ") }),
+      okLabel: t("saveAnyway"),
+    });
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return String(iso);
+    return d.toLocaleString(ja() ? "ja-JP" : "en-GB", { dateStyle: "medium", timeStyle: "short" });
+  }
+
+  function renderKeys() {
+    if (!ctx.canWrite()) {
+      keysEl.replaceChildren(h("p", { class: "field-hint" }, t("apiKeysAdminOnly")));
+    } else if (keyState === undefined || keyState === null) {
+      keysEl.replaceChildren(h("p", { class: "field-hint" }, t("apiKeysLoading")));
+    } else if (keyState.error) {
+      keysEl.replaceChildren(
+        h("p", { class: "field-error" }, t("apiKeysLoadFailed", { error: errorText(keyState.error) })),
+      );
+    } else {
+      keysEl.replaceChildren(...Object.keys(PROVIDERS).map((p) => keyRow(p, keyState.keys?.[p] ?? {})));
+    }
+  }
+
+  function keyRow(provider, s) {
+    const meta = PROVIDERS[provider];
+    const name = t(meta.name);
+    const input = h("input", {
+      type: "password",
+      class: "mono",
+      placeholder: t("apiKeyNewPlaceholder"),
+      autocomplete: "new-password",
+      spellcheck: "false",
+      "aria-label": `${name}: ${t("apiKeyNewPlaceholder")}`,
+    });
+    const error = h("p", { class: "field-error", role: "alert" });
+    const button = h("button", { class: "small", type: "button", disabled: s.canSave !== true }, t("apiKeyChange"));
+    button.addEventListener("click", () => changeKey(provider, input, button, error));
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !button.disabled) button.click();
+    });
+    const current = s.error
+      ? h("span", { class: "field-error" }, t("apiKeyUnreadable"))
+      : h("code", { title: t("apiKeyCurrent", { last4: s.last4 ?? "" }) }, `…${s.last4 ?? ""}`);
+    return h(
+      "div",
+      { class: "key-row" },
+      h("div", { class: "key-name" }, h("strong", {}, name), h("span", { class: "field-hint" }, t(meta.use))),
+      h(
+        "div",
+        { class: "key-state" },
+        current,
+        s.savedAt ? h("span", { class: "field-hint" }, t("apiKeySavedAt", { date: formatDate(s.savedAt) })) : null,
+      ),
+      h("div", { class: "key-edit" }, input, button),
+      s.canSave === false ? h("p", { class: "field-hint key-note" }, t("apiKeyNoPermission")) : null,
+      error,
+    );
+  }
+
+  async function changeKey(provider, input, button, error) {
+    const meta = PROVIDERS[provider];
+    const name = t(meta.name);
+    const key = input.value.trim();
+    error.textContent = "";
+    if (!key) {
+      error.textContent = t("apiKeyEmpty");
+      input.focus();
+      return;
+    }
+    if (!meta.pattern.test(key)) {
+      error.textContent = t(meta.format);
+      input.focus();
+      return;
+    }
+    const ok = await confirmDialog({
+      title: t("apiKeyChangeTitle", { name }),
+      message: t("apiKeyConfirm"),
+      okLabel: t("apiKeyChange"),
+    });
+    if (!ok) return;
+    const label = button.textContent;
+    button.disabled = true;
+    input.disabled = true;
+    button.textContent = t("apiKeyChecking");
+    try {
+      const r = await ctx.callFunction("setAiApiKey", { provider, key });
+      toast(r.unchanged ? t("apiKeyUnchanged") : t("apiKeyChanged", { name, last4: r.last4 }));
+      loadKeys(); // fresh rows: the field is empty again, the new key's models listed
+    } catch (e) {
+      error.textContent = `${keyErrorText(e, provider)} ${t("apiKeyNotChanged")}`;
+      button.disabled = false;
+      input.disabled = false;
+      button.textContent = label;
+    }
+  }
+
+  async function loadKeys() {
+    keysAsAdmin = ctx.canWrite();
+    const mine = ++keysRequest;
+    keyState = keysAsAdmin ? undefined : null;
+    renderKeys();
+    fillSuggestions();
+    if (!keysAsAdmin) return;
+    let next;
+    try {
+      next = await ctx.callFunction("getAiSettings", {});
+    } catch (e) {
+      next = { error: e };
+    }
+    if (disposed || mine !== keysRequest) return;
+    keyState = next;
+    renderKeys();
+    fillSuggestions();
+  }
+
+  function fillSuggestions() {
+    for (const [provider, list] of Object.entries(suggestions)) {
+      const models = keyState?.keys?.[provider]?.models ?? [];
+      list.replaceChildren(...models.map((m) => h("option", { value: m })));
+    }
+  }
+
   function number(n) {
     const v = Number(n);
-    return (Number.isFinite(v) ? v : 0).toLocaleString(ctx.lang() === "ja" ? "ja-JP" : "en-GB");
+    return (Number.isFinite(v) ? v : 0).toLocaleString(ja() ? "ja-JP" : "en-GB");
   }
 
   function renderUsage() {
@@ -302,12 +564,14 @@ export function mountCosts(root, ctx) {
 
   load();
   syncUsage();
+  loadKeys();
 
   return {
     isDirty: () => form.isDirty(),
     onConfig() {
       // The admin rights or the app's limit may have changed.
       syncUsage();
+      if (ctx.canWrite() !== keysAsAdmin) loadKeys();
       if (saving || !stale.isStale()) return;
       if (!form.isDirty()) load();
       else if (!body.querySelector(".banner.stale")) {
@@ -317,6 +581,7 @@ export function mountCosts(root, ctx) {
       }
     },
     dispose() {
+      disposed = true;
       stopUsage();
     },
   };

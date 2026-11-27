@@ -39,8 +39,10 @@ const ai = require("../lib/utils/ai");
 const prompt = require("../lib/utils/prompt");
 let aiResult = "";
 let aiCalls = 0;
-ai.callClaude = async () => {
+let aiModel = null;
+ai.callClaude = async (_key, _system, _user, model) => {
   aiCalls++;
+  aiModel = model;
   if (aiResult instanceof Error) throw aiResult;
   return aiResult;
 };
@@ -89,6 +91,7 @@ async function call(data) {
   check("written -> ok", r.code, "ok");
   check("written -> 3 tickets taken", docs.u1.ticketCount, 7);
   check("written -> the text comes back", r.result?.chronicleText, "戦史の本文。");
+  check("no 戦史 model set: Claude Haiku", aiModel, "claude-haiku-4-5-20251001");
 
   reset(10);
   const { raceStats, ...noStats } = VALID;
@@ -132,6 +135,12 @@ async function call(data) {
   reset(0, "sub3000");
   r = await call(VALID);
   check("Warlord (sub3000) -> free, written", [r.code, docs.u1.ticketCount, r.result?.ticketsConsumed], ["ok", 0, 0]);
+
+  // Last: the config read here is then cached for 5 minutes.
+  reset(10);
+  docs.game_config = { model_config: { war_history: "claude-sonnet-4-5" } };
+  r = await call(VALID);
+  check("the 戦史 model set in the PC admin is used", [r.code, aiModel], ["ok", "claude-sonnet-4-5"]);
 
   ft.cleanup();
   console.log(fail ? `\n${fail} check(s) FAILED\n` : "\nall checks passed\n");
