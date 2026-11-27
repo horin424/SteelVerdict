@@ -31,6 +31,9 @@ export { generateWarHistory } from "./history/generateWarHistory";
 // ─── Reports of AI output (the 「報告」 button) ───────────────────────────────────
 export { reportAiContent } from "./reports/reportAiContent";
 
+// ─── AI keys and models (the PC admin's 「コスト＆モデル」 page) ───────────────────
+export { getAiSettings, setAiApiKey, checkAiModel } from "./ai/aiSettingsFunctions";
+
 // ─── Purchases ────────────────────────────────────────────────────────────────
 export { validatePurchase } from "./purchase/validatePurchase";
 export { chooseScenarioPack } from "./purchase/scenarioPack";

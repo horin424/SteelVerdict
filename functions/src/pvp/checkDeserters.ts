@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { GEMINI_API_KEY, TICKET_COSTS } from "../utils/config";
+import { aiKey } from "../ai/apiKey";
 import { judgePvpMatch } from "../battle/judgePvpMatch";
 import { FirestorePvpMatch } from "../utils/firestore";
 import { fetchRemoteConfigData } from "../utils/prompt";
@@ -98,7 +99,7 @@ export const checkDeserters = onSchedule(
     let refunded = 0;
     for (const m of toJudge) {
       try {
-        await judgePvpMatch(m.id, m.data, GEMINI_API_KEY.value());
+        await judgePvpMatch(m.id, m.data, await aiKey("gemini"));
         judged++;
       } catch (err) {
         console.error(`checkDeserters: failed to judge ${m.id}:`, err);

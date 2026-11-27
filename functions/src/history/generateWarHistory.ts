@@ -1,5 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { CLAUDE_API_KEY, CLAUDE_HAIKU, CHRONICLE_MAX_TOKENS } from "../utils/config";
+import { CLAUDE_API_KEY, CHRONICLE_MAX_TOKENS } from "../utils/config";
+import { aiKey } from "../ai/apiKey";
+import { configuredModel } from "../ai/models";
 import { callClaude } from "../utils/ai";
 import { deductTickets, addTickets, getUser, ensureUserDoc } from "../utils/firestore";
 import { assemblePrompt, fetchRemoteConfigData } from "../utils/prompt";
@@ -110,11 +112,13 @@ Write the full chronicle now (approximately 3000 characters):`;
 
       let chronicleText: string;
       try {
+        // The key saved in the PC admin, and the model chosen there for 戦史
+        // (model_config.war_history; Claude Haiku when none is set).
         chronicleText = await callClaude(
-          CLAUDE_API_KEY.value(),
+          await aiKey("claude"),
           systemPrompt,
           userMessage,
-          CLAUDE_HAIKU,
+          configuredModel(config.model_config, "war_history"),
           CHRONICLE_MAX_TOKENS,
         );
       } catch (err) {

@@ -4,9 +4,9 @@ import {
   GEMINI_API_KEY,
   CLAUDE_API_KEY,
   TICKET_COSTS,
-  GEMINI_FLASH_LITE,
-  GEMINI_FLASH,
 } from "../utils/config";
+import { aiKey } from "../ai/apiKey";
+import { configuredModel } from "../ai/models";
 import { callGemini, callClaude } from "../utils/ai";
 import { assemblePrompt, formatBattleUserMessage, fetchRemoteConfigData } from "../utils/prompt";
 import { deductTickets, addTickets, getUser, ensureUserDoc } from "../utils/firestore";
@@ -173,26 +173,22 @@ export const submitBattle = onCall(
     let reportText: string;
     try {
       const maxTokens = maxTokensForMode(gameMode);
+      // The key: the newest one saved in the PC admin (src/ai/apiKey.ts). The
+      // model: the admin's choice in model_config, else the default (src/ai/models.ts).
       if (modelChoice === "claude") {
-        const rcModels = rcData.model_config ?? {};
-        const claudeModel = rcModels["claude"] ?? undefined;
         reportText = await callClaude(
-          CLAUDE_API_KEY.value(),
+          await aiKey("claude"),
           systemPrompt,
           userMessage,
-          claudeModel,
+          configuredModel(rcData.model_config, "claude"),
           maxTokens,
         );
       } else {
-        const rcModels = rcData.model_config ?? {};
-        const modelId = useLiteModel
-          ? (rcModels["gemini_flash_lite"] ?? GEMINI_FLASH_LITE)
-          : (rcModels["gemini_flash"] ?? GEMINI_FLASH);
         reportText = await callGemini(
-          GEMINI_API_KEY.value(),
+          await aiKey("gemini"),
           systemPrompt,
           userMessage,
-          modelId,
+          configuredModel(rcData.model_config, useLiteModel ? "gemini_flash_lite" : "gemini_flash"),
           maxTokens,
         );
       }

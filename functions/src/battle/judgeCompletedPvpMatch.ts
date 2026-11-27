@@ -1,6 +1,7 @@
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { GEMINI_API_KEY } from "../utils/config";
 import { judgePvpMatch } from "./judgePvpMatch";
+import { aiKey } from "../ai/apiKey";
 import { FirestorePvpMatch } from "../utils/firestore";
 
 /**
@@ -43,7 +44,7 @@ export const judgeCompletedPvpMatch = onDocumentUpdated(
     console.log(`Judging PvP match ${matchId}`);
 
     try {
-      await judgePvpMatch(matchId, after as FirestorePvpMatch, GEMINI_API_KEY.value());
+      await judgePvpMatch(matchId, after as FirestorePvpMatch, await aiKey("gemini"));
     } catch (err) {
       // Don't rethrow — a retry would re-run the AI call and double the cost.
       // checkDeserters picks up anything left unresolved at the deadline.

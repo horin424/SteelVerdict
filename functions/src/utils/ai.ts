@@ -85,12 +85,14 @@ export async function callClaude(
 }
 
 /**
- * Call Gemini Flash for PvP (fixed model for fairness).
+ * The PvP judge: one model for both players (model_config.pvp_judge, chosen in
+ * the PC admin; Gemini Flash when none is set).
  */
 export async function callGeminiFlash(
   apiKey: string,
   systemPrompt: string,
   userMessage: string,
+  modelId: string = GEMINI_FLASH,
 ): Promise<string> {
   // Passes the budget explicitly. This used to fall through to callGemini's
   // default, which was 1024 - so PvP verdicts were truncated the same way solo
@@ -99,7 +101,7 @@ export async function callGeminiFlash(
     apiKey,
     systemPrompt,
     userMessage,
-    GEMINI_FLASH,
+    modelId,
     REPORT_MAX_TOKENS,
   );
 }

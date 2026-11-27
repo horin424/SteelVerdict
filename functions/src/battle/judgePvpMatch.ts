@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import { callGeminiFlash } from "../utils/ai";
-import { assemblePrompt, formatPvpUserMessage } from "../utils/prompt";
+import { assemblePrompt, fetchRemoteConfigData, formatPvpUserMessage } from "../utils/prompt";
+import { configuredModel } from "../ai/models";
 import { FirestorePvpMatch } from "../utils/firestore";
 
 /**
@@ -12,8 +13,9 @@ import { FirestorePvpMatch } from "../utils/firestore";
  *   - checkDeserters, the hourly sweep, as a safety net for any match that
  *     reached its deadline with both strategies present but no verdict
  *
- * Gemini Flash is fixed for all PvP so both players are judged by the same
- * model regardless of what either of them paid for elsewhere.
+ * Both players are judged by the same model, whatever either of them paid for
+ * elsewhere: model_config.pvp_judge, chosen in the PC admin (Gemini Flash when
+ * none is set).
  */
 export async function judgePvpMatch(
   matchId: string,
@@ -35,7 +37,9 @@ export async function judgePvpMatch(
     match.playerBRaceName,
   );
 
-  const response = await callGeminiFlash(geminiApiKey, systemPrompt, userMessage);
+  const config = await fetchRemoteConfigData();
+  const response = await callGeminiFlash(
+    geminiApiKey, systemPrompt, userMessage, configuredModel(config.model_config, "pvp_judge"));
 
   const verdict = parsePvpResponse(response, match.playerAUid, match.playerBUid);
   if (!verdict) {
